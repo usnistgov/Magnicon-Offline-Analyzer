@@ -103,16 +103,11 @@ class bvd_mean:
             C2R2List.append((self.R2*ratioMeanC2[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
 
         if self.R1List and self.R2List:
-            # ??
             self.meanR1 = mean(self.R1List)
             self.meanR2 = mean(self.R2List)
             self.stdppm = (std(ratioMeanList, ddof=1))/mean(ratioMeanList)
-            # Show Ali
             self.stdR1ppm = std(self.R1List, ddof=1)
             self.stdR2ppm = std(self.R2List, ddof=1)
-            # print(self.stdR1ppm, self.stdR2ppm)
-            # print(self.stdppm*10**6)
-
             self.stdMeanPPM = self.stdppm/sqrt(len(self.R1List))
             # Possible problem with R2
             self.C1R1 = mean(C1R1List)
