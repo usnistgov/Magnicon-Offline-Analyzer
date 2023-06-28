@@ -1,0 +1,35 @@
+start date: 	2016-02-19
+start time: 	15.17.30
+stop date: 	2016-02-19
+stop time: 	15.19.41
+com rel. humid (%):	35.2
+com temp (°C):	26.04
+cn temp (°C):	27.09
+nv temp (°C):	31.47
+remarks: 	
+R1 Info: 	QHR
+R2 Info: 	1445
+data filepath: 	C:\MagniconData\CCCViewerData\cccviewer_measure\2016-02-19_CCC\160219_024_1517.txt
+config filepath: 	C:\MagniconData\CCCViewerData\cccviewer_measure\2016-02-19_CCC\160219_024_1517_cccdrive.cfg
+time base (Hz): 	60
+integration time (time base multiples):	3
+number of samples per half cycle: 	100
+ignored first samples: 	50
+ignored last samples: 	0
+amplifier gain: 	10000
+delta N1/NA (mTurns): 	-41.137695312
+delta (I2*R2) (V): 	3.0000
+
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)
+1	-1.692000E-7	-1.692000E-7	NaN
+2	-1.366080E-6	-7.676400E-7	5.984400E-7
+3	-1.773600E-7	-5.708800E-7	3.976070E-7
+4	-1.873920E-6	-8.966400E-7	4.303083E-7
+5	-2.940000E-7	-7.761120E-7	3.544378E-7
+6	-1.335120E-6	-8.692800E-7	3.040247E-7
+7	-1.076400E-6	-8.988686E-7	2.586458E-7
+8	-1.471200E-7	-8.049000E-7	2.429060E-7
+9	-1.570560E-6	-8.899733E-7	2.304972E-7
+10	-1.723680E-6	-9.733440E-7	2.223822E-7
+11	-9.120000E-8	-8.931491E-7	2.165489E-7
+12	-1.683360E-6	-9.590000E-7	2.083608E-7

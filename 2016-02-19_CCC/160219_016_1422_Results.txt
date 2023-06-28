@@ -1,0 +1,71 @@
+start date: 	2016-02-19						
+start time: 	14.22.29						
+stop date: 	2016-02-19						
+stop time: 	14.25.23						
+com rel. humid (%):	35.1						
+com temp (°C):	26.19						
+cn temp (°C):	27.34						
+nv temp (°C):	31.97						
+remarks: 							
+R1 Info: 	QHR(1.290640350E+4)						
+R2 Info: 	1445(1.000000000E+4)						
+data filepath: 	C:\MagniconData\CCCViewerData\cccviewer_measure\2016-02-19_CCC\160219_016_1422.txt						
+config filepath: 	C:\MagniconData\CCCViewerData\cccviewer_measure\2016-02-19_CCC\160219_016_1422_cccdrive.cfg						
+setup_file_path	C:\MagniconData\SQUIDViewerData\Saved Setups\Newest.stp						
+time base (Hz): 	60						
+integration time (time base multiples):	3						
+number of samples per half cycle: 	100						
+ignored first samples: 	50						
+ignored last samples: 	0						
+amplifier gain: 	10000						
+delta N1/NA (mTurns): 	-41.137695312						
+delta (I2*R2) (V): 	3.0000						
+							
+N1:	2065						
+N2:	1600						
+
+							
+Mode:	FLL						
+Rf Amp::	OFF						
+Amp Gain:	PLUS						
+Rf FLL:	11.0 kOhm						
+SQUID Gain:	NEG						
+I1 Range:	300uA						
+I1 Amplitude:	116.220588E-6						
+feedin Polarity:	POS						
+I1 SQUID feedIn (ON/OFF):	OFF						
+I1 SQUID feedin:	-37.0dB						
+I2 Range:	300uA						
+I2 Amplitude:	150.000000E-6						
+I2 SQUID feedIn (ON/OFF):	ON						
+I2 SQUID feedin:	-52.0dB						
+Screen (+):	ON						
+Screen (-):	OFF						
+Screen Amplitude:	1.499996E+0						
+
+							
+Results							
+Standard Pressure Correction:	NO						
+Res(ppm)	Ave Res(ppm)	stddrtN-1(ppm)	resistance(ohm)				
+29.3812	9.7096	1.000118608E+4					
+
+							
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)	Res(ppm)	Ave Res(ppm)	stddrtN-1(ppm)	resistance(ohm)
+
+							
+1	5.352000E-8	5.352000E-8	NaN	3.179766E+1	3.179766E+1	NaN	1.000031798E+4
+2	4.176000E-8	4.764000E-8	8.315576E-9	3.180158E+1	3.179962E+1	2.771946E-3	1.000031800E+4
+3	3.456000E-8	4.328000E-8	9.570956E-9	3.180398E+1	3.180107E+1	3.190420E-3	1.000031801E+4
+4	4.296000E-8	4.320000E-8	7.816291E-9	3.180118E+1	3.180110E+1	2.605513E-3	1.000031801E+4
+5	3.624000E-8	4.180800E-8	7.450444E-9	3.180342E+1	3.180156E+1	2.483560E-3	1.000031802E+4
+6	3.216000E-8	4.020000E-8	7.740884E-9	3.180478E+1	3.180210E+1	2.580377E-3	1.000031802E+4
+7	-2.976000E-8	3.020571E-8	2.737032E-8	3.182542E+1	3.180543E+1	9.123732E-3	1.000031805E+4
+8	2.784000E-8	2.991000E-8	2.535380E-8	3.180622E+1	3.180553E+1	8.451534E-3	1.000031806E+4
+9	3.264000E-8	3.021333E-8	2.373376E-8	3.180462E+1	3.180543E+1	7.911504E-3	1.000031805E+4
+10	8.400000E-9	2.803200E-8	2.341550E-8	3.181270E+1	3.180615E+1	7.805414E-3	1.000031806E+4
+11	3.288000E-8	2.847273E-8	2.226193E-8	3.180454E+1	3.180601E+1	7.420880E-3	1.000031806E+4
+12	1.165370E-4	9.737517E-6	3.363312E-5	-7.029895E+0	2.856968E+1	1.121096E+1	1.000028570E+4
+13	-1.104000E-8	8.987628E-6	3.231457E-5	3.181918E+1	2.881964E+1	1.077145E+1	1.000028820E+4
+14	1.080000E-8	8.346426E-6	3.113940E-5	3.181190E+1	2.903338E+1	1.037973E+1	1.000029033E+4
+15	-1.680000E-9	7.789885E-6	3.008399E-5	3.181606E+1	2.921889E+1	1.002793E+1	1.000029219E+4
+16	1.200000E-9	7.303092E-6	2.912905E-5	3.181510E+1	2.938115E+1	9.709615E+0	1.000029381E+4

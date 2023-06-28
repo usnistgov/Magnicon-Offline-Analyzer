@@ -1,0 +1,60 @@
+start date: 	2016-02-19						
+start time: 	16.18.17						
+stop date: 	2016-02-19						
+stop time: 	16.19.30						
+com rel. humid (%):	35.0						
+com temp (°C):	26.10						
+cn temp (°C):	26.97						
+nv temp (°C):	31.09						
+remarks: 							
+R1 Info: 	QHR(1.290640350E+4)						
+R2 Info: 	1445(1.000000000E+4)						
+data filepath: 	C:\MagniconData\CCCViewerData\cccviewer_measure\2016-02-19_CCC\160219_034_1618.txt						
+config filepath: 	C:\MagniconData\CCCViewerData\cccviewer_measure\2016-02-19_CCC\160219_034_1618_cccdrive.cfg						
+setup_file_path	C:\MagniconData\SQUIDViewerData\Saved Setups\Newest.stp						
+time base (Hz): 	60						
+integration time (time base multiples):	3						
+number of samples per half cycle: 	100						
+ignored first samples: 	50						
+ignored last samples: 	0						
+amplifier gain: 	10000						
+delta N1/NA (mTurns): 	-41.137695312						
+delta (I2*R2) (V): 	3.0000						
+							
+N1:	2065						
+N2:	1600						
+
+							
+Mode:	FLL						
+Rf Amp::	OFF						
+Amp Gain:	PLUS						
+Rf FLL:	11.0 kOhm						
+SQUID Gain:	NEG						
+I1 Range:	300uA						
+I1 Amplitude:	116.220588E-6						
+feedin Polarity:	POS						
+I1 SQUID feedIn (ON/OFF):	OFF						
+I1 SQUID feedin:	-37.0dB						
+I2 Range:	300uA						
+I2 Amplitude:	150.000000E-6						
+I2 SQUID feedIn (ON/OFF):	ON						
+I2 SQUID feedin:	-52.0dB						
+Screen (+):	ON						
+Screen (-):	OFF						
+Screen Amplitude:	1.499996E+0						
+
+							
+Results							
+Standard Pressure Correction:	NO						
+Res(ppm)	Ave Res(ppm)	stddrtN-1(ppm)	resistance(ohm)				
+32.4312	0.2145	1.000031799E+4					
+
+							
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)	Res(ppm)	Ave Res(ppm)	stddrtN-1(ppm)	resistance(ohm)
+
+							
+1	-1.082160E-6	-1.082160E-6	NaN	3.217623E+1	3.217623E+1	NaN	1.000032176E+4
+2	-1.413120E-6	-1.247640E-6	2.340241E-7	3.228655E+1	3.223139E+1	7.801057E-2	1.000032231E+4
+3	-1.807920E-6	-1.434400E-6	3.633477E-7	3.241816E+1	3.229365E+1	1.211199E-1	1.000032294E+4
+4	-2.227200E-6	-1.632600E-6	4.951235E-7	3.255792E+1	3.235972E+1	1.650466E-1	1.000032360E+4
+5	-2.705520E-6	-1.847184E-6	6.434998E-7	3.271737E+1	3.243125E+1	2.145070E-1	1.000032431E+4

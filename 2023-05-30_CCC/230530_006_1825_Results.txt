@@ -1,0 +1,77 @@
+start date: 	2023-05-30							
+start time: 	18.25.03							
+stop date: 	2023-05-30							
+stop time: 	18.41.12							
+com rel. humid (%):	33.4							
+com temp (°C):	28.40							
+cn temp (°C):	30.50							
+nv temp (°C):	34.69							
+bvd averages: 	     15							
+remarks: 	CCC ground via instr gnd, CMag-9T, B=9T, T=1.6K, I+=13, I-=2, V+=10, V-=14							
+R1 Info: 	NIST-QHREG13k-AF2(1.290640373E+4)( 0.0000)							
+R2 Info: 	1215(1.000000000E+2)( 0.0517)							
+data filepath: 	M:\MagniconData\CCCViewerData\cccviewer_measure\2023-05-30_CCC\230530_006_1825.txt							
+config filepath: 	M:\MagniconData\CCCViewerData\cccviewer_measure\2023-05-30_CCC\230530_006_1825_cccdrive.cfg							
+setup_file_path	M:\MagniconData\SQUIDViewerData\Magnicon1\Magicon CCC Probe CPS 2017-02.stp							
+time base (Hz): 	60							
+integration time (time base multiples):	60							
+number of samples per half cycle: 	30							
+ignored first samples: 	14							
+ignored last samples: 	0							
+amplifier gain: 	1000000							
+delta N1/NA (mTurns): 	24.520919658							
+delta (I2*R2) (V): 	1.000030519							
+N1 (Turns):	2065							
+N2 (Turns):	16							
+NA (Turns):	1							
+R1 (Ohm): 	12906.404000							
+R2 (Ohm): 	100.000000							
+								
+N1:	2065							
+N2:	16							
+
+								
+Mode:	AMP							
+Rf Amp::	1.65 kOhm							
+Amp Gain:	NEG							
+Rf FLL:	9.10 kOhm							
+SQUID Gain:	PLUS							
+I1 Range:	300uA							
+I1 Amplitude:	38.746300E-6							
+feedin Polarity:	NEG							
+I1 SQUID feedIn (ON/OFF):	OFF							
+I1 SQUID feedin:	-37.0dB							
+I2 Range:	20mA							
+I2 Amplitude:	5.000153E-3							
+I2 SQUID feedIn (ON/OFF):	ON							
+I2 SQUID feedin:	-47.0dB							
+Screen (+):	ON							
+Screen (-):	OFF							
+Screen Amplitude:	500.044371E-3							
+External Power:	ON							
+
+								
+Results								
+Standard Pressure Correction:	(101373.813)							
+Res(ppm)	stdd(ppm)	stddrtN-1(ppm)	resistance(ohm)					
+0.0118	0.0041	0.0011	1.290640373E+4					
+
+								
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)	R(ppm)	RMean(ohm)	RMean(ppm)	stdd(ppm)	stddrtN-1(ppm)
+
+								
+1	-1.218750E-9	-1.218750E-9	NaN	1.380208E-2	1.290640391E+4	1.380208E-2	NaN	NaN
+2	-2.474625E-9	-1.846687E-9	6.279375E-10	1.254624E-2	1.290640390E+4	1.317416E-2	8.880105E-4	6.279182E-4
+3	5.583750E-10	-1.045000E-9	8.798511E-10	1.557915E-2	1.290640391E+4	1.397582E-2	1.523900E-3	8.798242E-4
+4	-1.068300E-8	-3.454500E-9	2.488526E-9	4.338116E-3	1.290640388E+4	1.156640E-2	4.976899E-3	2.488450E-3
+5	-1.260750E-9	-3.015750E-9	1.976906E-9	1.376008E-2	1.290640388E+4	1.200513E-2	4.420361E-3	1.976846E-3
+6	-6.127500E-9	-3.534375E-9	1.695408E-9	8.893477E-3	1.290640388E+4	1.148652E-2	4.152759E-3	1.695357E-3
+7	-3.602250E-9	-3.544071E-9	1.432915E-9	1.141865E-2	1.290640388E+4	1.147683E-2	3.791020E-3	1.432871E-3
+8	-2.564250E-9	-3.421594E-9	1.246970E-9	1.245662E-2	1.290640388E+4	1.159930E-2	3.526856E-3	1.246932E-3
+9	2.777625E-9	-2.732792E-9	1.297629E-9	1.779833E-2	1.290640389E+4	1.228808E-2	3.892769E-3	1.297590E-3
+10	-4.768125E-9	-2.936325E-9	1.178346E-9	1.025281E-2	1.290640389E+4	1.208455E-2	3.726143E-3	1.178310E-3
+11	-1.021950E-8	-3.598432E-9	1.254763E-9	4.801602E-3	1.290640388E+4	1.142247E-2	4.161451E-3	1.254725E-3
+12	-4.706625E-9	-3.690781E-9	1.149153E-9	1.031431E-2	1.290640388E+4	1.133012E-2	3.980662E-3	1.149118E-3
+13	-6.764250E-9	-3.927202E-9	1.083183E-9	8.256746E-3	1.290640387E+4	1.109371E-2	3.905354E-3	1.083150E-3
+14	2.959875E-9	-3.435268E-9	1.116993E-9	1.798057E-2	1.290640388E+4	1.158563E-2	4.179277E-3	1.116959E-3
+15	-3.506250E-10	-3.229625E-9	1.060003E-9	1.467018E-2	1.290640388E+4	1.179126E-2	4.105247E-3	1.059970E-3

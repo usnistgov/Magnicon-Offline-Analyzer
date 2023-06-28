@@ -1,0 +1,44 @@
+start date: 	2023-05-31
+start time: 	19.57.41
+stop date: 	2023-05-31
+stop time: 	20.13.49
+com rel. humid (%):	32.2
+com temp (°C):	28.04
+cn temp (°C):	30.25
+nv temp (°C):	34.81
+bvd averages: 	     15
+remarks: 	CCC ground via instr gnd, CMag-9T, B=9T, T=1.6K, I+=2, I-=13, V+=15, V-=9
+R1 Info: 	NIST-QHREG13k-AF2
+R2 Info: 	1215
+data filepath: 	M:\MagniconData\CCCViewerData\cccviewer_measure\2023-05-31_CCC\230531_006_1957.txt
+config filepath: 	M:\MagniconData\CCCViewerData\cccviewer_measure\2023-05-31_CCC\230531_006_1957_cccdrive.cfg
+time base (Hz): 	60
+integration time (time base multiples):	60
+number of samples per half cycle: 	30
+ignored first samples: 	14
+ignored last samples: 	0
+amplifier gain: 	1000000
+delta N1/NA (mTurns): 	24.513290264
+delta (I2*R2) (V): 	1.000030519
+N1 (Turns):	2065
+N2 (Turns):	16
+NA (Turns):	1
+R1 (Ohm): 	12906.404000
+R2 (Ohm): 	100.000000
+
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)
+1	-3.505875E-09	-3.505875E-09	+NaN000000000
+2	-1.033013E-08	-6.918000E-09	+3.412125E-09
+3	-1.634625E-09	-5.156875E-09	+2.642428E-09
+4	-8.154375E-09	-5.906250E-09	+2.013151E-09
+5	+2.277375E-09	-4.269525E-09	+2.260649E-09
+6	-2.973750E-09	-4.053563E-09	+1.858403E-09
+7	+7.638750E-10	-3.365357E-09	+1.714797E-09
+8	+7.020000E-10	-2.856938E-09	+1.569677E-09
+9	-2.276250E-09	-2.792417E-09	+1.385828E-09
+10	-7.719375E-09	-3.285113E-09	+1.333853E-09
+11	+2.469000E-09	-2.762011E-09	+1.315034E-09
+12	+5.336250E-10	-2.487375E-09	+1.231471E-09
+13	-2.653500E-09	-2.500154E-09	+1.132861E-09
+14	-4.249500E-09	-2.625107E-09	+1.056242E-09
+15	-7.119375E-09	-2.924725E-09	+1.027942E-09
