@@ -167,7 +167,8 @@ class bvd_mean:
         self.R1CorVal = ((mag.R1Pred/1000000 + 1) * mag.R1NomVal)
         self.R2CorVal = ((mag.R2Pred/1000000 + 1) * mag.R2NomVal)
 
-        print(self.C1R1-self.C2R1, self.C1R2-self.C2R2)
+        # print(self.C1R1-self.C2R1, self.C1R2-self.C2R2)
+        print(self.C1R2, self.C2R2)
         
         
         

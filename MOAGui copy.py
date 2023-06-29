@@ -796,8 +796,8 @@ class Ui_mainWindow(object):
 
     def stdR(self, R):
         if R == 'R1':
-            self.R1ValueLineEdit.setText(str("{:.10f}".format(self.bvd.R1)))
-            self.R2ValueLineEdit.setText(str("{:.10f}".format(self.dat.R2NomVal)))
+            self.R1ValueLineEdit.setText(str("{:5.10f}".format(self.bvd.R1)))
+            self.R2ValueLineEdit.setText(str("{:5.10f}".format(self.dat.R2NomVal)))
             self.R2PPMLineEdit.setText(str(0))
             self.ppmMeanLineEdit.setText(str("{:.7f}".format(self.bvd.meanR1)))
             self.RMeanChkPPMLineEdit.setText(str("{:.7f}".format(self.bvd.R1MeanChk)))
