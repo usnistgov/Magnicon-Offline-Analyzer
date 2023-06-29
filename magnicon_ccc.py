@@ -8,7 +8,9 @@ from ResDataBase import ResData
 # Class for parsing CCC files
 class magnicon_ccc:
     def __init__(self, text):
+        # Reads in file and checks that it is a .txt file
         if '.txt' in text:
+            # If the file is a .txt file, it will parse it along with the bvd and cfg files after it
             self.validFile = True
             self.rawFile = text
             self.bvdFile = text.rstrip('.txt') + '_bvd.txt'
@@ -20,7 +22,7 @@ class magnicon_ccc:
         else:
             self.validFile = False
 
-    # Parses the raw dat (first .txt file)
+    # Parses the raw data (first .txt file)
     def load_raw(self):
         if not self.validFile:
             return
@@ -80,13 +82,14 @@ class magnicon_ccc:
                     self.intTime = int(self.intTime.lstrip(' \t'))
 
 
-            # Averages the datetime started and stopped and creates a timestamp of the average
+            # Averages the datetime start and stop and creates a timestamp of the average
             if stopDate:
                 dt1 = datetime(d1[0], d1[1], d1[2], t1[0], t1[1], t1[2])
                 dt2 = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
                 self.avgDT = (dt1-dt2)/2
                 self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
                 self.timeStamp = mktime(self.DT.timetuple())
+            # Returns the start datetime if there is no stop date
             else:
                 self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
                 self.timeStamp = mktime(self.DT.timetuple())
@@ -158,7 +161,7 @@ class magnicon_ccc:
                 if line.startswith('daq_numcycles_stop'):
                     self.numCycStop = int(line.split('=')[-1].rstrip(' \n'))
 
-
+    # Calculations using the parsed data
     def calculations(self):
         R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
         self.R1Pred = R.predictedValueUnix(self.R1SN, self.timeStamp)
@@ -166,16 +169,17 @@ class magnicon_ccc:
         R1index = R.getSNindex(self.R1SN)
         R2index = R.getSNindex(self.R2SN)
 
+        # Finds the data on the two resistors in the CCC files from the resistor database
         self.R1alpha = R.alpha[R1index]
         self.R1beta = R.beta[R1index]
         self.R1stdTemp = R.stdTemp[R1index]
         self.R1pcr = R.pcr[R1index]
-
         self.R2alpha = R.alpha[R2index]
         self.R2beta = R.beta[R2index]
         self.R2stdTemp = R.stdTemp[R2index]
         self.R2pcr = R.pcr[R2index]
 
+        # Time calculations
         if self.validFile:
             self.rampTime = self.rStepTime*self.rStepCount*2/1000000
             self.fullCyc = self.SHC*self.intTime/self.timeBase * 2

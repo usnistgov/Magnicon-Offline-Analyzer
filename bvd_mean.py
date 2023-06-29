@@ -2,6 +2,7 @@ from magnicon_ccc import magnicon_ccc
 # import numpy as np
 from numpy import sqrt, mean, std
 
+# Class that does calculations on the raw data
 class bvd_mean:
     def __init__(self, text, T1, T2, P1, P2):
         mag = magnicon_ccc(text)
@@ -15,7 +16,9 @@ class bvd_mean:
         start = False
         points = 0
         cur = ''
+        # Runs through the raw data
         while (i < len(mag.dataV)):
+            # Ensures the index is not greater than the length of the data
             if i >= len(mag.dataV):
                 break
             # Start at the first cycle ramping down
@@ -23,14 +26,18 @@ class bvd_mean:
                 i += mag.ignored + int((mag.SHC-mag.ignored)/2)
                 start = True
                 cur = 'A1'
+            # Stores A1 data
             if start and (points != int((mag.SHC-mag.ignored)/2)) and cur == 'A1':
                 temp.append(mag.dataV[i])
                 points += 1
+            # On the last data point calulate the mean and prepare for B1 and B2
             elif start and (points == int((mag.SHC-mag.ignored)/2)) and cur == 'A1':
-                A1 = sum(temp)/len(temp)
+                # A1 = sum(temp)/len(temp)
+                A1 = mean(temp)
                 temp = []
                 points = 0
                 cur = 'B'
+                # Ignored samples
                 i += mag.ignored
                 continue
             if i > len(mag.dataV):
@@ -39,8 +46,10 @@ class bvd_mean:
                 temp.append(mag.dataV[i])
                 points += 1
             elif start and (points == (mag.SHC-mag.ignored)) and cur == 'B':
-                B1 = sum(temp[0:int((mag.SHC-mag.ignored)/2)])/len(temp[0:int((mag.SHC-mag.ignored)/2)])
-                B2 = sum(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])/len(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])
+                # B1 = sum(temp[0:int((mag.SHC-mag.ignored)/2)])/len(temp[0:int((mag.SHC-mag.ignored)/2)])
+                # B2 = sum(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])/len(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])
+                B1 = mean(temp[0:int((mag.SHC-mag.ignored)/2)])
+                B2 = mean(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])
                 temp = []
                 points = 0
                 cur = 'A2'
@@ -51,8 +60,10 @@ class bvd_mean:
             if start and (points != int((mag.SHC-mag.ignored)/2)) and (cur == 'A2'):
                 temp.append(mag.dataV[i])
                 points += 1
+            # After storing A2, store all the data obtained and prepare to restart back to A1
             elif start and (points == int((mag.SHC-mag.ignored)/2)) and cur == 'A2':
-                A2 = sum(temp)/len(temp)
+                # A2 = sum(temp)/len(temp)
+                A2 = mean(temp)
                 self.V1.append(B2-A1)
                 self.V2.append(B1-A2)
                 self.A.append(A1)
@@ -69,7 +80,9 @@ class bvd_mean:
 
         self.results(mag, T1, T2, P1, P2)
 
+    # Results from data
     def results(self, mag, T1, T2, P1, P2):
+        # Only here for VSCode
         if 1 != 1:
             mag = magnicon_ccc()
         
@@ -105,7 +118,7 @@ class bvd_mean:
         if self.R1List and self.R2List:
             self.meanR1 = mean(self.R1List)
             self.meanR2 = mean(self.R2List)
-            self.stdppm = (std(ratioMeanList, ddof=1))/mean(ratioMeanList)
+            self.stdppm = std(ratioMeanList, ddof=1)/mean(ratioMeanList)
             self.stdR1ppm = std(self.R1List, ddof=1)
             self.stdR2ppm = std(self.R2List, ddof=1)
             self.stdMeanPPM = self.stdppm/sqrt(len(self.R1List))
