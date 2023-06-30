@@ -3,7 +3,7 @@ from magnicon_ccc import magnicon_ccc
 import sys
 sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
 from ResDataBase import ResData
-from bvd_mean import bvd_mean
+from bvd_stats import bvd_stat
 import tkinter
 from tkinter import filedialog
 import os
@@ -690,7 +690,7 @@ class Ui_mainWindow(object):
             self.data = False
             self.validFile = True
             self.dat = magnicon_ccc(self.txtFilePath)
-            self.bvd = bvd_mean(self.txtFilePath, self.R1Temp, self.R2Temp, self.R1pres, self.R2pres)
+            self.bvd = bvd_stat(self.txtFilePath, self.R1Temp, self.R2Temp, self.R1pres, self.R2pres)
             self.setValidData()
             self.plots()
             self.data = True 

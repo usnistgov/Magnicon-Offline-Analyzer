@@ -86,6 +86,12 @@ class magnicon_ccc:
             if stopDate:
                 dt1 = datetime(d1[0], d1[1], d1[2], t1[0], t1[1], t1[2])
                 dt2 = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
+                t1_str = f'{t1[0]}:{t1[1]}'
+                t1_obj = datetime.strptime(t1_str, '%H:%M')
+                t1_am_pm = t1_obj.strftime('%I:%M %p')
+                t2_str = f'{t2[0]}:{t2[1]}'
+                t2_obj = datetime.strptime(t2_str, '%H:%M')
+                t2_am_pm = t2_obj.strftime('%I:%M %p')
                 self.avgDT = (dt1-dt2)/2
                 self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
                 self.timeStamp = mktime(self.DT.timetuple())
@@ -93,6 +99,9 @@ class magnicon_ccc:
             else:
                 self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
                 self.timeStamp = mktime(self.DT.timetuple())
+
+            self.startDate = f'{d2[1]}/{d2[2]}/{d2[0]} {t2_am_pm}'
+            self.endDate = f'{d1[1]}/{d1[2]}/{d1[0]} {t1_am_pm}'
 
             # This does not average
             # self.timeStamp = mktime(datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]).timetuple())
