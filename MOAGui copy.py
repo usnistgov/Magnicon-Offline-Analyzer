@@ -817,8 +817,8 @@ class Ui_mainWindow(object):
             else:
                 self.R1PPMLineEdit.setText(str(0))
         else:
-            self.R1ValueLineEdit.setText(str("{:.7f}".format(self.dat.R1NomVal)))
-            self.R2ValueLineEdit.setText(str("{:.7f}".format(self.bvd.R2)))
+            self.R1ValueLineEdit.setText(str("{:5.10f}".format(self.dat.R1NomVal)))
+            self.R2ValueLineEdit.setText(str("{:5.10f}".format(self.bvd.R2)))
             self.R1PPMLineEdit.setText(str(0))
             self.ppmMeanLineEdit.setText(str("{:.7f}".format(self.bvd.meanR2)))
             self.RMeanChkPPMLineEdit.setText(str("{:.7f}".format(self.bvd.R2MeanChk)))
