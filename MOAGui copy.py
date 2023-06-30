@@ -689,6 +689,10 @@ class Ui_mainWindow(object):
         if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.')[0][-1].isnumeric():
             self.data = False
             self.validFile = True
+            if '/' in self.txtFilePath:
+                self.txtFile = self.txtFilePath.split('/')[-1]
+            else:
+                self.txtFile = self.txtFilePath.split('\\')[-1]
             self.dat = magnicon_ccc(self.txtFilePath)
             self.bvd = bvd_stat(self.txtFilePath, self.R1Temp, self.R2Temp, self.R1pres, self.R2pres)
             self.setValidData()
@@ -872,6 +876,9 @@ class Ui_mainWindow(object):
     def folderEdited(self):
         self.txtFilePath = self.txtFileLineEdit.text()
         self.getData()
+
+    def createDataFile(self):
+        pass
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
