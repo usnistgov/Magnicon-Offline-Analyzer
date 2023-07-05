@@ -755,7 +755,7 @@ class Ui_mainWindow(object):
 
         self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.bvd.stdppm*10**6)))
 
-        self.NLineEdit.setText(str(len(self.bvd.bvdList)))
+        self.NLineEdit.setText(str(self.bvd.N))
 
         self.stdR(self.RButStatus)
 

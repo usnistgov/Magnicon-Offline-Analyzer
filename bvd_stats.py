@@ -145,12 +145,14 @@ class bvd_stat:
             self.stdC2R2 = 0
 
         if len(self.bvdList):
+            self.N = len(self.bvdList)
             self.mean = mean(self.bvdList)
             self.std = std(self.bvdList, ddof=1)
             self.stdMean = self.std/sqrt(len(self.bvdList))
             self.stdMeanR1 = self.stdR1ppm/sqrt(len(self.R1List))
             self.stdMeanR2 = self.stdR2ppm/sqrt(len(self.R2List))
         else:
+            self.N = 0
             self.bvdMean = 0
             self.std = 0
             self.stdMean = 0
