@@ -121,7 +121,6 @@ class bvd_stat:
             self.stdR1ppm = std(self.R1List, ddof=1)
             self.stdR2ppm = std(self.R2List, ddof=1)
             self.stdMeanPPM = self.stdppm/sqrt(len(self.R1List))
-            # Possible problem with R2
             self.C1R1 = mean(C1R1List)
             self.C1R2 = mean(C1R2List)
             self.C2R1 = mean(C2R1List)

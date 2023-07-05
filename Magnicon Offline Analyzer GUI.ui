@@ -267,6 +267,9 @@
       <property name="currentText">
        <string/>
       </property>
+      <property name="placeholderText">
+       <string>CCC2014-01</string>
+      </property>
      </widget>
      <widget class="QLabel" name="SquidFeedLabel">
       <property name="geometry">
