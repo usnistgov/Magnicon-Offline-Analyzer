@@ -701,7 +701,7 @@ class Ui_mainWindow(object):
             self.SquidFeedBut.setStyleSheet("color: white; background-color: blue")
 
     def getData(self):
-        if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.')[0][-1].isnumeric():
+        if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.txt')[0][-1].isnumeric():
             self.data = False
             self.validFile = True
             if '/' in self.txtFilePath:
