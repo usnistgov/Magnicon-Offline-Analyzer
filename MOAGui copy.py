@@ -72,8 +72,6 @@ class Ui_mainWindow(object):
         self.MagElecComboBox.setCurrentText("")
         self.MagElecComboBox.setObjectName("MagElecComboBox")
 
-        self.setUpButtons()
-
         self.R2TempLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.R2TempLineEdit.setGeometry(QtCore.QRect(440, 410, 113, 22))
         self.R2TempLineEdit.setObjectName("R2TempLineEdit")
@@ -90,6 +88,11 @@ class Ui_mainWindow(object):
         self.CommentsTextBrowser.setObjectName("CommentsTextBrowser")
         self.CommentsTextBrowser.setReadOnly(False)
 
+        self.progressBar = QtWidgets.QProgressBar(parent=self.SetResTab)
+        self.progressBar.setGeometry(QtCore.QRect(740, 680, 111, 23))
+        self.progressBar.setProperty("value", 0)
+        self.progressBar.setObjectName("progressBar")
+
         self.txtFileLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.txtFileLineEdit.setGeometry(QtCore.QRect(20, 620, 511, 22))
         self.txtFileLineEdit.setObjectName("txtFileLineEdit")
@@ -100,6 +103,7 @@ class Ui_mainWindow(object):
         self.folderToolButton.setIcon(QtGui.QIcon(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\folder.ico'))
         self.folderToolButton.clicked.connect(self.folderClicked)
 
+        self.setUpButtons()
         self.BVDTabSetUp()
         
         self.Tab3 = QtWidgets.QWidget()
@@ -135,6 +139,7 @@ class Ui_mainWindow(object):
 
         self.RButStatus = 'R1'
         self.SquidFeedStatus = 'Neg'
+        self.saveStatus = False
 
     # Set up for the labels
     def setLabels(self):
@@ -318,6 +323,9 @@ class Ui_mainWindow(object):
         self.StdDevMeanChkLabel = QtWidgets.QLabel(parent=self.SetResTab)
         self.StdDevMeanChkLabel.setGeometry(QtCore.QRect(740, 150, 111, 16))
         self.StdDevMeanChkLabel.setObjectName("StdDevMeanChkLabel")
+        self.MDSSLabel = QtWidgets.QLabel(parent=self.SetResTab)
+        self.MDSSLabel.setGeometry(QtCore.QRect(630, 600, 61, 16))
+        self.MDSSLabel.setObjectName("MDSSLabel")
 
     # Set up the read only LineEdits
     def setLineEdits(self):
@@ -535,6 +543,18 @@ class Ui_mainWindow(object):
         self.SquidFeedBut.setStyleSheet("color: white; background-color: blue")
         self.SquidFeedBut.clicked.connect(self.SquidButClicked)
 
+        self.MDSSButton = QtWidgets.QPushButton(parent=self.SetResTab)
+        self.MDSSButton.setGeometry(QtCore.QRect(630, 620, 75, 24))
+        self.MDSSButton.setObjectName("MDSSButton")
+        self.MDSSButton.setStyleSheet("color: white; background-color: red")
+        self.MDSSButton.clicked.connect(self.MDSSClicked)
+        
+        self.saveButton = QtWidgets.QPushButton(parent=self.SetResTab)
+        self.saveButton.setGeometry(QtCore.QRect(630, 680, 75, 24))
+        self.saveButton.setObjectName("saveButton")
+        self.saveButton.setEnabled(False)
+        self.saveButton.clicked.connect(self.saveMDSS)
+
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
         mainWindow.setWindowTitle(_translate("mainWindow", "Magnicon Offline Analyzer"))
@@ -603,6 +623,9 @@ class Ui_mainWindow(object):
         self.VMeanChkLabel.setText(_translate("mainWindow", "Mean Chk [V]"))
         self.StdDevChkLabel.setText(_translate("mainWindow", "Std. Dev. Chk"))
         self.StdDevMeanChkLabel.setText(_translate("mainWindow", "Std. Mean Chk"))
+        self.saveButton.setText(_translate("mainWindow", "Save"))
+        self.MDSSButton.setText(_translate("mainWindow", "No"))
+        self.MDSSLabel.setText(_translate("mainWindow", "Save MDSS"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
 
     def plots(self):
@@ -879,6 +902,26 @@ class Ui_mainWindow(object):
 
     def createDataFile(self):
         pass
+
+    def MDSSClicked(self):
+        if self.saveStatus:
+            self.saveStatus = False
+            self.MDSSButton.setStyleSheet("color: white; background-color: red")
+            self.MDSSButton.setText('No')
+            self.saveButton.setEnabled(False)
+        else:
+            self.saveStatus = True
+            self.MDSSButton.setStyleSheet("color: white; background-color: green")
+            self.MDSSButton.setText('Yes')
+            self.saveButton.setEnabled(True)
+            self.progressBar.setProperty('value', 0)
+
+    def saveMDSS(self):
+        self.saveStatus = False
+        self.MDSSButton.setStyleSheet("color: white; background-color: red")
+        self.MDSSButton.setText('No')
+        self.saveButton.setEnabled(False)
+        self.progressBar.setProperty('value', 100)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
