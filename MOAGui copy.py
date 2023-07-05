@@ -109,6 +109,8 @@ class Ui_mainWindow(object):
         self.Tab3 = QtWidgets.QWidget()
         self.Tab3.setObjectName("Tab3")
         self.tabWidget.addTab(self.Tab3, "")
+
+        self.tabWidget.currentChanged.connect(self.tabIndexChanged)
         
         mainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=mainWindow)
@@ -681,22 +683,12 @@ class Ui_mainWindow(object):
             self.StandardRBut.setStyleSheet("color: white; background-color: green")
             if self.validFile:
                 self.stdR(self.RButStatus)
-                # self.ax2.cla()
-                # self.twin2.set_visible(False)
-                # self.bvdPlot()
-                # self.fig.tight_layout()
-                # self.canvas.draw()
         else:
             self.RButStatus = 'R1'
             self.StandardRBut.setText('R1')
             self.StandardRBut.setStyleSheet("color: white; background-color: red")
             if self.validFile:
                 self.stdR(self.RButStatus)
-                # self.ax2.cla()
-                # self.twin2.set_visible(False)
-                # self.bvdPlot()
-                # self.fig.tight_layout()
-                # self.canvas.draw()
 
     def SquidButClicked(self):
         if self.SquidFeedBut.pressed and self.SquidFeedStatus == 'Neg':
@@ -719,7 +711,7 @@ class Ui_mainWindow(object):
             self.dat = magnicon_ccc(self.txtFilePath)
             self.bvd = bvd_stat(self.txtFilePath, self.R1Temp, self.R2Temp, self.R1pres, self.R2pres)
             self.setValidData()
-            self.plots()
+            # self.plots()
             self.data = True 
         else:
             self.setInvalidData()
@@ -924,6 +916,10 @@ class Ui_mainWindow(object):
 
     def createDataFile(self):
         pass
+
+    def tabIndexChanged(self):
+        if self.tabWidget.currentIndex() == 1 and self.validFile:
+            self.plots()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
