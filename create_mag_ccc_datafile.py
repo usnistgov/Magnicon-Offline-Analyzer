@@ -5,8 +5,10 @@ class writeDataFile():
     def __init__(self, text, dat_obj, bvd_stat_obj, RStatus):
         dataFileName = text.replace('.txt', "")
         dataFileName = f'{dataFileName}_MDSS.txt'
-        # bvd_stat_obj = bvd_stat()
-        # dat_obj = magnicon_ccc()
+        if 1 != 1:
+            bvd_stat_obj = bvd_stat()
+            dat_obj = magnicon_ccc()
+            
         with open(dataFileName, 'w') as f:
             if RStatus == 'R1':
                 f.write(f'{dat_obj.R1NomVal}')

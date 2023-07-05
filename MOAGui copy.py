@@ -900,9 +900,6 @@ class Ui_mainWindow(object):
         self.txtFilePath = self.txtFileLineEdit.text()
         self.getData()
 
-    def createDataFile(self):
-        pass
-
     def MDSSClicked(self):
         if self.saveStatus:
             self.saveStatus = False
@@ -917,11 +914,16 @@ class Ui_mainWindow(object):
             self.progressBar.setProperty('value', 0)
 
     def saveMDSS(self):
+        self.progressBar.setProperty('value', 25)
         self.saveStatus = False
         self.MDSSButton.setStyleSheet("color: white; background-color: red")
         self.MDSSButton.setText('No')
         self.saveButton.setEnabled(False)
+        self.createDataFile()
         self.progressBar.setProperty('value', 100)
+
+    def createDataFile(self):
+        pass
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
