@@ -174,6 +174,8 @@ if __name__ == '__main__':
     file1 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2016-02-18_CCC\160218_016_1548.txt'
     file2 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2023-06-01_CCC\230601_001_1134.txt'
     file3 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2016-02-18_CCC\160218_001_0935.txt'
-    test = bvd_stat(file2, 25, 25, 101325, 101325)
-    # test = bvd_mean(file2, 25, 25, 103008, 103008)
-    # print(test.ratioMean)
+    diffFile = r'C:/Users/ajg8@nist.gov/Desktop/Magnicon-Offline-Analyzer/2023-05-31_CCC/230531_001_1015.txt'
+    # test = bvd_stat(file2, 25, 25, 101325, 101325)
+    # test = bvd_stat(file2, 25, 25, 103008, 103008)
+    test = bvd_stat(diffFile, 25, 25, 101325, 101325)
+    print(test.ratioMean)
