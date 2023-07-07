@@ -1,8 +1,14 @@
 from time import mktime
 from datetime import datetime, timedelta
-import sys
+import sys, os
 from numpy import std
-sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
+try:
+    sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
+except:
+    os.chdir('..')
+    os.chdir('ResDatabase')
+    ResDataDir = os.getcwd()
+    sys.path.append(ResDataDir)
 from ResDataBase import ResData
 
 # Class for parsing CCC files
@@ -172,7 +178,10 @@ class magnicon_ccc:
 
     # Calculations using the parsed data
     def calculations(self):
-        R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
+        try:
+            R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
+        except:
+            R = ResData(ResDataDir)
         self.R1Pred = R.predictedValueUnix(self.R1SN, self.timeStamp)
         self.R2Pred = R.predictedValueUnix(self.R2SN, self.timeStamp)
         R1index = R.getSNindex(self.R1SN)
@@ -197,10 +206,10 @@ class magnicon_ccc:
 
 # For testing
 if __name__ == '__main__':
-    file1 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2016-02-18_CCC\160218_016_1548.txt'
-    file2 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2023-06-01_CCC\230601_001_1134.txt'
-    file3 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2016-02-18_CCC\160218_001_0935.txt'
-    diffFile = r'C:/Users/ajg8@nist.gov/Desktop/Magnicon-Offline-Analyzer/2023-05-31_CCC/230531_001_1015.txt'
+    file1 = r'2016-02-18_CCC\160218_016_1548.txt'
+    file2 = r'2023-06-01_CCC\230601_001_1134.txt'
+    file3 = r'2016-02-18_CCC\160218_001_0935.txt'
+    diffFile = r'2023-05-31_CCC/230531_001_1015.txt'
     # mc = magnicon_ccc(file2)
-    mc = magnicon_ccc(diffFile)
+    mc = magnicon_ccc(file2)
     print(mc.R2Pred)

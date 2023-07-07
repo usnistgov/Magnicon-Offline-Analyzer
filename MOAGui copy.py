@@ -1,18 +1,24 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from magnicon_ccc import magnicon_ccc
-import sys
-sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
+import sys, os
+
+try:
+    sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
+except:
+    os.chdir('..')
+    os.chdir('ResDatabase')
+    ResDataDir = os.getcwd()
+    sys.path.append(ResDataDir)
+
 from ResDataBase import ResData
 from bvd_stats import bvd_stat
 import tkinter
 from tkinter import filedialog
-import os
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import numpy as np
-
 
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
@@ -71,6 +77,7 @@ class Ui_mainWindow(object):
         self.MagElecComboBox.setEditable(False)
         self.MagElecComboBox.setCurrentText("")
         self.MagElecComboBox.setObjectName("MagElecComboBox")
+        self.MagElecComboBox.addItem('CCC2014')
 
         self.R2TempLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.R2TempLineEdit.setGeometry(QtCore.QRect(440, 410, 113, 22))
@@ -126,7 +133,10 @@ class Ui_mainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
 
     def initializations(self):
-        self.R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
+        try:
+            self.R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
+        except:
+            self.R = ResData(ResDataDir)
         self.validFile = False
         self.txtFilePath = ''
         self.plotted = False
@@ -562,12 +572,12 @@ class Ui_mainWindow(object):
         mainWindow.setWindowTitle(_translate("mainWindow", "Magnicon Offline Analyzer"))
         self.R1OilDepthLabel.setText(_translate("mainWindow", "R1 Oil Depth [mm]"))
         self.RelHumLabel.setText(_translate("mainWindow", "Relative Humidity [%]"))
-        self.R2TempLabel.setText(_translate("mainWindow", "R2 Temperature [" + chr(176) + "C]"))
+        self.R2TempLabel.setText(_translate("mainWindow", f'R2 Temperature [{chr(176)}C]'))
         self.R1PresLabel.setText(_translate("mainWindow", "R1 Pressure [Pa]"))
         self.MagElecLabel.setText(_translate("mainWindow", "Magnicon Electronics"))
         self.R1OilPresLabel.setText(_translate("mainWindow", "R1 Oil Pressure [Pa]"))
         self.R2OilPresLabel.setText(_translate("mainWindow", "R2 Oil Pressure [Pa]"))
-        self.R1TempLabel.setText(_translate("mainWindow", "R1 Temperature [" + chr(176) + "C]"))
+        self.R1TempLabel.setText(_translate("mainWindow", f'R1 Temperature [{chr(176)}C]'))
         self.StandardRLabel.setText(_translate("mainWindow", "  Standard R"))
         self.MeasTimeLabel.setText(_translate("mainWindow", "Measurement Time"))
         self.RemTimeLabel.setText(_translate("mainWindow", "Remaining Time"))
@@ -605,8 +615,8 @@ class Ui_mainWindow(object):
         self.R1SNLabel.setText(_translate("mainWindow", "R1 Serial Number"))
         self.R2SNLabel.setText(_translate("mainWindow", "R2 Serial Number"))
         self.RampLabel.setText(_translate("mainWindow", "Ramp [s]"))
-        self.R1PPMLabel.setText(_translate("mainWindow", "R1 [" + chr(956) + chr(937) + "/" + chr(937) + "]"))
-        self.R2PPMLabel.setText(_translate("mainWindow", "R2 [" + chr(956) + chr(937) + "/" + chr(937) + "]"))
+        self.R1PPMLabel.setText(_translate("mainWindow", f'R1 [{chr(956)}{chr(937)}/{chr(937)}]'))
+        self.R2PPMLabel.setText(_translate("mainWindow", f'R2 [{chr(956)}{chr(937)}/{chr(937)}]'))
         self.R1ValueLabel.setText(_translate("mainWindow", "R1 Value"))
         self.AppVoltLabel.setText(_translate("mainWindow", "Applied Voltage"))
         self.MeasLabel.setText(_translate("mainWindow", "Meas [s]"))
