@@ -166,6 +166,11 @@ class bvd_stat:
 
         self.R1CorVal = ((mag.R1Pred/1000000 + 1) * mag.R1NomVal)
         self.R2CorVal = ((mag.R2Pred/1000000 + 1) * mag.R2NomVal)
+
+        # print(1.2906403862E+4)
+        # print((self.C1R1/1000000 + 1) * mag.R1NomVal)
+        # print(1.0000000416E+2)
+        # print((self.C2R2/1000000 + 1) * self.R2CorVal)
         
         
         
