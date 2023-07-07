@@ -217,7 +217,7 @@ if __name__ == '__main__':
     file1 = r'2016-02-18_CCC\160218_016_1548.txt'
     file2 = r'2023-06-01_CCC\230601_001_1134.txt'
     file3 = r'2016-02-18_CCC\160218_001_0935.txt'
-    diffFile = r'2023-05-31_CCC/230531_001_1015.txt'
+    diffFile = r'2023-05-31_CCC/230531_008_2200.txt'
     # mc = magnicon_ccc(file2)
     mc = magnicon_ccc(file2)
     print(mc.R2Pred)

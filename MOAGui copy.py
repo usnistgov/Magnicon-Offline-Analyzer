@@ -77,7 +77,7 @@ class Ui_mainWindow(object):
         self.MagElecComboBox.setEditable(False)
         self.MagElecComboBox.setCurrentText("")
         self.MagElecComboBox.setObjectName("MagElecComboBox")
-        self.MagElecComboBox.addItem('CCC2014')
+        self.MagElecComboBox.addItem('CCC2014-01')
 
         self.R2TempLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.R2TempLineEdit.setGeometry(QtCore.QRect(440, 410, 113, 22))

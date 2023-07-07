@@ -2,7 +2,7 @@ from bvd_stats import bvd_stat
 from magnicon_ccc import magnicon_ccc
 
 class writeDataFile():
-    def __init__(self, text, dat_obj, bvd_stat_obj, RStatus):
+    def __init__(self, text, dat_obj, bvd_stat_obj, RStatus, R1Temp, R2Temp, pres, system):
         dataFileName = text.replace('.txt', "")
         dataFileName = f'{dataFileName}_MDSS.txt'
         if 1 != 1:
@@ -13,7 +13,7 @@ class writeDataFile():
         with open(dataFileName, 'w') as f:
             f.write(f'{dat_obj.R1NomVal}')
             f.write(f'|{dat_obj.startDate}|{dat_obj.endDate}')
-            f.write(f'|{dat_obj.I2}')
+            f.write(f'|{"{:.6E}".format(dat_obj.I2).replace("E-0", "E-")}')
             f.write(f'|{"{:.2f}".format(dat_obj.fullCyc)}')
             f.write(f'|{dat_obj.N1}/{dat_obj.N2}')
             f.write(f'|{dat_obj.R2SN} ({"{:.4f}".format(dat_obj.R2Pred)})')
@@ -26,9 +26,9 @@ class writeDataFile():
             # elif dat_obj.R2NomVal == 1000:
             #     f.write(f'|{float(1.2906403862E+4)/13}')
             f.write(f'|{bvd_obj.N}')
-            f.write(f'|???')
-            f.write(f'|???')
-            f.write(f'|???')
+            f.write(f'|{pres}')
+            f.write(f'|{R2Temp}')
+            f.write(f'|{R1Temp}')
             if RStatus == 'R1':
                 pass
             else:
@@ -48,23 +48,25 @@ class writeDataFile():
             f.write(f'|???')
             f.write(f'|???')
             f.write(f'|???')
-            f.write(f'|{dat_obj.appVolt}')
-            f.write(f'|{"{:.6e}".format(bvd_obj.mean)}')
+            if float(dat_obj.appVolt) >= 0:
+                f.write(f'|+{dat_obj.appVolt}')
+            else:
+                f.write(f'|-{dat_obj.appVolt}')
+            f.write(f'|{"{:.6E}".format(bvd_obj.mean).replace("E-0", "E-")}')
             f.write(f'|???')
             f.write(f'|???')
             f.write(f'|???')
-            # Temps
             f.write(f'|{dat_obj.comRelHum}|{"{:.2f}".format(dat_obj.comTemp)}|{"{:.2f}".format(dat_obj.cnTemp)}|{"{:.2f}".format(dat_obj.nvTemp)}')
-            f.write(f'|???')
+            f.write(f'|{system}/???')
             f.write(f'|???')
             f.write(f'|???')
             f.write(f'|???')
 
 if __name__ == '__main__':
-    file1 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2016-02-18_CCC\160218_016_1548.txt'
-    file2 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2023-06-01_CCC\230601_001_1134.txt'
-    file3 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2016-02-18_CCC\160218_001_0935.txt'
+    file1 = r'2016-02-18_CCC\160218_016_1548.txt'
+    file2 = r'2023-06-01_CCC\230601_001_1134.txt'
+    file3 = r'2016-02-18_CCC\160218_001_0935.txt'
     file4 = r'2023-05-31_CCC\230531_008_2200.txt'
     dat_obj = magnicon_ccc(file4)
     bvd_obj = bvd_stat(file4, 25, 25, 101325, 101325)
-    test_obj = writeDataFile('230531_008_2200.txt', dat_obj, bvd_obj, 'R2')
+    test_obj = writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_obj, RStatus='R2', R2Temp='25.0002', R1Temp='-271.5500', pres='101473.813', system='CCC2014-01')
