@@ -92,12 +92,12 @@ class magnicon_ccc:
             if stopDate:
                 dt1 = datetime(d1[0], d1[1], d1[2], t1[0], t1[1], t1[2])
                 dt2 = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
-                t1_str = f'{t1[0]}:{t1[1]}'
-                t1_obj = datetime.strptime(t1_str, '%H:%M')
-                t1_am_pm = t1_obj.strftime('%I:%M %p')
-                t2_str = f'{t2[0]}:{t2[1]}'
-                t2_obj = datetime.strptime(t2_str, '%H:%M')
-                t2_am_pm = t2_obj.strftime('%I:%M %p')
+                t1_str = f'{t1[0]}:{t1[1]}:{t1[2]}'
+                t1_obj = datetime.strptime(t1_str, '%H:%M:%S')
+                t1_am_pm = t1_obj.strftime('%I:%M:%S %p')
+                t2_str = f'{t2[0]}:{t2[1]}:{t2[2]}'
+                t2_obj = datetime.strptime(t2_str, '%H:%M:%S')
+                t2_am_pm = t2_obj.strftime('%I:%M:%S %p')
                 self.avgDT = (dt1-dt2)/2
                 self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
                 self.timeStamp = mktime(self.DT.timetuple())
@@ -151,6 +151,8 @@ class magnicon_ccc:
     def load_cfg(self):
         if not self.validFile:
             return
+        feedinIndex = [-97, -94.5, -92.0, -89.5, -87.0, -84.5, -82.0, -79.5, -77.0, -74.5, -72.0, -69.5, -67.0, -64.5, -62.0, 
+                       -59.5, -57.0, -54.5, -52.0, -49.5, -47.0, -44.5, -42.0, -39.5, -37.0, -34.5, -32.0, -29.5, -27.0]
         with open (self.cfgFile, "r") as file:
             for line in file.readlines():
                 if line.startswith('r1 '):
@@ -167,6 +169,12 @@ class magnicon_ccc:
                     self.I1 = float(line.split('=')[-1].rstrip(' \n'))
                 if line.startswith('cs_amplitude 4'):
                     self.I2 = float(line.split('=')[-1].rstrip(' \n'))
+                if line.startswith('cs_feedin 3'):
+                    I1FeedinIndex = int(line.split('=')[-1].rstrip(' \n'))
+                    self.I1Feedin = feedinIndex[I1FeedinIndex - 1]
+                if line.startswith('cs_feedin 4'):
+                    I2FeedinIndex = int(line.split('=')[-1].rstrip(' \n'))
+                    self.I2Feedin = feedinIndex[I2FeedinIndex - 1]
                 if line.startswith('c1_sum'):
                     self.N1 = int(line.split('=')[-1].rstrip(' \n'))
                 if line.startswith('c2_sum'):
@@ -175,6 +183,11 @@ class magnicon_ccc:
                     self.NA = int(line.split('=')[-1].rstrip(' \n'))
                     if self.NA == 0:
                         self.NA = 1
+                if line.startswith("co_extpower 2"):
+                    if 'TRUE' in line:
+                        self.extpower = 'ON'
+                    else:
+                        self.extpower = 'OFF'
                 if line.startswith("co_amplitude 2"):
                     self.appVolt = line.split('= ')[-1].rstrip(' \n')
                 if line.startswith('ra_steptime 2'):
@@ -219,5 +232,5 @@ if __name__ == '__main__':
     file3 = r'2016-02-18_CCC\160218_001_0935.txt'
     diffFile = r'2023-05-31_CCC/230531_008_2200.txt'
     # mc = magnicon_ccc(file2)
-    mc = magnicon_ccc(file2)
-    print(mc.R2Pred)
+    mc = magnicon_ccc(diffFile)
+    # print(mc.R2Pred)

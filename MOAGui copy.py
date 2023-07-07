@@ -78,6 +78,7 @@ class Ui_mainWindow(object):
         self.MagElecComboBox.setCurrentText("")
         self.MagElecComboBox.setObjectName("MagElecComboBox")
         self.MagElecComboBox.addItem('CCC2014-01')
+        self.MagElecComboBox.addItem('CCC2019-01')
 
         self.R2TempLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.R2TempLineEdit.setGeometry(QtCore.QRect(440, 410, 113, 22))
@@ -559,12 +560,13 @@ class Ui_mainWindow(object):
         self.MDSSButton.setGeometry(QtCore.QRect(630, 620, 75, 24))
         self.MDSSButton.setObjectName("MDSSButton")
         self.MDSSButton.setStyleSheet("color: white; background-color: red")
+        self.MDSSButton.setEnabled(False)
         self.MDSSButton.clicked.connect(self.MDSSClicked)
         
         self.saveButton = QtWidgets.QPushButton(parent=self.SetResTab)
         self.saveButton.setGeometry(QtCore.QRect(630, 680, 75, 24))
         self.saveButton.setObjectName("saveButton")
-        self.saveButton.setEnabled(False)
+        # self.saveButton.setEnabled(False)
         self.saveButton.clicked.connect(self.saveMDSS)
 
     def retranslateUi(self, mainWindow):
