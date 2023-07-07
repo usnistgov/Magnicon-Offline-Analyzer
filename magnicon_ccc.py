@@ -121,6 +121,14 @@ class magnicon_ccc:
             start = False
             self.bvd = []
             for line in file.readlines():
+                if line.startswith('com rel. hum'):
+                    self.comRelHum = float(line.split(':')[-1].rstrip(' \n'))
+                if line.startswith('com temp'):
+                    self.comTemp = float(line.split(':')[-1].rstrip(' \n'))
+                if line.startswith('cn temp'):
+                    self.cnTemp = float(line.split(':')[-1].rstrip(' \n'))
+                if line.startswith('nv temp'):
+                    self.nvTemp = float(line.split(':')[-1].rstrip(' \n'))
                 if line.startswith('delta N1/NA'):
                     self.deltaNApN1 = float(line.split(':')[-1].rstrip(' \n')) * 0.001
                 if line.startswith('delta (I2*R2)'):
@@ -168,7 +176,7 @@ class magnicon_ccc:
                     if self.NA == 0:
                         self.NA = 1
                 if line.startswith("co_amplitude 2"):
-                    self.appVolt = float(line.split('=')[-1].rstrip(' \n'))
+                    self.appVolt = line.split('= ')[-1].rstrip(' \n')
                 if line.startswith('ra_steptime 2'):
                     self.rStepTime = int(line.split('=')[-1].rstrip(' \n'))
                 if line.startswith('ra_stepcount 2'):
@@ -206,6 +214,7 @@ class magnicon_ccc:
 
 # For testing
 if __name__ == '__main__':
+<<<<<<< HEAD
     file1 = r'2016-02-18_CCC\160218_016_1548.txt'
     file2 = r'2023-06-01_CCC\230601_001_1134.txt'
     file3 = r'2016-02-18_CCC\160218_001_0935.txt'
@@ -213,3 +222,12 @@ if __name__ == '__main__':
     # mc = magnicon_ccc(file2)
     mc = magnicon_ccc(file2)
     print(mc.R2Pred)
+=======
+    file1 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2016-02-18_CCC\160218_016_1548.txt'
+    file2 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2023-06-01_CCC\230601_001_1134.txt'
+    file3 = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\2016-02-18_CCC\160218_001_0935.txt'
+    diffFile = r'C:/Users/ajg8@nist.gov/Desktop/Magnicon-Offline-Analyzer/2023-05-31_CCC/230531_001_1015.txt'
+    mc = magnicon_ccc(file2)
+    # mc = magnicon_ccc(diffFile)
+    # print(mc.R2Pred)
+>>>>>>> f8797ee0d690beabfef2ff8355ce95c0fc378b01
