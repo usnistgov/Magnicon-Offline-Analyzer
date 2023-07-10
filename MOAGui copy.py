@@ -937,15 +937,23 @@ class Ui_mainWindow(object):
 
     def R1PresChanged(self):
         try:
-            self.R1pres = float(self.R1PresLineEdit.text())
-            self.getData()
+            try:
+                self.R1pres = int(self.R1PresLineEdit.text())
+                self.getData()
+            except ValueError:
+                self.R1pres = float(self.R1PresLineEdit.text())
+                self.getData()
         except ValueError:
             self.R1PresLineEdit.setText(str(self.R1pres))
 
     def R2PresChanged(self):
         try:
-            self.R2pres = float(self.R2PresLineEdit.text())
-            self.getData()
+            try:
+                self.R2pres = int(self.R2PresLineEdit.text())
+                self.getData()
+            except ValueError:
+                self.R2pres = float(self.R2PresLineEdit.text())
+                self.getData()
         except ValueError:
             self.R2PresLineEdit.setText(str(self.R2pres))
 
