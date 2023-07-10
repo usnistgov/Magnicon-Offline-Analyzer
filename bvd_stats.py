@@ -1,5 +1,7 @@
 from magnicon_ccc import magnicon_ccc
 from numpy import sqrt, mean, std
+import os
+bp = os.getcwd()
 
 # Class that does calculations on the raw data
 class bvd_stat:
@@ -175,10 +177,10 @@ class bvd_stat:
         
         
 if __name__ == '__main__':
-    file1 = r'2016-02-18_CCC\160218_016_1548.txt'
-    file2 = r'2023-06-01_CCC\230601_001_1134.txt'
-    file3 = r'2016-02-18_CCC\160218_001_0935.txt'
-    diffFile = r'2023-05-31_CCC/230531_008_2200.txt'
+    file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
+    file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
+    file3 = bp + r'\2016-02-18_CCC\160218_001_0935.txt'
+    diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # test = bvd_stat(file2, 25, 25, 101325, 101325)
     # test = bvd_stat(file2, 25, 25, 103008, 103008)
     test = bvd_stat(diffFile, T1=25, T2=24, P1=101325, P2=101325)

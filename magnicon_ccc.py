@@ -3,13 +3,18 @@ from datetime import datetime, timedelta
 import sys, os
 from numpy import std
 try:
+    bp = os.getcwd()
     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
+    from ResDataBase import ResData
 except:
+    bp = os.getcwd()
     os.chdir('..')
     os.chdir('ResDatabase')
     ResDataDir = os.getcwd()
+    os.chdir('..')
+    os.chdir('Magnicon-Offline-Analyzer')
     sys.path.append(ResDataDir)
-from ResDataBase import ResData
+    from ResDataBase import ResData
 
 # Class for parsing CCC files
 class magnicon_ccc:
@@ -227,10 +232,10 @@ class magnicon_ccc:
 
 # For testing
 if __name__ == '__main__':
-    file1 = r'2016-02-18_CCC\160218_016_1548.txt'
-    file2 = r'2023-06-01_CCC\230601_001_1134.txt'
-    file3 = r'2016-02-18_CCC\160218_001_0935.txt'
-    diffFile = r'2023-05-31_CCC/230531_008_2200.txt'
+    file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
+    file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
+    file3 = bp + r'\2016-02-18_CCC\160218_001_0935.txt'
+    diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # mc = magnicon_ccc(file2)
     mc = magnicon_ccc(diffFile)
-    # print(mc.R2Pred)
+    print(mc.R2Pred)

@@ -2,15 +2,19 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from magnicon_ccc import magnicon_ccc
 import sys, os
 
-try:
+bp = os.getcwd()
+if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
-except:
+    from ResDataBase import ResData
+else:
     os.chdir('..')
     os.chdir('ResDatabase')
     ResDataDir = os.getcwd()
+    os.chdir('..')
+    os.chdir('Magnicon-Offline-Analyzer')
     sys.path.append(ResDataDir)
+    from ResDataBase import ResData
 
-from ResDataBase import ResData
 from bvd_stats import bvd_stat
 import tkinter
 from tkinter import filedialog
@@ -108,7 +112,7 @@ class Ui_mainWindow(object):
         self.folderToolButton = QtWidgets.QToolButton(parent=self.SetResTab)
         self.folderToolButton.setGeometry(QtCore.QRect(530, 620, 22, 22))
         self.folderToolButton.setObjectName("folderToolButton")
-        self.folderToolButton.setIcon(QtGui.QIcon(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\High Resistance\2023 AJ\Magnicon Gui Files\folder.ico'))
+        self.folderToolButton.setIcon(QtGui.QIcon(bp + r'\folder.ico'))
         self.folderToolButton.clicked.connect(self.folderClicked)
 
         self.setUpButtons()
