@@ -2,12 +2,11 @@ from time import mktime
 from datetime import datetime, timedelta
 import sys, os
 from numpy import std
-try:
-    bp = os.getcwd()
+bp = os.getcwd()
+if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
     from ResDataBase import ResData
-except:
-    bp = os.getcwd()
+else:
     os.chdir('..')
     os.chdir('ResDatabase')
     ResDataDir = os.getcwd()
@@ -206,7 +205,7 @@ class magnicon_ccc:
     def calculations(self):
         try:
             R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
-        except:
+        except FileNotFoundError:
             R = ResData(ResDataDir)
         self.R1Pred = R.predictedValueUnix(self.R1SN, self.timeStamp)
         self.R2Pred = R.predictedValueUnix(self.R2SN, self.timeStamp)

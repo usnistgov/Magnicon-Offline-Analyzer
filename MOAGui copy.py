@@ -69,13 +69,14 @@ class Ui_mainWindow(object):
         self.R1TempLineEdit.setObjectName("R1TempLineEdit")
         self.R1TempLineEdit.returnPressed.connect(self.temp1Changed)
 
-        # self.TotalPresLineEdit.textEdited.connect(self.userInput)
         self.R1PresLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.R1PresLineEdit.setGeometry(QtCore.QRect(20, 410, 81, 22))
         self.R1PresLineEdit.setObjectName("R1PresLineEdit")
+        self.R1PresLineEdit.returnPressed.connect(self.R1PresChanged)
         self.R2PresLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.R2PresLineEdit.setGeometry(QtCore.QRect(20, 470, 81, 22))
         self.R2PresLineEdit.setObjectName("R2PresLineEdit")
+        self.R2PresLineEdit.returnPressed.connect(self.R2PresChanged)
 
         self.MagElecComboBox = QtWidgets.QComboBox(parent=self.SetResTab)
         self.MagElecComboBox.setGeometry(QtCore.QRect(20, 680, 151, 22))
@@ -146,7 +147,7 @@ class Ui_mainWindow(object):
     def initializations(self):
         try:
             self.R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
-        except:
+        except FileNotFoundError:
             self.R = ResData(ResDataDir)
         self.validFile = False
         self.txtFilePath = ''
@@ -787,7 +788,6 @@ class Ui_mainWindow(object):
             self.dat = magnicon_ccc(self.txtFilePath)
             self.bvd = bvd_stat(self.txtFilePath, self.R1Temp, self.R2Temp, self.R1pres, self.R2pres)
             self.setValidData()
-            # self.plots()
             self.data = True 
         else:
             self.setInvalidData()
@@ -935,6 +935,20 @@ class Ui_mainWindow(object):
             else:
                 self.R2PPMLineEdit.setText(str(0))
 
+    def R1PresChanged(self):
+        try:
+            self.R1pres = float(self.R1PresLineEdit.text())
+            self.getData()
+        except ValueError:
+            self.R1PresLineEdit.setText(str(self.R1pres))
+
+    def R2PresChanged(self):
+        try:
+            self.R2pres = float(self.R2PresLineEdit.text())
+            self.getData()
+        except ValueError:
+            self.R2PresLineEdit.setText(str(self.R2pres))
+
     def oilDepth1Changed(self):
         self.R1OilDepth = self.R1OilDepthSpinBox.value()
         if self.R1PresLineEdit.text():
@@ -961,12 +975,18 @@ class Ui_mainWindow(object):
             self.R2OilDepthSpinBox.setValue(self.R2OilDepth)
 
     def temp1Changed(self):
-        self.R1Temp = float(self.R1TempLineEdit.text())
-        self.getData()
+        try:
+            self.R1Temp = float(self.R1TempLineEdit.text())
+            self.getData()
+        except ValueError:
+            self.R1TempLineEdit.setText(str("{:.4f}".format(self.R1Temp)))
 
     def temp2Changed(self):
-        self.R2Temp = float(self.R2TempLineEdit.text())
-        self.getData()
+        try:
+            self.R2Temp = float(self.R2TempLineEdit.text())
+            self.getData()
+        except ValueError:
+            self.R2TempLineEdit.setText(str("{:.4f}".format(self.R2Temp)))
 
     def folderClicked(self):
         self.txtFilePath = filedialog.askopenfilename()
