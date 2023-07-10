@@ -170,12 +170,9 @@ class bvd_stat:
         self.R1CorVal = ((mag.R1Pred/1000000 + 1) * mag.R1NomVal)
         self.R2CorVal = ((mag.R2Pred/1000000 + 1) * mag.R2NomVal)
 
-        # print(1.2906403862E+4)
-        # print((self.C1R1/1000000 + 1) * mag.R1NomVal)
-        # print(1.0000000416E+2)
-        # print((self.C2R2/1000000 + 1) * self.R2CorVal)
-        
-        
+        self.R1MeanChkOhm = (self.meanR2/1000000 + 1) * mag.R1NomVal
+        self.R2MeanChkOhm = (self.meanR1/1000000 + 1) * mag.R2NomVal
+
         
 if __name__ == '__main__':
     file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'

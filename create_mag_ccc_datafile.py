@@ -35,15 +35,14 @@ class writeDataFile():
                 f.write(f'|{"{:.4f}".format(bvd_stat_obj.meanR1)}')
                 f.write(f'|{"{:.4f}".format(bvd_stat_obj.stdR1ppm)}')
                 f.write(f'|{"{:.4f}".format(dat_obj.R2Pred)}')
-                f.write(f'|???')
+                f.write(f'|{"{:.10E}".format(bvd_stat_obj.R2MeanChkOhm).replace("E+0", "E+")}')
             else:
                 f.write(f'|{dat_obj.R2SN} ({"{:.4f}".format(dat_obj.R2Pred)})')
                 f.write(f'|{dat_obj.R1SN}')
                 f.write(f'|{"{:.4f}".format(bvd_stat_obj.meanR2)}')
                 f.write(f'|{"{:.4f}".format(bvd_stat_obj.stdR2ppm)}')
                 f.write(f'|{"{:.4f}".format(dat_obj.R1Pred)}')
-                f.write(f'|???')
-                # f.write(f'|1.2906403862E+4')
+                f.write(f'|{"{:.10E}".format(bvd_stat_obj.R1MeanChkOhm).replace("E+0", "E+")}')
             f.write(f'|{bvd_stat_obj.N}')
             if RStatus == 'R1':
                 f.write(f'|{"{:.3f}".format(R2Pres)}')
@@ -111,5 +110,5 @@ if __name__ == '__main__':
     file4 = bp + r'\2023-05-31_CCC\230531_008_2200.txt'
     dat_obj = magnicon_ccc(file4)
     bvd_stat_obj = bvd_stat(file4, 25, 25, 101325, 101325)
-    writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_stat_obj, RStatus='R1', R2Temp='25.0002', 
-                  R1Temp='-271.5500', R1Pres='101473.813', R2Pres='101473.813', I='I2', polarity='NEG', system='CCC2014-01', probe='Magnicon1')
+    writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_stat_obj, RStatus='R2', R2Temp=25.0002, 
+                  R1Temp=-271.5500, R1Pres=101473.813, R2Pres=101473.813, I='I2', polarity='NEG', system='CCC2014-01', probe='Magnicon1')
