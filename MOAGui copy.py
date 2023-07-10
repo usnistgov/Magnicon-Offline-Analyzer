@@ -551,14 +551,15 @@ class Ui_mainWindow(object):
         self.BVDVerticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 951, 761))
         self.BVDVerticalLayout = QtWidgets.QVBoxLayout(self.BVDVerticalLayoutWidget)
         self.BVDVerticalLayout.setObjectName("BVDVerticalLayout")
+
         # self.fig = plt.figure(figsize=(1,1),dpi=100)
         self.BVDfig = plt.figure()
-        self.ax1 = self.BVDfig.add_subplot(2,1,1)
-        self.ax2 = self.BVDfig.add_subplot(2,2,3)
-        self.ax3 = self.BVDfig.add_subplot(2,2,4)
-        self.canvas = FigureCanvas(self.BVDfig)
-        self.BVDVerticalLayout.addWidget(NavigationToolbar(self.canvas))
-        self.BVDVerticalLayout.addWidget(self.canvas)
+        self.BVDax1 = self.BVDfig.add_subplot(2,1,1)
+        self.BVDax2 = self.BVDfig.add_subplot(2,2,3)
+        self.BVDax3 = self.BVDfig.add_subplot(2,2,4)
+        self.BVDcanvas = FigureCanvas(self.BVDfig)
+        self.BVDVerticalLayout.addWidget(NavigationToolbar(self.BVDcanvas))
+        self.BVDVerticalLayout.addWidget(self.BVDcanvas)
 
     def AllanTabSetUp(self):
         self.AllanTab = QtWidgets.QWidget()
@@ -569,6 +570,13 @@ class Ui_mainWindow(object):
         self.AllanVerticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 951, 761))
         self.AllanVerticalLayout = QtWidgets.QVBoxLayout(self.AllanVerticalLayoutWidget)
         self.AllanVerticalLayout.setObjectName("AllanVerticalLayout")
+        
+        self.Allanfig = plt.figure()
+        self.Allanax1 = self.Allanfig.add_subplot(2,1,1)
+        self.Allanax2 = self.Allanfig.add_subplot(2,1,2)
+        self.AllanCanvas = FigureCanvas(self.Allanfig)
+        self.AllanVerticalLayout.addWidget(NavigationToolbar(self.AllanCanvas))
+        self.AllanVerticalLayout.addWidget(self.AllanCanvas)
 
     def setUpButtons(self):
         self.StandardRBut = QtWidgets.QPushButton(parent=self.SetResTab)
@@ -684,45 +692,55 @@ class Ui_mainWindow(object):
             
         self.plotted = True
         count = range(len(self.bvd.A))
-        self.ax1.scatter(count, self.bvd.A, color='r', marker='+', s=75)
-        self.ax1.scatter(count, self.bvd.B, color='b', marker='x')
-        self.ax1.set_title('Bridge Voltage')
-        self.ax1.set_xlabel('Count')
-        self.ax1.set_ylabel('Amplitude [V]')
+        self.BVDax1.scatter(count, self.bvd.A, color='r', marker='+', s=75)
+        self.BVDax1.scatter(count, self.bvd.B, color='b', marker='x')
+        self.BVDax1.set_title('Bridge Voltage')
+        self.BVDax1.set_xlabel('Count')
+        self.BVDax1.set_ylabel('Amplitude [V]')
 
         self.bvdPlot()
-        self.fig.tight_layout()
-        self.canvas.draw()
+        self.allanPlot()
+        self.BVDfig.tight_layout()
+        self.BVDcanvas.draw()
+        self.Allanfig.tight_layout()
+        self.AllanCanvas.draw()
 
     def bvdPlot(self):
         count = range(len(self.bvd.bvdList))
         if self.RButStatus == 'R1':
-            self.ax2.scatter(count, self.bvd.R1List, color='b', zorder=3)
+            self.BVDax2.scatter(count, self.bvd.R1List, color='b', zorder=3)
         else:
-            self.ax2.scatter(count, self.bvd.R2List, color='b', zorder=3)
+            self.BVDax2.scatter(count, self.bvd.R2List, color='b', zorder=3)
 
-        self.ax2.set_title('BVD')
-        self.ax2.set_xlabel('Count')
-        self.ax2.set_ylabel('Resistance [ppm]')
+        self.BVDax2.set_title('BVD')
+        self.BVDax2.set_xlabel('Count')
+        self.BVDax2.set_ylabel('Resistance [ppm]')
 
-        self.twin2 = self.ax2.twinx()
-        self.twin2.plot(count, 3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-        self.twin2.plot(count, -8*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-        self.twin2.scatter(count, self.bvd.bvdList, color='r')
-        self.twin2.set_ylim([-9*self.bvd.std, 4*self.bvd.std])
-        self.twin2.set_ylabel('BVD [V]')
-        self.ax2.set_axisbelow(True)
-        self.ax2.grid(axis='x',zorder=0)
-        self.twin2.set_axisbelow(True)
-        self.twin2.grid(zorder=0)
+        self.BVDtwin2 = self.BVDax2.twinx()
+        self.BVDtwin2.plot(count, 3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+        self.BVDtwin2.plot(count, -8*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+        self.BVDtwin2.scatter(count, self.bvd.bvdList, color='r')
+        self.BVDtwin2.set_ylim([-9*self.bvd.std, 4*self.bvd.std])
+        self.BVDtwin2.set_ylabel('BVD [V]')
+        self.BVDax2.set_axisbelow(True)
+        self.BVDax2.grid(axis='x',zorder=0)
+        self.BVDtwin2.set_axisbelow(True)
+        self.BVDtwin2.grid(zorder=0)
+
+    def allanPlot(self):
+        pass
 
     def clearPlots(self):
-        self.ax1.cla()
-        self.ax2.cla()
-        self.twin2.set_visible(False)
-        self.ax3.cla()
+        self.BVDax1.cla()
+        self.BVDax2.cla()
+        self.BVDtwin2.set_visible(False)
+        self.BVDax3.cla()
         # self.fig.tight_layout()
-        self.canvas.draw()
+        self.BVDcanvas.draw()
+
+        self.Allanax1.cla()
+        self.Allanax2.cla()
+        self.AllanCanvas.draw()
 
     def RButClicked(self):
         if self.StandardRBut.pressed and self.RButStatus == 'R1':
