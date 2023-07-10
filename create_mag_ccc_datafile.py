@@ -11,12 +11,12 @@ class writeDataFile():
 
         with open(dataFileName, 'w') as f:
             if RStatus == 'R1':
-                pass
+                f.write(f'{dat_obj.R2NomVal}')
             else:
                 f.write(f'{dat_obj.R1NomVal}')
             f.write(f'|{dat_obj.startDate}|{dat_obj.endDate}')
             if RStatus == 'R1':
-                f.write(f'|{"{:.6E}".format(dat_obj.I2).replace("E-0", "E-")}')
+                f.write(f'|{"{:.6E}".format(dat_obj.I1).replace("E-0", "E-")}')
             else:
                 f.write(f'|{"{:.6E}".format(dat_obj.I2).replace("E-0", "E-")}')
             f.write(f'|{"{:.2f}".format(dat_obj.fullCyc)}')
@@ -59,7 +59,10 @@ class writeDataFile():
             f.write(f'|{dat_obj.SHC}')
             f.write(f'|{dat_obj.samplesUsed}')
             f.write(f'|{"{:.2f}".format(dat_obj.rampTime)}/{"{:.2f}".format(dat_obj.delay)}/{"{:.2f}".format(dat_obj.measTime)}')
-            f.write(f'|{"{:.4f}".format(bvd_obj.R2PPM)}')
+            if RStatus == 'R1':
+                f.write(f'|{"{:.4f}".format(bvd_obj.R1PPM)}')
+            else:
+                f.write(f'|{"{:.4f}".format(bvd_obj.R2PPM)}')
             f.write(f'|{dat_obj.comments} ')
             if RStatus == 'R1':
                 f.write(f'|{"{:.4f}".format(dat_obj.R1pcr)}')
@@ -81,7 +84,7 @@ class writeDataFile():
                 f.write(f'|-{dat_obj.appVolt}')
             f.write(f'|{"{:.6E}".format(bvd_obj.mean).replace("E-0", "E-")}')
             f.write(f'|{I} Feedback({polarity})')
-            if RStatus == 'R1':
+            if I == 'I1':
                 f.write(f'|{dat_obj.I1Feedin}')
             else:
                 f.write(f'|{dat_obj.I2Feedin}')
@@ -97,5 +100,5 @@ if __name__ == '__main__':
     file4 = r'2023-05-31_CCC\230531_008_2200.txt'
     dat_obj = magnicon_ccc(file4)
     bvd_obj = bvd_stat(file4, 25, 25, 101325, 101325)
-    test_obj = writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_obj, RStatus='R2', R2Temp='25.0002', R1Temp='-271.5500', pres='101473.813', I='I2', 
+    test_obj = writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_obj, RStatus='R1', R2Temp='25.0002', R1Temp='-271.5500', pres='101473.813', I='I2', 
                              polarity='NEG', system='CCC2014-01', probe='Magnicon1')

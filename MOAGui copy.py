@@ -563,14 +563,14 @@ class Ui_mainWindow(object):
         self.MDSSButton = QtWidgets.QPushButton(parent=self.SetResTab)
         self.MDSSButton.setGeometry(QtCore.QRect(630, 620, 75, 24))
         self.MDSSButton.setObjectName("MDSSButton")
-        self.MDSSButton.setStyleSheet("color: white; background-color: red")
+        # self.MDSSButton.setStyleSheet("color: white; background-color: red")
         self.MDSSButton.setEnabled(False)
         self.MDSSButton.clicked.connect(self.MDSSClicked)
         
         self.saveButton = QtWidgets.QPushButton(parent=self.SetResTab)
         self.saveButton.setGeometry(QtCore.QRect(630, 680, 75, 24))
         self.saveButton.setObjectName("saveButton")
-        # self.saveButton.setEnabled(False)
+        self.saveButton.setEnabled(False)
         self.saveButton.clicked.connect(self.saveMDSS)
 
     def retranslateUi(self, mainWindow):
@@ -773,6 +773,9 @@ class Ui_mainWindow(object):
 
         self.NLineEdit.setText(str(self.bvd.N))
 
+        self.MDSSButton.setStyleSheet("color: white; background-color: red")
+        self.MDSSButton.setEnabled(True)
+
         self.stdR(self.RButStatus)
 
     def setInvalidData(self):
@@ -826,6 +829,13 @@ class Ui_mainWindow(object):
         self.StdDevC2LineEdit.setText("")
         self.C1C2LineEdit.setText("")
         self.NLineEdit.setText("")
+
+        self.MDSSButton.setStyleSheet("")
+        self.MDSSButton.setText("No")
+        self.MDSSButton.setEnabled(False)
+        self.saveButton.setEnabled(False)
+        self.saveStatus = False
+
         if self.plotted:
             self.clearPlots()
 
