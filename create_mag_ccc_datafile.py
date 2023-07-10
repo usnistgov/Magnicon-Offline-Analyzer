@@ -1,8 +1,11 @@
 from bvd_stats import bvd_stat
 from magnicon_ccc import magnicon_ccc
+import os
+
+bp = os.getcwd()
 
 class writeDataFile():
-    def __init__(self, text, dat_obj, bvd_stat_obj, RStatus, R1Temp, R2Temp, pres, I, polarity, system, probe):
+    def __init__(self, text, dat_obj, bvd_stat_obj, RStatus, R1Temp, R2Temp, R1Pres, R2Pres, I, polarity, system, probe):
         dataFileName = text.replace('.txt', "")
         dataFileName = f'{dataFileName}_MDSS.txt'
         if 1 != 1:
@@ -36,33 +39,36 @@ class writeDataFile():
                 f.write(f'|{"{:.4f}".format(dat_obj.R1Pred)}')
                 f.write(f'|???')
                 # f.write(f'|1.2906403862E+4')
-            f.write(f'|{bvd_obj.N}')
-            f.write(f'|{pres}')
+            f.write(f'|{bvd_stat_obj.N}')
             if RStatus == 'R1':
-                f.write(f'|{R1Temp}')
-                f.write(f'|{R2Temp}')
+                f.write(f'|{"{:.3f}".format(R2Pres)}')
             else:
-                f.write(f'|{R2Temp}')
-                f.write(f'|{R1Temp}')
+                f.write(f'|{"{:.3f}".format(R1Pres)}')
             if RStatus == 'R1':
-                f.write(f'|{"{:.4f}".format(bvd_obj.C1R1)}')
-                f.write(f'|{"{:.4f}".format(bvd_obj.C2R1)}')
-                f.write(f'|{"{:.6f}".format(bvd_obj.C1R1-bvd_obj.C2R1)}')
-                f.write(f'|{"{:.4f}".format(bvd_obj.stdC1R1)}')
-                f.write(f'|{"{:.4f}".format(bvd_obj.stdC2R1)}')
+                f.write(f'|{"{:.4f}".format(R1Temp)}')
+                f.write(f'|{"{:.4f}".format(R2Temp)}')
             else:
-                f.write(f'|{"{:.4f}".format(bvd_obj.C1R2)}')
-                f.write(f'|{"{:.4f}".format(bvd_obj.C2R2)}')
-                f.write(f'|{"{:.6f}".format(bvd_obj.C1R2-bvd_obj.C2R2)}')
-                f.write(f'|{"{:.4f}".format(bvd_obj.stdC1R2)}')
-                f.write(f'|{"{:.4f}".format(bvd_obj.stdC2R2)}')
+                f.write(f'|{"{:.4f}".format(R2Temp)}')
+                f.write(f'|{"{:.4f}".format(R1Temp)}')
+            if RStatus == 'R1':
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.C1R1)}')
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.C2R1)}')
+                f.write(f'|{"{:.6f}".format(bvd_stat_obj.C1R1-bvd_stat_obj.C2R1)}')
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.stdC1R1)}')
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.stdC2R1)}')
+            else:
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.C1R2)}')
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.C2R2)}')
+                f.write(f'|{"{:.6f}".format(bvd_stat_obj.C1R2-bvd_stat_obj.C2R2)}')
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.stdC1R2)}')
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.stdC2R2)}')
             f.write(f'|{dat_obj.SHC}')
             f.write(f'|{dat_obj.samplesUsed}')
             f.write(f'|{"{:.2f}".format(dat_obj.rampTime)}/{"{:.2f}".format(dat_obj.delay)}/{"{:.2f}".format(dat_obj.measTime)}')
             if RStatus == 'R1':
-                f.write(f'|{"{:.4f}".format(bvd_obj.R1PPM)}')
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.R1PPM)}')
             else:
-                f.write(f'|{"{:.4f}".format(bvd_obj.R2PPM)}')
+                f.write(f'|{"{:.4f}".format(bvd_stat_obj.R2PPM)}')
             f.write(f'|{dat_obj.comments} ')
             if RStatus == 'R1':
                 f.write(f'|{"{:.4f}".format(dat_obj.R1pcr)}')
@@ -82,7 +88,7 @@ class writeDataFile():
                 f.write(f'|+{dat_obj.appVolt}')
             else:
                 f.write(f'|-{dat_obj.appVolt}')
-            f.write(f'|{"{:.6E}".format(bvd_obj.mean).replace("E-0", "E-")}')
+            f.write(f'|{"{:.6E}".format(bvd_stat_obj.mean).replace("E-0", "E-")}')
             f.write(f'|{I} Feedback({polarity})')
             if I == 'I1':
                 f.write(f'|{dat_obj.I1Feedin}')
@@ -94,11 +100,11 @@ class writeDataFile():
             f.write(f'|51100S|Magnicon CCC Process|StandRes')
 
 if __name__ == '__main__':
-    file1 = r'2016-02-18_CCC\160218_016_1548.txt'
-    file2 = r'2023-06-01_CCC\230601_001_1134.txt'
-    file3 = r'2016-02-18_CCC\160218_001_0935.txt'
-    file4 = r'2023-05-31_CCC\230531_008_2200.txt'
+    file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
+    file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
+    file3 = bp + r'\2016-02-18_CCC\160218_001_0935.txt'
+    file4 = bp + r'\2023-05-31_CCC\230531_008_2200.txt'
     dat_obj = magnicon_ccc(file4)
-    bvd_obj = bvd_stat(file4, 25, 25, 101325, 101325)
-    test_obj = writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_obj, RStatus='R1', R2Temp='25.0002', R1Temp='-271.5500', pres='101473.813', I='I2', 
-                             polarity='NEG', system='CCC2014-01', probe='Magnicon1')
+    bvd_stat_obj = bvd_stat(file4, 25, 25, 101325, 101325)
+    writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_stat_obj, RStatus='R1', R2Temp='25.0002', 
+                  R1Temp='-271.5500', R1Pres='101473.813', R2Pres='101473.813', I='I2', polarity='NEG', system='CCC2014-01', probe='Magnicon1')

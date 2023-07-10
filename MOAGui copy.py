@@ -1,5 +1,6 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from magnicon_ccc import magnicon_ccc
+from create_mag_ccc_datafile import writeDataFile
 import sys, os
 
 bp = os.getcwd()
@@ -147,15 +148,15 @@ class Ui_mainWindow(object):
         self.plotted = False
         self.data = False
 
-        self.R1Temp = 25
-        self.R2Temp = 25
+        self.R1Temp = 25.0000
+        self.R2Temp = 25.0000
         self.R1pres = 101325
         self.R2pres = 101325
         self.R1OilDepth = 203
         self.R2OilDepth = 203
 
         self.RButStatus = 'R1'
-        self.SquidFeedStatus = 'Neg'
+        self.SquidFeedStatus = 'NEG'
         self.saveStatus = False
 
     # Set up for the labels
@@ -707,12 +708,12 @@ class Ui_mainWindow(object):
                 self.stdR(self.RButStatus)
 
     def SquidButClicked(self):
-        if self.SquidFeedBut.pressed and self.SquidFeedStatus == 'Neg':
-            self.SquidFeedStatus = 'Pos'
+        if self.SquidFeedBut.pressed and self.SquidFeedStatus == 'NEG':
+            self.SquidFeedStatus = 'POS'
             self.SquidFeedBut.setText('Positive')
             self.SquidFeedBut.setStyleSheet("color: white; background-color: red")
         else:
-            self.SquidFeedStatus = 'Neg'
+            self.SquidFeedStatus = 'NEG'
             self.SquidFeedBut.setText('Negative')
             self.SquidFeedBut.setStyleSheet("color: white; background-color: blue")
 
@@ -941,7 +942,9 @@ class Ui_mainWindow(object):
         self.progressBar.setProperty('value', 100)
 
     def createDataFile(self):
-        pass
+        writeDataFile(text=self.txtFile, dat_obj=self.dat, bvd_stat_obj=self.bvd, RStatus=self.RButStatus, R1Temp=self.R1Temp,
+                      R2Temp=self.R2Temp, R1Pres=self.R1TotPres, R2Pres=self.R2TotPres, I='I1', polarity=self.SquidFeedStatus,
+                      system=self.MagElecComboBox.currentText(), probe='Magnicon1')
 
     def tabIndexChanged(self):
         if self.tabWidget.currentIndex() == 1 and self.validFile:
