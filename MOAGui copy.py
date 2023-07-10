@@ -85,6 +85,14 @@ class Ui_mainWindow(object):
         self.MagElecComboBox.addItem('CCC2014-01')
         self.MagElecComboBox.addItem('CCC2019-01')
 
+        self.ProbeComboBox = QtWidgets.QComboBox(parent=self.SetResTab)
+        self.ProbeComboBox.setGeometry(QtCore.QRect(20, 730, 151, 22))
+        self.ProbeComboBox.setEditable(False)
+        self.ProbeComboBox.setCurrentText("")
+        self.ProbeComboBox.setObjectName("ProbeComboBox")
+        self.ProbeComboBox.addItem('Magnicon1')
+        self.ProbeComboBox.addItem('NIST1')
+
         self.R2TempLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.R2TempLineEdit.setGeometry(QtCore.QRect(440, 410, 113, 22))
         self.R2TempLineEdit.setObjectName("R2TempLineEdit")
@@ -157,6 +165,7 @@ class Ui_mainWindow(object):
 
         self.RButStatus = 'R1'
         self.SquidFeedStatus = 'NEG'
+        self.CurrentButStatus = 'I1'
         self.saveStatus = False
 
     # Set up for the labels
@@ -344,6 +353,12 @@ class Ui_mainWindow(object):
         self.MDSSLabel = QtWidgets.QLabel(parent=self.SetResTab)
         self.MDSSLabel.setGeometry(QtCore.QRect(630, 600, 61, 16))
         self.MDSSLabel.setObjectName("MDSSLabel")
+        self.ProbeLabel = QtWidgets.QLabel(parent=self.SetResTab)
+        self.ProbeLabel.setGeometry(QtCore.QRect(20, 710, 31, 16))
+        self.ProbeLabel.setObjectName("ProbeLabel")
+        self.CurrentButLabel = QtWidgets.QLabel(parent=self.SetResTab)
+        self.CurrentButLabel.setGeometry(QtCore.QRect(470, 710, 51, 16))
+        self.CurrentButLabel.setObjectName("CurrentLabel")
 
     # Set up the read only LineEdits
     def setLineEdits(self):
@@ -561,6 +576,12 @@ class Ui_mainWindow(object):
         self.SquidFeedBut.setStyleSheet("color: white; background-color: blue")
         self.SquidFeedBut.clicked.connect(self.SquidButClicked)
 
+        self.CurrentBut = QtWidgets.QPushButton(parent=self.SetResTab)
+        self.CurrentBut.setGeometry(QtCore.QRect(440, 730, 111, 24))
+        self.CurrentBut.setObjectName("CurrentBut")
+        self.CurrentBut.setStyleSheet("color: white; background-color: red")
+        self.CurrentBut.clicked.connect(self.CurrentButClicked)
+
         self.MDSSButton = QtWidgets.QPushButton(parent=self.SetResTab)
         self.MDSSButton.setGeometry(QtCore.QRect(630, 620, 75, 24))
         self.MDSSButton.setObjectName("MDSSButton")
@@ -635,6 +656,9 @@ class Ui_mainWindow(object):
         self.R2TotalPresLabel.setText(_translate("mainWindow", "R2 Total Pressure [Pa]"))
         self.R2PresLabel.setText(_translate("mainWindow", "R2 Pressure [Pa]"))
         self.R2OilDepthLabel.setText(_translate("mainWindow", "R2 Oil Depth [mm]"))
+        self.ProbeLabel.setText(_translate("mainWindow", "Probe"))
+        self.CurrentButLabel.setText(_translate("mainWindow", "  Current"))
+        self.CurrentBut.setText(_translate("mainWindow", "I1"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.BVDTab), _translate("mainWindow", "BVD"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab3), _translate("mainWindow", "Tab3"))
@@ -716,6 +740,16 @@ class Ui_mainWindow(object):
             self.SquidFeedStatus = 'NEG'
             self.SquidFeedBut.setText('Negative')
             self.SquidFeedBut.setStyleSheet("color: white; background-color: blue")
+
+    def CurrentButClicked(self):
+        if self.CurrentBut.pressed and self.CurrentButStatus == 'I1':
+            self.CurrentButStatus = 'I2'
+            self.CurrentBut.setText('I2')
+            self.CurrentBut.setStyleSheet("color: white; background-color: green")
+        else:
+            self.CurrentButStatus = 'I1'
+            self.CurrentBut.setText('I1')
+            self.CurrentBut.setStyleSheet("color: white; background-color: red")
 
     def getData(self):
         if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.txt')[0][-1].isnumeric():
@@ -943,8 +977,8 @@ class Ui_mainWindow(object):
 
     def createDataFile(self):
         writeDataFile(text=self.txtFile, dat_obj=self.dat, bvd_stat_obj=self.bvd, RStatus=self.RButStatus, R1Temp=self.R1Temp,
-                      R2Temp=self.R2Temp, R1Pres=self.R1TotPres, R2Pres=self.R2TotPres, I='I1', polarity=self.SquidFeedStatus,
-                      system=self.MagElecComboBox.currentText(), probe='Magnicon1')
+                      R2Temp=self.R2Temp, R1Pres=self.R1TotPres, R2Pres=self.R2TotPres, I=self.CurrentButStatus, polarity=self.SquidFeedStatus,
+                      system=self.MagElecComboBox.currentText(), probe=self.ProbeComboBox.currentText())
 
     def tabIndexChanged(self):
         if self.tabWidget.currentIndex() == 1 and self.validFile:
