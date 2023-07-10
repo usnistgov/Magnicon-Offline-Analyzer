@@ -126,10 +126,7 @@ class Ui_mainWindow(object):
 
         self.setUpButtons()
         self.BVDTabSetUp()
-        
-        self.Tab3 = QtWidgets.QWidget()
-        self.Tab3.setObjectName("Tab3")
-        self.tabWidget.addTab(self.Tab3, "")
+        self.AllanTabSetUp()
 
         self.tabWidget.currentChanged.connect(self.tabIndexChanged)
         
@@ -555,13 +552,23 @@ class Ui_mainWindow(object):
         self.BVDVerticalLayout = QtWidgets.QVBoxLayout(self.BVDVerticalLayoutWidget)
         self.BVDVerticalLayout.setObjectName("BVDVerticalLayout")
         # self.fig = plt.figure(figsize=(1,1),dpi=100)
-        self.fig = plt.figure()
-        self.ax1 = self.fig.add_subplot(2,1,1)
-        self.ax2 = self.fig.add_subplot(2,2,3)
-        self.ax3 = self.fig.add_subplot(2,2,4)
-        self.canvas = FigureCanvas(self.fig)
+        self.BVDfig = plt.figure()
+        self.ax1 = self.BVDfig.add_subplot(2,1,1)
+        self.ax2 = self.BVDfig.add_subplot(2,2,3)
+        self.ax3 = self.BVDfig.add_subplot(2,2,4)
+        self.canvas = FigureCanvas(self.BVDfig)
         self.BVDVerticalLayout.addWidget(NavigationToolbar(self.canvas))
         self.BVDVerticalLayout.addWidget(self.canvas)
+
+    def AllanTabSetUp(self):
+        self.AllanTab = QtWidgets.QWidget()
+        self.AllanTab.setObjectName("Allan Dev.")
+        self.tabWidget.addTab(self.AllanTab, "")
+        self.AllanVerticalLayoutWidget = QtWidgets.QWidget(parent=self.AllanTab)
+        self.AllanVerticalLayoutWidget.setObjectName("AllanVerticalLayout")
+        self.AllanVerticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 951, 761))
+        self.AllanVerticalLayout = QtWidgets.QVBoxLayout(self.AllanVerticalLayoutWidget)
+        self.AllanVerticalLayout.setObjectName("AllanVerticalLayout")
 
     def setUpButtons(self):
         self.StandardRBut = QtWidgets.QPushButton(parent=self.SetResTab)
@@ -661,7 +668,7 @@ class Ui_mainWindow(object):
         self.CurrentBut.setText(_translate("mainWindow", "I1"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.BVDTab), _translate("mainWindow", "BVD"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.Tab3), _translate("mainWindow", "Tab3"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.AllanTab), _translate("mainWindow", "Allan Dev."))
         self.txtFileLabel.setText(_translate("mainWindow", ".txt File"))
         self.VMeanChkLabel.setText(_translate("mainWindow", "Mean Chk [V]"))
         self.StdDevChkLabel.setText(_translate("mainWindow", "Std. Dev. Chk"))
