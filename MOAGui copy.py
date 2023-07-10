@@ -1030,6 +1030,7 @@ class Ui_mainWindow(object):
         self.MDSSButton.setStyleSheet("color: white; background-color: red")
         self.MDSSButton.setText('No')
         self.saveButton.setEnabled(False)
+        self.dat.comments = self.CommentsTextBrowser.toPlainText()
         self.createDataFile()
         self.progressBar.setProperty('value', 100)
 
