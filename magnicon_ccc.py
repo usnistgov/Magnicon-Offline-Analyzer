@@ -54,11 +54,6 @@ class magnicon_ccc:
                 if line.startswith('ignored first samples'):
                     self.ignored = int(line.split(':')[-1].rstrip(' \n'))
                     self.samplesUsed = self.SHC - self.ignored
-                if line.startswith('com rel. humid (%)'):
-                    if 'x' in line:
-                        self.relHum = line.split('\t')[-1].rstrip(' \n')
-                    else:
-                        self.relHum = float(line.split(':')[-1].rstrip(' \n'))
                 if line.startswith('remarks'):
                     self.comments = line.split(':')[-1].rstrip(' \n')
                     self.comments = self.comments.lstrip(' \t')
@@ -105,13 +100,12 @@ class magnicon_ccc:
                 self.avgDT = (dt1-dt2)/2
                 self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
                 self.timeStamp = mktime(self.DT.timetuple())
+                self.startDate = f'{d2[1]}/{d2[2]}/{d2[0]} {t2_am_pm}'
+                self.endDate = f'{d1[1]}/{d1[2]}/{d1[0]} {t1_am_pm}'
             # Returns the start datetime if there is no stop date
             else:
                 self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
                 self.timeStamp = mktime(self.DT.timetuple())
-
-            self.startDate = f'{d2[1]}/{d2[2]}/{d2[0]} {t2_am_pm}'
-            self.endDate = f'{d1[1]}/{d1[2]}/{d1[0]} {t1_am_pm}'
 
             # This does not average
             # self.timeStamp = mktime(datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]).timetuple())
@@ -126,13 +120,25 @@ class magnicon_ccc:
             self.bvd = []
             for line in file.readlines():
                 if line.startswith('com rel. hum'):
-                    self.comRelHum = float(line.split(':')[-1].rstrip(' \n'))
+                    try:
+                        self.relHum = float(line.split(':')[-1].rstrip(' \n'))
+                    except ValueError:
+                        self.relHum = 'xx.x'
                 if line.startswith('com temp'):
-                    self.comTemp = float(line.split(':')[-1].rstrip(' \n'))
+                    try:
+                        self.comTemp = float(line.split(':')[-1].rstrip(' \n'))
+                    except ValueError:
+                        self.comTemp = 'xx.xx'
                 if line.startswith('cn temp'):
-                    self.cnTemp = float(line.split(':')[-1].rstrip(' \n'))
+                    try:
+                        self.cnTemp = float(line.split(':')[-1].rstrip(' \n'))
+                    except ValueError:
+                        self.cnTemp = 'xx.xx'
                 if line.startswith('nv temp'):
-                    self.nvTemp = float(line.split(':')[-1].rstrip(' \n'))
+                    try:
+                        self.nvTemp = float(line.split(':')[-1].rstrip(' \n'))
+                    except ValueError:
+                        self.nvTemp = 'xx.xx'
                 if line.startswith('delta N1/NA'):
                     self.deltaNApN1 = float(line.split(':')[-1].rstrip(' \n')) * 0.001
                 if line.startswith('delta (I2*R2)'):

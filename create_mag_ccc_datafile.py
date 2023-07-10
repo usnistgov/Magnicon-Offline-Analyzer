@@ -99,7 +99,7 @@ class writeDataFile():
             else:
                 f.write(f'|{dat_obj.I2Feedin}')
             f.write(f'|{dat_obj.extpower}')
-            f.write(f'|{dat_obj.comRelHum}|{"{:.2f}".format(dat_obj.comTemp)}|{"{:.2f}".format(dat_obj.cnTemp)}|{"{:.2f}".format(dat_obj.nvTemp)}')
+            f.write(f'|{dat_obj.relHum}|{"{:.2f}".format(dat_obj.comTemp)}|{"{:.2f}".format(dat_obj.cnTemp)}|{"{:.2f}".format(dat_obj.nvTemp)}')
             f.write(f'|{system}/{probe}')
             f.write(f'|51100S|Magnicon CCC Process|StandRes')
 
