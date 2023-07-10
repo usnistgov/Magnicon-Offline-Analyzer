@@ -83,7 +83,7 @@ class bvd_stat:
 
     # Results from data
     def results(self, mag, T1, T2, P1, P2):
-        # Only here for VSCode
+        # Only here for VSCode, delete when done
         if 1 != 1:
             mag = magnicon_ccc()
         
@@ -152,6 +152,7 @@ class bvd_stat:
             self.stdMean = self.std/sqrt(len(self.bvdList))
             self.stdMeanR1 = self.stdR1ppm/sqrt(len(self.R1List))
             self.stdMeanR2 = self.stdR2ppm/sqrt(len(self.R2List))
+        # Set these variables to 0 incase there is no data so that the Gui does not raise any errors
         else:
             self.N = 0
             self.bvdMean = 0
@@ -183,5 +184,5 @@ if __name__ == '__main__':
     diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # test = bvd_stat(file2, 25, 25, 101325, 101325)
     # test = bvd_stat(file2, 25, 25, 103008, 103008)
-    test = bvd_stat(diffFile, T1=25, T2=24, P1=101325, P2=101325)
+    test = bvd_stat(diffFile, T1=25, T2=25, P1=101325, P2=101325)
     # print(test.ratioMean)

@@ -976,15 +976,15 @@ class Ui_mainWindow(object):
         if R == 'R1' or R == 'both':
             self.R1OilPres = 0.8465*9.81*self.R1OilDepth
             self.R1OilPresLineEdit.setText(str("{:.4f}".format(self.R1OilPres)))
-            self.R1TotPres = round(self.R1pres + self.R1OilPres)
-            self.R1TotalPresLineEdit.setText(str(self.R1TotPres))
+            self.R1TotPres = self.R1pres + self.R1OilPres
+            self.R1TotalPresLineEdit.setText(str("{:.4f}".format(self.R1TotPres)))
             self.R1OilDepthSpinBox.setValue(self.R1OilDepth)
 
         if R == 'R2' or R == 'both':
             self.R2OilPres = 0.8465*9.81*self.R2OilDepth
             self.R2OilPresLineEdit.setText(str("{:.4f}".format(self.R2OilPres)))
-            self.R2TotPres = round(self.R2pres + self.R2OilPres)
-            self.R2TotalPresLineEdit.setText(str(self.R2TotPres))
+            self.R2TotPres = self.R2pres + self.R2OilPres
+            self.R2TotalPresLineEdit.setText(str("{:.4f}".format(self.R2TotPres)))
             self.R2OilDepthSpinBox.setValue(self.R2OilDepth)
 
     def temp1Changed(self):
