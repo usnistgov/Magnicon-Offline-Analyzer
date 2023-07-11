@@ -47,8 +47,7 @@ class allan:
             cur_mean = mean(subarray)
             temp = cur_mean - prev_mean
             prev_mean = cur_mean
-            temp = temp*temp
-            temp_array.append(temp)
+            temp_array.append(temp*temp)
         return mean(temp_array)/2
     
     def overlapping(self):
