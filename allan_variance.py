@@ -70,17 +70,18 @@ class allan:
             return False
     
     def overlapping(self, input_array, tau):
-        i = 0
+        N = len(input_array)
         csum = self.cumsum(input_array)
+        i = 0
         x = len(input_array)
         y = tau*2 + i
         temp_array = []
         temp_array.append((csum[y] - csum[tau+i] + csum[i])**2)
-        i = 1
+        i -= 1
         n = 1
         while x < y:
             temp_array.append((csum[y] - csum[tau+i] + csum[i])**2)
-            i += 1
+            i -= 1
             n += 1
         print((sum(temp_array)/n)/(tau*2*tau))
         return ((sum(temp_array)/n)/(tau*2*tau))
