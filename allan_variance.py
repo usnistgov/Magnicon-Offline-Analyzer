@@ -39,7 +39,11 @@ class allan:
         self.samples = []
         self.tau_array = []
         if overlapping:
-            pass
+            for i in range(tau):
+                tau_out = self.non_overlapping(input_array, 2**(i+1))
+                if tau_out:
+                    self.samples.append(i+1)
+                    self.tau_array.append(sqrt(tau_out))
         else:
             for i in range(tau):
                 tau_out = self.non_overlapping(input_array, 2**(i+1))
