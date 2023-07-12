@@ -19,25 +19,33 @@ class allan:
             self.twoCaretn(input_array, tau, overlapping)
 
     def allTau(self, input_array, tau, overlapping):
-        tau_array = []
+        self.samples = []
+        self.tau_array = []
         if overlapping:
             for i in range(tau):
+                self.samples.append(i+1)
                 tau_out = self.overlapping(input_array, i+1)
-                tau_array.append(sqrt(tau_out))
+                self.tau_array.append(sqrt(tau_out))
         else:
             for i in range(tau):
+                self.samples.append(i+1)
                 tau_out = self.non_overlapping(input_array, i+1)
-                print(tau_out)
-                tau_array.append(sqrt(tau_out))
+                self.tau_array.append(sqrt(tau_out))
         # plt.figure(1)
-        # plt.plot(range(len(tau_array)), tau_array)
+        # plt.plot(self.samples, tau_array)
         # plt.show()
     
     def twoCaretn(self, input_array, tau, overlapping):
+        self.samples = []
+        self.tau_array = []
         if overlapping:
             pass
         else:
-            pass
+            for i in range(tau):
+                tau_out = self.non_overlapping(input_array, 2**(i+1))
+                if tau_out:
+                    self.samples.append(i+1)
+                    self.tau_array.append(sqrt(tau_out))
 
     def non_overlapping(self, input_array, tau):
         N = floor(len(input_array)/tau)
@@ -51,8 +59,15 @@ class allan:
             temp = cur_mean - prev_mean
             prev_mean = cur_mean
             temp_array.append(temp*temp)
-        temp_array.pop(0)
-        return (mean(temp_array)/2)
+        try:
+            temp_array.pop(0)
+            if temp_array:
+                print(mean(temp_array)/2)
+                return (mean(temp_array)/2)
+            else:
+                return False
+        except IndexError:
+            return False
     
     def overlapping(self, input_array, tau):
         i = 0
@@ -76,4 +91,4 @@ if __name__ == '__main__':
     dat_obj = magnicon_ccc(file2)
     # bvd_stat_obj = bvd_stat(file2, 25, 25, 101325, 101325)
 
-    test = allan(input_array=dat_obj.bvd, allan_type='all', overlapping=False)
+    test = allan(input_array=dat_obj.bvd, allan_type='2^n', overlapping=False)
