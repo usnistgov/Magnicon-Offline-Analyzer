@@ -1,6 +1,6 @@
 from bvd_stats import bvd_stat
 from magnicon_ccc import magnicon_ccc
-from numpy import sqrt, mean, cumsum
+from numpy import sqrt, mean
 from math import floor
 import os
 bp = os.getcwd()
@@ -63,19 +63,15 @@ class allan:
             temp = cur_mean - prev_mean
             prev_mean = cur_mean
             temp_array.append(temp*temp)
-        try:
+        if len(temp_array) > 2:
             temp_array.pop(0)
-            if temp_array:
-                print(mean(temp_array)/2)
-                return (mean(temp_array)/2)
-            else:
-                return False
-        except IndexError:
+            return (mean(temp_array)/2)
+        else:
             return False
     
     def overlapping(self, input_array, tau):
         i = 0
-        csum = cumsum(input_array)
+        csum = self.cumsum(input_array)
         x = len(input_array)
         y = tau*2 + i
         temp_array = []
@@ -86,8 +82,17 @@ class allan:
             temp_array.append((csum[y] - csum[tau+i] + csum[i])**2)
             i += 1
             n += 1
+        print((sum(temp_array)/n)/(tau*2*tau))
         return ((sum(temp_array)/n)/(tau*2*tau))
-
+    
+    def cumsum(self, input_array):
+        N = len(input_array)
+        cumsum = []
+        for i in range(N):
+            temp_array = input_array[0:N-i-1]
+            cumsum.append(sum(temp_array))
+        return cumsum
+    
 
 if __name__ == '__main__':
     file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
@@ -95,4 +100,4 @@ if __name__ == '__main__':
     dat_obj = magnicon_ccc(file2)
     # bvd_stat_obj = bvd_stat(file2, 25, 25, 101325, 101325)
 
-    test = allan(input_array=dat_obj.bvd, allan_type='2^n', overlapping=False)
+    test = allan(input_array=dat_obj.bvd, allan_type='all', overlapping=True)
