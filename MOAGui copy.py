@@ -23,6 +23,7 @@ from tkinter import filedialog
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+from allan_variance import allan
 import numpy as np
 
 class Ui_mainWindow(object):
@@ -72,7 +73,8 @@ class Ui_mainWindow(object):
             self.R = ResData(ResDataDir)
         self.validFile = False
         self.txtFilePath = ''
-        self.plotted = False
+        self.plottedBVD = False
+        self.plottedAllan = False
         self.data = False
 
         self.R1Temp = 25.0000
@@ -692,11 +694,12 @@ class Ui_mainWindow(object):
         self.MDSSLabel.setText(_translate("mainWindow", "Save MDSS"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
 
-    def plots(self):
-        if self.plotted:
+    def plotBVD(self):
+        if self.plottedBVD:
             self.clearPlots()
-            
-        self.plotted = True
+
+        self.plottedBVD = True
+
         count = range(len(self.bvd.A))
         self.BVDax1.scatter(count, self.bvd.A, color='r', marker='+', s=75)
         self.BVDax1.scatter(count, self.bvd.B, color='b', marker='x')
@@ -704,14 +707,6 @@ class Ui_mainWindow(object):
         self.BVDax1.set_xlabel('Count')
         self.BVDax1.set_ylabel('Amplitude [V]')
 
-        self.bvdPlot()
-        self.allanPlot()
-        self.BVDfig.tight_layout()
-        self.BVDcanvas.draw()
-        self.Allanfig.tight_layout()
-        self.AllanCanvas.draw()
-
-    def bvdPlot(self):
         count = range(len(self.bvd.bvdList))
         if self.RButStatus == 'R1':
             self.BVDax2.scatter(count, self.bvd.R1List, color='b', zorder=3)
@@ -733,8 +728,31 @@ class Ui_mainWindow(object):
         self.BVDtwin2.set_axisbelow(True)
         self.BVDtwin2.grid(zorder=0)
 
-    def allanPlot(self):
-        pass
+        self.BVDfig.tight_layout()
+        self.BVDcanvas.draw()
+
+    def plotAllan(self):
+        if self.plottedAllan:
+            self.clearPlots()
+        
+        self.plottedAllan = True
+
+        x = False
+        if x:
+            bvd = allan(input_array=self.dat.bvd, allan_type='all', overlapping=False)
+            A = allan(input_array=self.bvd.A, allan_type='all', overlapping=False)
+            B = allan(input_array=self.bvd.B, allan_type='all', overlapping=False)
+            self.Allanax1.plot(bvd.samples, bvd.tau_array, A.samples, A.tau_array, B.samples, B.tau_array)
+        else:
+            bvd = allan(input_array=self.dat.bvd, allan_type='all', overlapping=False)
+            self.Allanax1.plot(bvd.samples, bvd.tau_array)
+        
+        self.Allanax1.set_title('Allan Deviation vs. Samples')
+        self.Allanax1.set_ylabel('Allan Deviation')
+        self.Allanax1.set_xlabel('\u03C4 (samples)')
+
+        self.Allanfig.tight_layout()
+        self.AllanCanvas.draw()
 
     def clearPlots(self):
         self.BVDax1.cla()
@@ -776,7 +794,7 @@ class Ui_mainWindow(object):
         if self.CurrentBut.pressed and self.CurrentButStatus == 'I1':
             self.CurrentButStatus = 'I2'
             self.CurrentBut.setText('I2')
-            self.CurrentBut.setStyleSheet("color: white; background-color: green")
+            self.CurrentBut.setStyleSheet("color: white; background-color: blue")
         else:
             self.CurrentButStatus = 'I1'
             self.CurrentBut.setText('I1')
@@ -901,7 +919,9 @@ class Ui_mainWindow(object):
         self.saveButton.setEnabled(False)
         self.saveStatus = False
 
-        if self.plotted:
+        if self.plottedBVD or self.plottedAllan:
+            self.plottedBVD = False
+            self.plottedAllan = False
             self.clearPlots()
 
     def stdR(self, R):
@@ -1041,7 +1061,9 @@ class Ui_mainWindow(object):
 
     def tabIndexChanged(self):
         if self.tabWidget.currentIndex() == 1 and self.validFile:
-            self.plots()
+            self.plotBVD()
+        elif self.tabWidget.currentIndex() == 2 and self.validFile:
+            self.plotAllan()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

@@ -4,8 +4,6 @@ from math import floor
 import os
 bp = os.getcwd()
 
-import matplotlib.pyplot as plt
-
 class allan:
     def __init__(self, input_array, allan_type, overlapping):
 
@@ -30,9 +28,6 @@ class allan:
                 self.samples.append(i+1)
                 tau_out = self.non_overlapping(input_array, i+1)
                 self.tau_array.append(sqrt(tau_out))
-        # plt.figure(1)
-        # plt.plot(self.samples, tau_array)
-        # plt.show()
     
     def twoCaretn(self, input_array, tau, overlapping):
         self.samples = []
@@ -62,7 +57,7 @@ class allan:
             temp = cur_mean - prev_mean
             prev_mean = cur_mean
             temp_array.append(temp*temp)
-        if len(temp_array) > 2:
+        if len(temp_array) >= 2:
             temp_array.pop(0)
             return (mean(temp_array)/2)
         else:
@@ -116,3 +111,4 @@ if __name__ == '__main__':
     file4 = bp + r'\2023-05-31_CCC\230531_008_2200.txt'
     dat_obj = magnicon_ccc(file2)
     test = allan(input_array=dat_obj.bvd, allan_type='all', overlapping=False)
+    print(test.tau_array)
