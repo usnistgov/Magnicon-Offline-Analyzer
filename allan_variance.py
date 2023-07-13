@@ -1,4 +1,3 @@
-from bvd_stats import bvd_stat
 from magnicon_ccc import magnicon_ccc
 from numpy import sqrt, mean
 from math import floor
@@ -40,7 +39,7 @@ class allan:
         self.tau_array = []
         if overlapping:
             for i in range(tau):
-                tau_out = self.non_overlapping(input_array, 2**(i+1))
+                tau_out = self.overlapping(input_array, 2**(i+1))
                 if tau_out:
                     self.samples.append(i+1)
                     self.tau_array.append(sqrt(tau_out))
@@ -70,14 +69,16 @@ class allan:
             return False
     
     def overlapping(self, input_array, tau):
-        N = len(input_array)
         csum = self.cumsum(input_array)
         i = 0
         n = 1
         x = len(input_array)
         y = tau*2 + i
         temp_array = []
-        temp_array.append((csum[y] - csum[tau+i] + csum[i])**2)
+        temp1 = LabViewArray(csum, y)
+        temp2 = LabViewArray(csum, tau+i)
+        temp3 = LabViewArray(csum, i)
+        temp_array.append((temp1 - temp2 + temp3)**2)
         while x > y:
             i += 1
             n += 1
@@ -114,6 +115,4 @@ if __name__ == '__main__':
     file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
     file4 = bp + r'\2023-05-31_CCC\230531_008_2200.txt'
     dat_obj = magnicon_ccc(file2)
-    # bvd_stat_obj = bvd_stat(file2, 25, 25, 101325, 101325)
-
-    test = allan(input_array=dat_obj.bvd, allan_type='all', overlapping=True)
+    test = allan(input_array=dat_obj.bvd, allan_type='all', overlapping=False)
