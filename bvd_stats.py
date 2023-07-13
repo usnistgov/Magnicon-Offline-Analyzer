@@ -18,9 +18,9 @@ class bvd_stat:
         points = 0
         cur = ''
         # Runs through the raw data
-        while (i < len(mag.dataV)):
+        while (i < len(mag.rawData)):
             # Ensures the index is not greater than the length of the data
-            if i >= len(mag.dataV):
+            if i >= len(mag.rawData):
                 break
             # Start at the first cycle ramping down
             if mag.phase[i] == 4 and not(start):
@@ -29,7 +29,7 @@ class bvd_stat:
                 cur = 'A1'
             # Stores A1 data
             if start and (points != int((mag.SHC-mag.ignored)/2)) and cur == 'A1':
-                temp.append(mag.dataV[i])
+                temp.append(mag.rawData[i])
                 points += 1
             # On the last data point calulate the mean and prepare for B1 and B2
             elif start and (points == int((mag.SHC-mag.ignored)/2)) and cur == 'A1':
@@ -41,10 +41,10 @@ class bvd_stat:
                 # Ignored samples
                 i += mag.ignored
                 continue
-            if i > len(mag.dataV):
+            if i > len(mag.rawData):
                 break
             if start and (points != (mag.SHC-mag.ignored)) and cur == 'B':
-                temp.append(mag.dataV[i])
+                temp.append(mag.rawData[i])
                 points += 1
             elif start and (points == (mag.SHC-mag.ignored)) and cur == 'B':
                 # B1 = sum(temp[0:int((mag.SHC-mag.ignored)/2)])/len(temp[0:int((mag.SHC-mag.ignored)/2)])
@@ -56,10 +56,10 @@ class bvd_stat:
                 cur = 'A2'
                 i += mag.ignored
                 continue
-            if i > len(mag.dataV):
+            if i > len(mag.rawData):
                 break
             if start and (points != int((mag.SHC-mag.ignored)/2)) and (cur == 'A2'):
-                temp.append(mag.dataV[i])
+                temp.append(mag.rawData[i])
                 points += 1
             # After storing A2, store all the data obtained and prepare to restart back to A1
             elif start and (points == int((mag.SHC-mag.ignored)/2)) and cur == 'A2':
@@ -75,7 +75,7 @@ class bvd_stat:
                 points = 0
                 cur = 'A1'
                 continue
-            if i > len(mag.dataV):
+            if i > len(mag.rawData):
                 break
             i += 1
 
@@ -135,6 +135,8 @@ class bvd_stat:
             self.meanR1 = 0
             self.meanR2 = 0
             self.stdppm = 0
+            self.stdR1ppm = 0
+            self.stdR2ppm = 0
             self.stdMeanPPM = 0
             self.C1R1 = 0
             self.C1R2 = 0
@@ -155,7 +157,7 @@ class bvd_stat:
         # Set these variables to 0 incase there is no data so that the Gui does not raise any errors
         else:
             self.N = 0
-            self.bvdMean = 0
+            self.mean = 0
             self.std = 0
             self.stdMean = 0
             self.stdMeanR1 = 0

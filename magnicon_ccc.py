@@ -36,7 +36,7 @@ class magnicon_ccc:
     def load_raw(self):
         if not self.validFile:
             return
-        self.dataV = []
+        self.rawData = []
         self.phase = []
         self.error = []
         self.comments = ''
@@ -74,7 +74,7 @@ class magnicon_ccc:
                 if line.startswith('start time'):
                     t2 = [int(line.split('.')[0].lstrip('start time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
                 if collectData:
-                    self.dataV.append(float(line.split('\t')[0]))
+                    self.rawData.append(float(line.split('\t')[0]))
                     self.phase.append(int(line.split('\t')[1]))
                     self.error.append(int(line.split('\t')[2]))
                 if line.startswith('data(V)'):
@@ -86,29 +86,28 @@ class magnicon_ccc:
                     self.intTime = line.split(':')[-1].rstrip(' \n')
                     self.intTime = int(self.intTime.lstrip(' \t'))
 
+        # Averages the datetime start and stop and creates a timestamp of the average
+        if stopDate:
+            dt1 = datetime(d1[0], d1[1], d1[2], t1[0], t1[1], t1[2])
+            dt2 = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
+            t1_str = f'{t1[0]}:{t1[1]}:{t1[2]}'
+            t1_obj = datetime.strptime(t1_str, '%H:%M:%S')
+            t1_am_pm = t1_obj.strftime('%I:%M:%S %p')
+            t2_str = f'{t2[0]}:{t2[1]}:{t2[2]}'
+            t2_obj = datetime.strptime(t2_str, '%H:%M:%S')
+            t2_am_pm = t2_obj.strftime('%I:%M:%S %p')
+            self.avgDT = (dt1-dt2)/2
+            self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
+            self.timeStamp = mktime(self.DT.timetuple())
+            self.startDate = f'{d2[1]}/{d2[2]}/{d2[0]} {t2_am_pm}'
+            self.endDate = f'{d1[1]}/{d1[2]}/{d1[0]} {t1_am_pm}'
+        # Returns the start datetime if there is no stop date
+        else:
+            self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
+            self.timeStamp = mktime(self.DT.timetuple())
 
-            # Averages the datetime start and stop and creates a timestamp of the average
-            if stopDate:
-                dt1 = datetime(d1[0], d1[1], d1[2], t1[0], t1[1], t1[2])
-                dt2 = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
-                t1_str = f'{t1[0]}:{t1[1]}:{t1[2]}'
-                t1_obj = datetime.strptime(t1_str, '%H:%M:%S')
-                t1_am_pm = t1_obj.strftime('%I:%M:%S %p')
-                t2_str = f'{t2[0]}:{t2[1]}:{t2[2]}'
-                t2_obj = datetime.strptime(t2_str, '%H:%M:%S')
-                t2_am_pm = t2_obj.strftime('%I:%M:%S %p')
-                self.avgDT = (dt1-dt2)/2
-                self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
-                self.timeStamp = mktime(self.DT.timetuple())
-                self.startDate = f'{d2[1]}/{d2[2]}/{d2[0]} {t2_am_pm}'
-                self.endDate = f'{d1[1]}/{d1[2]}/{d1[0]} {t1_am_pm}'
-            # Returns the start datetime if there is no stop date
-            else:
-                self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
-                self.timeStamp = mktime(self.DT.timetuple())
-
-            # This does not average
-            # self.timeStamp = mktime(datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]).timetuple())
+        # This does not average
+        # self.timeStamp = mktime(datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]).timetuple())
                     
 
     # Parses the bvd.txt file
@@ -234,6 +233,8 @@ class magnicon_ccc:
             self.fullCyc = self.SHC*self.intTime/self.timeBase * 2
             self.delay = (self.ignored/self.SHC)*(self.SHC*self.intTime/self.timeBase - self.rampTime)
             self.measTime = (self.SHC*self.intTime/self.timeBase) - self.rampTime - self.delay
+            self.dt = self.SHC*2/self.fullCyc
+
 
 # For testing
 if __name__ == '__main__':
@@ -243,4 +244,4 @@ if __name__ == '__main__':
     diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # mc = magnicon_ccc(file2)
     mc = magnicon_ccc(diffFile)
-    print(mc.R2Pred)
+    print(mc.dt)
