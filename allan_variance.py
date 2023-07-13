@@ -22,10 +22,14 @@ class allan:
         self.samples = []
         self.tau_array = []
         if overlapping:
-            for i in range(tau):
-                self.samples.append(i+1)
-                tau_out = self.overlapping(input_array, i+1)
-                self.tau_array.append(sqrt(tau_out))
+            # for i in range(tau):
+            #     self.samples.append(i+1)
+            #     tau_out = self.overlapping(input_array, i+1)
+            #     self.tau_array.append(sqrt(tau_out))
+            i = 0
+            self.samples.append(i+1)
+            tau_out = self.overlapping(input_array, i+1)
+            self.tau_array.append(sqrt(tau_out))
         else:
             for i in range(tau):
                 self.samples.append(i+1)
@@ -72,18 +76,25 @@ class allan:
     def overlapping(self, input_array, tau):
         N = len(input_array)
         csum = self.cumsum(input_array)
+        # print(csum)
         i = 0
+        n = 1
         x = len(input_array)
         y = tau*2 + i
         temp_array = []
         temp_array.append((csum[y] - csum[tau+i] + csum[i])**2)
-        i -= 1
-        n = 1
-        while x < y:
+        # print((csum[y] - csum[tau+i] + csum[i])**2)
+        i += 1
+        n += 1
+        y = tau*2 + i
+        while x > y:
             temp_array.append((csum[y] - csum[tau+i] + csum[i])**2)
-            i -= 1
+            # print((csum[y] - csum[tau+i] + csum[i])**2)
+            i += 1
             n += 1
-        print((sum(temp_array)/n)/(tau*2*tau))
+            y = tau*2 + i
+            # print(y, n)
+        # print((sum(temp_array)/n)/(tau*2*tau), n)
         return ((sum(temp_array)/n)/(tau*2*tau))
     
     def cumsum(self, input_array):
