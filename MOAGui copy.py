@@ -531,6 +531,32 @@ class Ui_mainWindow(object):
         self.AllanVerticalLayout.addWidget(NavigationToolbar(self.AllanCanvas))
         self.AllanVerticalLayout.addWidget(self.AllanCanvas)
 
+        # self.AllanHorizontalLayoutWidget = QtWidgets.QWidget()
+        # self.AllanHorizontalLayoutWidget.setObjectName("AllanHorizontalLayout")
+        self.AllanHorizontalLayout = QtWidgets.QHBoxLayout()
+        self.AllanHorizontalLayout.setObjectName("AllanHorizontalLayout")
+
+        self.AllanTypeComboBox = QtWidgets.QComboBox(parent=self.AllanTab)
+        self.AllanTypeComboBox.setEditable(False)
+        self.AllanTypeComboBox.setObjectName("AllanTypeComboBox")
+        self.AllanTypeComboBox.addItem('all')
+        self.AllanTypeComboBox.addItem('2^n')
+        self.AllanTypeComboBox.currentIndexChanged.connect(self.plotAllan)
+
+        self.OverlappingComboBox = QtWidgets.QComboBox(parent=self.AllanTab)
+        self.OverlappingComboBox.setEditable(False)
+        self.OverlappingComboBox.setObjectName("OverlappingComboBox")
+        self.OverlappingComboBox.addItem('non-overlapping')
+        self.OverlappingComboBox.addItem('overlapping')
+        self.OverlappingComboBox.currentIndexChanged.connect(self.plotAllan)
+
+        self.AllanHorizontalSpacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+
+        self.AllanHorizontalLayout.addWidget(self.AllanTypeComboBox)
+        self.AllanHorizontalLayout.addWidget(self.OverlappingComboBox)
+        self.AllanHorizontalLayout.addItem(self.AllanHorizontalSpacer)
+        self.AllanVerticalLayout.addLayout(self.AllanHorizontalLayout)
+
     def setButtons(self):
         self.StandardRBut = QtWidgets.QPushButton(parent=self.SetResTab)
         self.StandardRBut.setGeometry(QtCore.QRect(460, 530, 71, 24))
@@ -588,7 +614,6 @@ class Ui_mainWindow(object):
         self.MagElecComboBox = QtWidgets.QComboBox(parent=self.SetResTab)
         self.MagElecComboBox.setGeometry(QtCore.QRect(20, 680, 151, 22))
         self.MagElecComboBox.setEditable(False)
-        self.MagElecComboBox.setCurrentText("")
         self.MagElecComboBox.setObjectName("MagElecComboBox")
         self.MagElecComboBox.addItem('CCC2014-01')
         self.MagElecComboBox.addItem('CCC2019-01')
@@ -596,7 +621,6 @@ class Ui_mainWindow(object):
         self.ProbeComboBox = QtWidgets.QComboBox(parent=self.SetResTab)
         self.ProbeComboBox.setGeometry(QtCore.QRect(20, 730, 151, 22))
         self.ProbeComboBox.setEditable(False)
-        self.ProbeComboBox.setCurrentText("")
         self.ProbeComboBox.setObjectName("ProbeComboBox")
         self.ProbeComboBox.addItem('Magnicon1')
         self.ProbeComboBox.addItem('NIST1')
@@ -713,7 +737,7 @@ class Ui_mainWindow(object):
         else:
             self.BVDax2.scatter(count, self.bvd.R2List, color='b', zorder=3)
 
-        self.BVDax2.set_title('BVD')
+        self.BVDax2.set_title(f'BVD [{self.RButStatus}]')
         self.BVDax2.set_xlabel('Count')
         self.BVDax2.set_ylabel('Resistance [ppm]')
 
@@ -736,18 +760,23 @@ class Ui_mainWindow(object):
             self.clearPlots()
         
         self.plottedAllan = True
+        allan_type = self.AllanTypeComboBox.currentText()
+        overlapping = is_overlapping(self.OverlappingComboBox.currentText())
+
+        self.Allanax1.set_yscale('log')
 
         x = False
         if x:
-            bvd = allan(input_array=self.dat.bvd, allan_type='all', overlapping=False)
-            A = allan(input_array=self.bvd.A, allan_type='all', overlapping=False)
-            B = allan(input_array=self.bvd.B, allan_type='all', overlapping=False)
-            self.Allanax1.plot(bvd.samples, bvd.tau_array, A.samples, A.tau_array, B.samples, B.tau_array)
+            bvd = allan(input_array=self.dat.bvd, allan_type=allan_type, overlapping=overlapping)
+            C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
+            C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
+            self.Allanax1.plot(bvd.samples, bvd.tau_array, C1.samples, C1.tau_array, C2.samples, C2.tau_array)
         else:
-            bvd = allan(input_array=self.dat.bvd, allan_type='all', overlapping=False)
+            bvd = allan(input_array=self.dat.bvd, allan_type=allan_type, overlapping=overlapping)
+            # samples = np.array(bvd.samples)
             self.Allanax1.plot(bvd.samples, bvd.tau_array)
-        
-        self.Allanax1.set_title('Allan Deviation vs. Samples')
+
+        self.Allanax1.set_title(f'Allan Deviation vs. Samples [{self.RButStatus}]')
         self.Allanax1.set_ylabel('Allan Deviation')
         self.Allanax1.set_xlabel('\u03C4 (samples)')
 
@@ -757,7 +786,10 @@ class Ui_mainWindow(object):
     def clearPlots(self):
         self.BVDax1.cla()
         self.BVDax2.cla()
-        self.BVDtwin2.set_visible(False)
+        try:
+            self.BVDtwin2.set_visible(False)
+        except AttributeError:
+            pass
         self.BVDax3.cla()
         # self.fig.tight_layout()
         self.BVDcanvas.draw()
@@ -1064,6 +1096,12 @@ class Ui_mainWindow(object):
             self.plotBVD()
         elif self.tabWidget.currentIndex() == 2 and self.validFile:
             self.plotAllan()
+
+def is_overlapping(overlapping):
+    if overlapping == 'overlapping':
+        return True
+    else:
+        return False
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

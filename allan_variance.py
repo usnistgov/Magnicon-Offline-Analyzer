@@ -1,5 +1,5 @@
 from magnicon_ccc import magnicon_ccc
-from numpy import sqrt, mean
+from numpy import sqrt, mean, polyfit
 from math import floor
 import os
 bp = os.getcwd()
@@ -111,4 +111,4 @@ if __name__ == '__main__':
     file4 = bp + r'\2023-05-31_CCC\230531_008_2200.txt'
     dat_obj = magnicon_ccc(file2)
     test = allan(input_array=dat_obj.bvd, allan_type='all', overlapping=False)
-    print(test.tau_array)
+    # print(test.a)

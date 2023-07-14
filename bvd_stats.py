@@ -100,10 +100,10 @@ class bvd_stat:
         self.R2List = []
         ratioMeanC1 = []
         ratioMeanC2 = []
-        C1R1List = []
-        C1R2List = []
-        C2R1List = []
-        C2R2List = []
+        self.C1R1List = []
+        self.C1R2List = []
+        self.C2R1List = []
+        self.C2R2List = []
         for i in range(len(self.V1)):
             self.bvdList.append((self.V1[i]+self.V2[i])/2)
             ratioMeanList.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvdList[i]/mag.deltaI2R2))
@@ -111,10 +111,10 @@ class bvd_stat:
             self.R2List.append((self.R2*ratioMeanList[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
             ratioMeanC1.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V1[i]/mag.deltaI2R2))
             ratioMeanC2.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V2[i]/mag.deltaI2R2))
-            C1R1List.append((self.R1/ratioMeanC1[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
-            C1R2List.append((self.R2*ratioMeanC1[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
-            C2R1List.append((self.R1/ratioMeanC2[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
-            C2R2List.append((self.R2*ratioMeanC2[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
+            self.C1R1List.append((self.R1/ratioMeanC1[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
+            self.C1R2List.append((self.R2*ratioMeanC1[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
+            self.C2R1List.append((self.R1/ratioMeanC2[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
+            self.C2R2List.append((self.R2*ratioMeanC2[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
 
         if self.R1List and self.R2List:
             self.meanR1 = mean(self.R1List)
@@ -123,14 +123,14 @@ class bvd_stat:
             self.stdR1ppm = std(self.R1List, ddof=1)
             self.stdR2ppm = std(self.R2List, ddof=1)
             self.stdMeanPPM = self.stdppm/sqrt(len(self.R1List))
-            self.C1R1 = mean(C1R1List)
-            self.C1R2 = mean(C1R2List)
-            self.C2R1 = mean(C2R1List)
-            self.C2R2 = mean(C2R2List)
-            self.stdC1R1 = std(C1R1List, ddof=1)
-            self.stdC1R2 = std(C1R2List, ddof=1)
-            self.stdC2R1 = std(C2R1List, ddof=1)
-            self.stdC2R2 = std(C2R2List, ddof=1)
+            self.C1R1 = mean(self.C1R1List)
+            self.C1R2 = mean(self.C1R2List)
+            self.C2R1 = mean(self.C2R1List)
+            self.C2R2 = mean(self.C2R2List)
+            self.stdC1R1 = std(self.C1R1List, ddof=1)
+            self.stdC1R2 = std(self.C1R2List, ddof=1)
+            self.stdC2R1 = std(self.C2R1List, ddof=1)
+            self.stdC2R2 = std(self.C2R2List, ddof=1)
         else:
             self.meanR1 = 0
             self.meanR2 = 0
