@@ -175,6 +175,8 @@ class bvd_stat:
         self.R1MeanChkOhm = (self.meanR2/1000000 + 1) * mag.R1NomVal
         self.R2MeanChkOhm = (self.meanR1/1000000 + 1) * mag.R2NomVal
 
+        self.remTime = mag.measTime - (self.N*mag.fullCyc)
+        self.remTimeStamp = mag.sec2ts(self.remTime)
         
 if __name__ == '__main__':
     file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
@@ -184,4 +186,4 @@ if __name__ == '__main__':
     # test = bvd_stat(file2, 25, 25, 101325, 101325)
     # test = bvd_stat(file2, 25, 25, 103008, 103008)
     test = bvd_stat(diffFile, T1=25, T2=25, P1=101325, P2=101325)
-    # print(test.ratioMean)
+    print(test.remTimeStamp)

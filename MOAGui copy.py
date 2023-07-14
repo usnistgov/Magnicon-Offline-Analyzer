@@ -446,6 +446,14 @@ class Ui_mainWindow(object):
         self.R1ValueLineEdit.setGeometry(QtCore.QRect(300, 50, 113, 22))
         self.R1ValueLineEdit.setReadOnly(True)
         self.R1ValueLineEdit.setObjectName("R1ValueLineEdit")
+        self.MeasTimeLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
+        self.MeasTimeLineEdit.setGeometry(QtCore.QRect(440, 110, 113, 22))
+        self.MeasTimeLineEdit.setReadOnly(True)
+        self.MeasTimeLineEdit.setObjectName("MeasTimeLineEdit")
+        self.RemTimeLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
+        self.RemTimeLineEdit.setGeometry(QtCore.QRect(440, 170, 113, 22))
+        self.RemTimeLineEdit.setReadOnly(True)
+        self.RemTimeLineEdit.setObjectName("RemTimeLineEdit")
 
         self.R2OilPresLineEdit = QtWidgets.QLineEdit(parent=self.SetResTab)
         self.R2OilPresLineEdit.setGeometry(QtCore.QRect(280, 470, 111, 22))
@@ -766,22 +774,23 @@ class Ui_mainWindow(object):
         self.Allanax1.set_yscale('log')
 
         x = False
-        if x:
+        if x and self.validFile:
             bvd = allan(input_array=self.dat.bvd, allan_type=allan_type, overlapping=overlapping)
             C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
             C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
             self.Allanax1.plot(bvd.samples, bvd.tau_array, C1.samples, C1.tau_array, C2.samples, C2.tau_array)
-        else:
+        elif not x and self.validFile:
             bvd = allan(input_array=self.dat.bvd, allan_type=allan_type, overlapping=overlapping)
             # samples = np.array(bvd.samples)
             self.Allanax1.plot(bvd.samples, bvd.tau_array)
 
-        self.Allanax1.set_title(f'Allan Deviation vs. Samples [{self.RButStatus}]')
-        self.Allanax1.set_ylabel('Allan Deviation')
-        self.Allanax1.set_xlabel('\u03C4 (samples)')
+        if self.validFile:
+            self.Allanax1.set_title(f'Allan Deviation vs. Samples [{self.RButStatus}]')
+            self.Allanax1.set_ylabel('Allan Deviation')
+            self.Allanax1.set_xlabel('\u03C4 (samples)')
 
-        self.Allanfig.tight_layout()
-        self.AllanCanvas.draw()
+            self.Allanfig.tight_layout()
+            self.AllanCanvas.draw()
 
     def clearPlots(self):
         self.BVDax1.cla()
@@ -853,7 +862,7 @@ class Ui_mainWindow(object):
         self.Current1LineEdit.setText(str(self.dat.I1))
         self.FullCycLineEdit.setText(str(self.dat.fullCyc))
         self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
-        self.MeasLineEdit.setText(str("{:2.4f}".format(self.dat.measTime)))
+        self.MeasLineEdit.setText(str("{:2.4f}".format(self.dat.meas)))
         self.DelayLineEdit.setText(str(self.dat.delay))
         self.R1SNLineEdit.setText(self.dat.R1SN)
         self.Current2LineEdit.setText(str(self.dat.I2))
@@ -875,7 +884,7 @@ class Ui_mainWindow(object):
         self.R1STPLineEdit.setText(str("{:2.7f}".format(self.bvd.R1PPM)))
         self.R2STPLineEdit.setText(str("{:2.7f}".format(self.bvd.R2PPM)))
         self.RampLineEdit.setText(str(self.dat.rampTime))
-        self.MeasCycLineEdit.setText(str(int(self.dat.numCycStop/2)))
+        self.MeasCycLineEdit.setText(str(int(self.dat.measCyc)))
 
         self.RatioMeanLineEdit.setText(str("{:.10f}".format(self.bvd.ratioMean)))
 
@@ -887,6 +896,8 @@ class Ui_mainWindow(object):
         self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.bvd.stdppm*10**6)))
 
         self.NLineEdit.setText(str(self.bvd.N))
+        self.MeasTimeLineEdit.setText(self.dat.measTimeStamp)
+        self.RemTimeLineEdit.setText(self.bvd.remTimeStamp)
 
         self.MDSSButton.setStyleSheet("color: white; background-color: red")
         self.MDSSButton.setEnabled(True)
@@ -944,6 +955,8 @@ class Ui_mainWindow(object):
         self.StdDevC2LineEdit.setText("")
         self.C1C2LineEdit.setText("")
         self.NLineEdit.setText("")
+        self.MeasTimeLineEdit.setText("")
+        self.RemTimeLineEdit.setText("")
 
         self.MDSSButton.setStyleSheet("")
         self.MDSSButton.setText("No")

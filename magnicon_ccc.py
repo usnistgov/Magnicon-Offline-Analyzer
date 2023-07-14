@@ -1,7 +1,7 @@
 from time import mktime
 from datetime import datetime, timedelta
 import sys, os
-from numpy import std
+from numpy import std, floor
 bp = os.getcwd()
 if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
@@ -231,9 +231,21 @@ class magnicon_ccc:
         if self.validFile:
             self.rampTime = self.rStepTime*self.rStepCount*2/1000000
             self.fullCyc = self.SHC*self.intTime/self.timeBase * 2
+            self.measCyc = self.numCycStop/2
             self.delay = (self.ignored/self.SHC)*(self.SHC*self.intTime/self.timeBase - self.rampTime)
-            self.measTime = (self.SHC*self.intTime/self.timeBase) - self.rampTime - self.delay
+            self.meas = (self.SHC*self.intTime/self.timeBase) - self.rampTime - self.delay
             self.dt = self.SHC*2/self.fullCyc
+            self.measTime = self.fullCyc*self.measCyc
+            self.measTimeStamp = self.sec2ts(self.measTime)
+
+    def sec2ts(self, sec):
+        a = [3600, 60, 60]
+        ts = []
+        for i in a:
+            cur = floor(sec/i)
+            ts.append(cur)
+            sec = sec - i*cur
+        return f'{"{:02d}".format(int(ts[0]))}:{"{:02d}".format(int(ts[1]))}:{"{:02d}".format(int(ts[2]))}'
 
 
 # For testing
@@ -244,4 +256,4 @@ if __name__ == '__main__':
     diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # mc = magnicon_ccc(file2)
     mc = magnicon_ccc(diffFile)
-    print(mc.dt)
+    print(mc.measTimeStamp)
