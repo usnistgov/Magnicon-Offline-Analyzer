@@ -790,7 +790,7 @@ class Ui_mainWindow(object):
             self.Allanax1.plot(bvd.samples, bvd.tau_array, C1.samples, C1.tau_array, C2.samples, C2.tau_array)
         elif not x and self.validFile:
             bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
-            self.Allanax1.plot(bvd.samples, bvd.tau_array, bvd.samples, bvd.fit)
+            self.Allanax1.plot(bvd.samples, bvd.tau_array, bvd.samples, bvd.y_fit)
 
         if self.validFile:
             self.Allanax1.set_title(f'Allan Deviation vs. Samples [{self.RButStatus}]')

@@ -15,7 +15,7 @@ class allan:
         elif allan_type == '2^n':
             self.twoCaretn(input_array, tau, overlapping)
 
-        self.fit = fit_line(self.samples, self.tau_array)
+        self.x_fit, self.y_fit = fit_line(self.samples, self.tau_array)
 
     def allTau(self, input_array, tau, overlapping):
         self.samples = []
@@ -108,12 +108,15 @@ def LabViewArray(input_array, index):
         return 0
     
 def fit_line(samples, tau_array):
-    m = (tau_array[-1]-tau_array[0])/(samples[-1]-samples[0])
+    end = floor(len(samples)/2)
+    m = (tau_array[end]-tau_array[0])/(samples[end]-samples[0])
     c = tau_array[0] - m*samples[0]
-    fit = []
+    x_fit = []
+    y_fit = []
     for i in range(len(samples)):
-        fit.append(m*samples[i] + c)
-    return fit
+        # x_fit.append(i+1)
+        y_fit.append(m*samples[i] + c)
+    return x_fit, y_fit
 
 
 if __name__ == '__main__':
