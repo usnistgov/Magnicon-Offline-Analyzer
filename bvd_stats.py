@@ -185,5 +185,9 @@ if __name__ == '__main__':
     diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # test = bvd_stat(file2, 25, 25, 101325, 101325)
     # test = bvd_stat(file2, 25, 25, 103008, 103008)
-    test = bvd_stat(diffFile, T1=25, T2=25, P1=101325, P2=101325)
-    print(test.remTimeStamp)
+    test = bvd_stat(file2, T1=25, T2=25, P1=101325, P2=101325)
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import StrMethodFormatter, NullFormatter
+    plt.hist(test.bvdList, bins=20, orientation='horizontal', color ='r', edgecolor='k')
+    .xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
+    plt.show()
