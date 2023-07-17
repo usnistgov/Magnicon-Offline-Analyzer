@@ -752,14 +752,17 @@ class Ui_mainWindow(object):
 
         self.BVDtwin2 = self.BVDax2.twinx()
         self.BVDtwin2.plot(count, 3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-        self.BVDtwin2.plot(count, -8*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+        self.BVDtwin2.plot(count, -3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
         self.BVDtwin2.scatter(count, self.bvd.bvdList, color='r')
-        self.BVDtwin2.set_ylim([-9*self.bvd.std, 4*self.bvd.std])
+        self.BVDtwin2.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
         self.BVDtwin2.set_ylabel('BVD [V]')
         self.BVDax2.set_axisbelow(True)
         self.BVDax2.grid(axis='x',zorder=0)
         self.BVDtwin2.set_axisbelow(True)
         self.BVDtwin2.grid(zorder=0)
+
+        self.BVDax3.hist(self.bvd.bvdList, bins=20, orientation='horizontal', color='r', edgecolor='k')
+        self.BVDax3.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
 
         self.BVDfig.tight_layout()
         self.BVDcanvas.draw()
@@ -781,12 +784,12 @@ class Ui_mainWindow(object):
 
         x = False
         if x and self.validFile:
-            bvd = allan(input_array=self.dat.bvd, allan_type=allan_type, overlapping=overlapping)
+            bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
             C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
             C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
             self.Allanax1.plot(bvd.samples, bvd.tau_array, C1.samples, C1.tau_array, C2.samples, C2.tau_array)
         elif not x and self.validFile:
-            bvd = allan(input_array=self.dat.bvd, allan_type=allan_type, overlapping=overlapping)
+            bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
             self.Allanax1.plot(bvd.samples, bvd.tau_array, bvd.samples, bvd.fit)
 
         if self.validFile:
