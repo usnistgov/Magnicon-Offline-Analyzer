@@ -23,6 +23,7 @@ from tkinter import filedialog
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+from matplotlib.ticker import StrMethodFormatter, NullFormatter
 from allan_variance import allan
 import numpy as np
 
@@ -771,7 +772,12 @@ class Ui_mainWindow(object):
         allan_type = self.AllanTypeComboBox.currentText()
         overlapping = is_overlapping(self.OverlappingComboBox.currentText())
 
+        self.Allanax1.set_xscale('log')
+        self.Allanax1.xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
+        self.Allanax1.xaxis.set_minor_formatter(StrMethodFormatter('{x:.0f}'))
         self.Allanax1.set_yscale('log')
+
+        self.Allanax1.set_ylim([1E-9, 1E-8])
 
         x = False
         if x and self.validFile:
@@ -781,8 +787,7 @@ class Ui_mainWindow(object):
             self.Allanax1.plot(bvd.samples, bvd.tau_array, C1.samples, C1.tau_array, C2.samples, C2.tau_array)
         elif not x and self.validFile:
             bvd = allan(input_array=self.dat.bvd, allan_type=allan_type, overlapping=overlapping)
-            # samples = np.array(bvd.samples)
-            self.Allanax1.plot(bvd.samples, bvd.tau_array)
+            self.Allanax1.plot(bvd.samples, bvd.tau_array, bvd.samples, bvd.fit)
 
         if self.validFile:
             self.Allanax1.set_title(f'Allan Deviation vs. Samples [{self.RButStatus}]')

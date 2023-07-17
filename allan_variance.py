@@ -1,5 +1,5 @@
 from magnicon_ccc import magnicon_ccc
-from numpy import sqrt, mean, polyfit
+from numpy import sqrt, mean
 from math import floor
 import os
 bp = os.getcwd()
@@ -14,6 +14,8 @@ class allan:
 
         elif allan_type == '2^n':
             self.twoCaretn(input_array, tau, overlapping)
+
+        self.fit = fit_line(self.samples, self.tau_array)
 
     def allTau(self, input_array, tau, overlapping):
         self.samples = []
@@ -98,13 +100,21 @@ class allan:
             temp_array = input_array[0:N-i-1]
             cumsum.append(sum(temp_array))
         return cumsum
-    
+
 def LabViewArray(input_array, index):
     if index < len(input_array):
         return input_array[index]
     else:
         return 0
     
+def fit_line(samples, tau_array):
+    m = (tau_array[-1]-tau_array[0])/(samples[-1]-samples[0])
+    c = tau_array[0] - m*samples[0]
+    fit = []
+    for i in range(len(samples)):
+        fit.append(m*samples[i] + c)
+    return fit
+
 
 if __name__ == '__main__':
     file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
