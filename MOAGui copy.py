@@ -559,11 +559,11 @@ class Ui_mainWindow(object):
         self.OverlappingComboBox.addItem('overlapping')
         self.OverlappingComboBox.currentIndexChanged.connect(self.plotAllan)
 
-        self.AllanHorizontalSpacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.AllanHorizontalSpacer = QtWidgets.QSpacerItem(600, 10, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
 
         self.AllanHorizontalLayout.addWidget(self.AllanTypeComboBox)
-        self.AllanHorizontalLayout.addWidget(self.OverlappingComboBox)
         self.AllanHorizontalLayout.addItem(self.AllanHorizontalSpacer)
+        self.AllanHorizontalLayout.addWidget(self.OverlappingComboBox)
         self.AllanVerticalLayout.addLayout(self.AllanHorizontalLayout)
 
     def setButtons(self):
@@ -739,6 +739,7 @@ class Ui_mainWindow(object):
         self.BVDax1.set_title('Bridge Voltage')
         self.BVDax1.set_xlabel('Count')
         self.BVDax1.set_ylabel('Amplitude [V]')
+        self.BVDax1.legend(['I+', 'I-'])
 
         count = range(len(self.bvd.bvdList))
         if self.RButStatus == 'R1':
@@ -796,6 +797,10 @@ class Ui_mainWindow(object):
             self.Allanax1.set_title(f'Allan Deviation vs. Samples [{self.RButStatus}]')
             self.Allanax1.set_ylabel('Allan Deviation')
             self.Allanax1.set_xlabel('\u03C4 (samples)')
+
+            self.Allanax2.set_title('Power Spectrum')
+            self.Allanax2.set_ylabel('Power Spectrum from FFT')
+            self.Allanax2.set_xlabel('Frequency (Hz)')
 
             self.Allanfig.tight_layout()
             self.AllanCanvas.draw()
@@ -1124,10 +1129,14 @@ def is_overlapping(overlapping):
     else:
         return False
 
-if __name__ == "__main__":
+def main():
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = QtWidgets.QMainWindow()
     ui = Ui_mainWindow()
     ui.setupUi(mainWindow)
     mainWindow.show()
     sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
