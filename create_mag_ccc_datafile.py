@@ -17,6 +17,7 @@ class writeDataFile():
             dat_obj = magnicon_ccc()
         
         # Writes the data to the MDSS file
+        os.chdir(bp + r'\MDSS Folder')
         with open(dataFileName, 'w') as f:
             if RStatus == 'R1':
                 f.write(f'{dat_obj.R2NomVal}')
