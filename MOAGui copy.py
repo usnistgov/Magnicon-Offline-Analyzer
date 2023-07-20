@@ -32,7 +32,7 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
         mainWindow.resize(989, 833)
-        mainWindow.setWindowIcon(QtGui.QIcon('analyser.ico'))
+        mainWindow.setWindowIcon(QtGui.QIcon('analyzer.ico'))
 
         self.initializations()
 
