@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>989</width>
-    <height>833</height>
+    <height>844</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="SetResTab">
      <attribute name="title">
@@ -1743,10 +1743,21 @@
         <x>0</x>
         <y>0</y>
         <width>951</width>
-        <height>761</height>
+        <height>681</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout"/>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>680</y>
+        <width>951</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout"/>
      </widget>
     </widget>
     <widget class="QWidget" name="Tab3">

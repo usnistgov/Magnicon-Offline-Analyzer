@@ -511,7 +511,7 @@ class Ui_mainWindow(object):
         self.tabWidget.addTab(self.BVDTab, "")
         self.BVDVerticalLayoutWidget = QtWidgets.QWidget(parent=self.BVDTab)
         self.BVDVerticalLayoutWidget.setObjectName("BVDVerticalLayout")
-        self.BVDVerticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 951, 761))
+        self.BVDVerticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 951, 681))
         self.BVDVerticalLayout = QtWidgets.QVBoxLayout(self.BVDVerticalLayoutWidget)
         self.BVDVerticalLayout.setObjectName("BVDVerticalLayout")
 
@@ -524,13 +524,16 @@ class Ui_mainWindow(object):
         self.BVDVerticalLayout.addWidget(NavigationToolbar(self.BVDcanvas))
         self.BVDVerticalLayout.addWidget(self.BVDcanvas)
 
-
-
-        grid = QtWidgets.QGridLayout()
+        gridWidget = QtWidgets.QWidget(self.BVDTab)
+        gridWidget.setGeometry(QtCore.QRect(0, 680, 951, 81))
+        grid = QtWidgets.QGridLayout(gridWidget)
+        grid.setSpacing(5)
         SkewnessLabel = QtWidgets.QLabel('Skewness', parent=self.BVDTab)
         KurtosisLabel = QtWidgets.QLabel('Kurtosis', parent=self.BVDTab)
         self.SkewnessEdit = QtWidgets.QLineEdit(parent=self.BVDTab)
+        self.SkewnessEdit.setReadOnly(True)
         self.KurtosisEdit = QtWidgets.QLineEdit(parent=self.BVDTab)
+        self.KurtosisEdit.setReadOnly(True)
         Spacer = QtWidgets.QSpacerItem(600, 1, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         grid.addWidget(SkewnessLabel, 1, 1)
         grid.addItem(Spacer, 1, 2)
