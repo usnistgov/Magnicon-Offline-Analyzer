@@ -17,6 +17,7 @@ else:
     from ResDataBase import ResData
 
 from bvd_stats import bvd_stat
+from skew_and_kurt import skewness, kurtosis
 import tkinter
 from tkinter import filedialog
 
@@ -523,6 +524,22 @@ class Ui_mainWindow(object):
         self.BVDVerticalLayout.addWidget(NavigationToolbar(self.BVDcanvas))
         self.BVDVerticalLayout.addWidget(self.BVDcanvas)
 
+
+
+        grid = QtWidgets.QGridLayout()
+        SkewnessLabel = QtWidgets.QLabel('Skewness', parent=self.BVDTab)
+        KurtosisLabel = QtWidgets.QLabel('Kurtosis', parent=self.BVDTab)
+        self.SkewnessEdit = QtWidgets.QLineEdit(parent=self.BVDTab)
+        self.KurtosisEdit = QtWidgets.QLineEdit(parent=self.BVDTab)
+        Spacer = QtWidgets.QSpacerItem(600, 1, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        grid.addWidget(SkewnessLabel, 1, 1)
+        grid.addItem(Spacer, 1, 2)
+        grid.addWidget(KurtosisLabel, 1, 3)
+        grid.addWidget(self.SkewnessEdit, 2, 1)
+        grid.addItem(Spacer, 2, 2)
+        grid.addWidget(self.KurtosisEdit, 2, 3)
+        self.BVDVerticalLayout.addLayout(grid)
+
     def AllanTabSetUp(self):
         self.AllanTab = QtWidgets.QWidget()
         self.AllanTab.setObjectName("Allan Dev.")
@@ -540,10 +557,7 @@ class Ui_mainWindow(object):
         self.AllanVerticalLayout.addWidget(NavigationToolbar(self.AllanCanvas))
         self.AllanVerticalLayout.addWidget(self.AllanCanvas)
 
-        # self.AllanHorizontalLayoutWidget = QtWidgets.QWidget()
-        # self.AllanHorizontalLayoutWidget.setObjectName("AllanHorizontalLayout")
         self.AllanHorizontalLayout = QtWidgets.QHBoxLayout()
-        self.AllanHorizontalLayout.setObjectName("AllanHorizontalLayout")
 
         self.AllanTypeComboBox = QtWidgets.QComboBox(parent=self.AllanTab)
         self.AllanTypeComboBox.setEditable(False)
@@ -915,6 +929,9 @@ class Ui_mainWindow(object):
         self.MDSSButton.setStyleSheet("color: white; background-color: red")
         self.MDSSButton.setEnabled(True)
 
+        self.SkewnessEdit.setText(str("{:.3f}".format(skewness(self.bvd.bvdList))))
+        self.KurtosisEdit.setText(str("{:.3f}".format(kurtosis(self.bvd.bvdList))))
+
         self.stdR(self.RButStatus)
 
     def setInvalidData(self):
@@ -976,6 +993,9 @@ class Ui_mainWindow(object):
         self.MDSSButton.setEnabled(False)
         self.saveButton.setEnabled(False)
         self.saveStatus = False
+
+        self.SkewnessEdit.setText("")
+        self.KurtosisEdit.setText("")
 
         if self.plottedBVD or self.plottedAllan:
             self.plottedBVD = False
