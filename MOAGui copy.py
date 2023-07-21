@@ -528,20 +528,19 @@ class Ui_mainWindow(object):
         gridWidget.setGeometry(QtCore.QRect(0, 680, 951, 81))
         grid = QtWidgets.QGridLayout(gridWidget)
         grid.setSpacing(5)
-        SkewnessLabel = QtWidgets.QLabel('Skewness', parent=self.BVDTab)
-        KurtosisLabel = QtWidgets.QLabel('Kurtosis', parent=self.BVDTab)
-        self.SkewnessEdit = QtWidgets.QLineEdit(parent=self.BVDTab)
+        SkewnessLabel = QtWidgets.QLabel('Skewness', parent=gridWidget)
+        KurtosisLabel = QtWidgets.QLabel('Kurtosis', parent=gridWidget)
+        self.SkewnessEdit = QtWidgets.QLineEdit(gridWidget)
         self.SkewnessEdit.setReadOnly(True)
-        self.KurtosisEdit = QtWidgets.QLineEdit(parent=self.BVDTab)
+        self.KurtosisEdit = QtWidgets.QLineEdit(gridWidget)
         self.KurtosisEdit.setReadOnly(True)
-        Spacer = QtWidgets.QSpacerItem(600, 1, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        Spacer = QtWidgets.QSpacerItem(750, 1, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         grid.addWidget(SkewnessLabel, 1, 1)
         grid.addItem(Spacer, 1, 2)
         grid.addWidget(KurtosisLabel, 1, 3)
         grid.addWidget(self.SkewnessEdit, 2, 1)
         grid.addItem(Spacer, 2, 2)
         grid.addWidget(self.KurtosisEdit, 2, 3)
-        self.BVDVerticalLayout.addLayout(grid)
 
     def AllanTabSetUp(self):
         self.AllanTab = QtWidgets.QWidget()
@@ -781,6 +780,7 @@ class Ui_mainWindow(object):
 
         self.BVDax3.hist(self.bvd.bvdList, bins=20, orientation='horizontal', color='r', edgecolor='k')
         self.BVDax3.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
+        self.BVDax3.set_title('BVD Histogram')
 
         self.BVDfig.tight_layout()
         self.BVDcanvas.draw()
