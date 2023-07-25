@@ -36,7 +36,8 @@ class Window(QMainWindow):
         self.initUI()
         self.setWindowTitle('Magnicon Offline Analyzer')
         self.setWindowIcon(QIcon('analyzer.ico'))
-        self.setGeometry(QRect(0, 0, 961, 791))
+        # self.setGeometry(QRect(0, 0, 961, 791))
+        # self.centerOnScreen()
         
 
     def initUI(self):
