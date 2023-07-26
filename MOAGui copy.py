@@ -90,6 +90,8 @@ class Ui_mainWindow(object):
         self.deletedIndex = []
         self.deletedCount = []
         self.deletedBVD = []
+        self.deletedR1 = []
+        self.deletedR2 = []
 
     # Set up for the labels
     def setLabels(self):
@@ -422,7 +424,7 @@ class Ui_mainWindow(object):
         self.RestoreBut.pressed.connect(self.restoreDeleted)
         self.RePlotBut = QPushButton()
         self.RePlotBut.setText('Replot All')
-        self.RePlotBut.pressed.connect(self.replotDeleted)
+        self.RePlotBut.pressed.connect(self.replotAll)
 
         #
         SkewnessLabel = QLabel('Skewness', parent=gridWidget)
@@ -654,32 +656,44 @@ class Ui_mainWindow(object):
         self.BVDax1.legend(['I+', 'I-'])
 
         # count = range(len(self.bvd.bvdList))
-        # if self.RButStatus == 'R1':
-        #     self.BVDax2.scatter(self.bvdCount, self.bvd.R1List, color='b', zorder=3)
-        # else:
-        #     self.BVDax2.scatter(self.bvdCount, self.bvd.R2List, color='b', zorder=3)
+        if self.RButStatus == 'R1':
+            self.BVDax2.scatter(self.bvdCount, self.bvd.R1List, color='b', zorder=3)
+        else:
+            self.BVDax2.scatter(self.bvdCount, self.bvd.R2List, color='b', zorder=3)
 
         self.BVDax2.set_title(f'BVD [{self.RButStatus}]')
         self.BVDax2.set_xlabel('Count')
         self.BVDax2.set_ylabel('Resistance [ppm]')
 
         self.BVDtwin2 = self.BVDax2.twinx()
-        self.BVDtwin2.plot(self.bvdCount, 3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-        self.BVDtwin2.plot(self.bvdCount, -3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-        self.BVDtwin2.scatter(self.bvdCount, self.bvd.bvdList, color='r')
-        self.BVDtwin2.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
+        if self.bvd.bvdList:
+            # self.BVDtwin2.plot(self.bvdCount, 3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            # self.BVDtwin2.plot(self.bvdCount, -3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            self.BVDtwin2.plot(self.bvdCount, 3*np.std(self.bvd.bvdList)*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            self.BVDtwin2.plot(self.bvdCount, -3*np.std(self.bvd.bvdList)*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            self.BVDtwin2.scatter(self.bvdCount, self.bvd.bvdList, color='r')
+            # self.BVDtwin2.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
+
+            self.BVDtwin2.set_ylim([-3.2*np.std(self.bvd.bvdList), 3.2*np.std(self.bvd.bvdList)])
+            self.BVDax3.hist(self.bvd.bvdList, bins=20, orientation='horizontal', color='r', edgecolor='k')
+            # self.BVDax3.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
+            self.BVDax3.set_ylim([-3.2*np.std(self.bvd.bvdList), 3.2*np.std(self.bvd.bvdList)])
+            self.BVDax3.set_title('BVD Histogram')
+        else:
+            self.BVDax2.cla()
+            self.BVDax3.cla()
+
         self.BVDtwin2.set_ylabel('BVD [V]')
         self.BVDax2.set_axisbelow(True)
         self.BVDax2.grid(axis='x',zorder=0)
         self.BVDtwin2.set_axisbelow(True)
         self.BVDtwin2.grid(zorder=0)
 
-        self.BVDax3.hist(self.bvd.bvdList, bins=20, orientation='horizontal', color='r', edgecolor='k')
-        self.BVDax3.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
-        self.BVDax3.set_title('BVD Histogram')
-
         self.BVDfig.tight_layout()
         self.BVDcanvas.draw()
+
+        self.SkewnessEdit.setText(str("{:.3f}".format(skewness(self.bvd.bvdList))))
+        self.KurtosisEdit.setText(str("{:.3f}".format(kurtosis(self.bvd.bvdList))))
 
     def plotAllan(self):
         if self.plottedAllan:
@@ -832,10 +846,8 @@ class Ui_mainWindow(object):
         self.MDSSButton.setStyleSheet("color: white; background-color: red")
         self.MDSSButton.setEnabled(True)
 
-        self.SkewnessEdit.setText(str("{:.3f}".format(skewness(self.bvd.bvdList))))
-        self.KurtosisEdit.setText(str("{:.3f}".format(kurtosis(self.bvd.bvdList))))
-
         self.bvdCount = []
+        self.plotCountCombo.clear()
         for i in range(len(self.bvd.bvdList)):
             self.bvdCount.append(i)
             self.plotCountCombo.addItem(f'Count {i}')
@@ -909,6 +921,8 @@ class Ui_mainWindow(object):
         self.deletedCount = []
         self.deletedBVD = []
         self.bvdCount = []
+        self.deletedR1 = []
+        self.deletedR2
 
         self.plotCountCombo.clear()
 
@@ -1067,6 +1081,11 @@ class Ui_mainWindow(object):
             self.plotCountCombo.removeItem(curIndex)
             self.bvd.bvdList.pop(curIndex)
             self.bvdCount.pop(curIndex)
+
+            self.deletedR1.append(self.bvd.R1List[curIndex])
+            self.deletedR2.append(self.bvd.R2List[curIndex])
+            self.bvd.R1List.pop(curIndex)
+            self.bvd.R2List.pop(curIndex)
             self.plotBVD()
 
     def restoreDeleted(self, loop=None):
@@ -1074,13 +1093,17 @@ class Ui_mainWindow(object):
             self.plotCountCombo.insertItem(self.deletedIndex[-1], f'Count {self.deletedCount[-1]}')
             self.bvdCount.insert(self.deletedIndex[-1], self.deletedCount[-1])
             self.bvd.bvdList.insert(self.deletedIndex[-1], self.deletedBVD[-1])
+            self.bvd.R1List.insert(self.deletedIndex[-1], self.deletedR1[-1])
+            self.bvd.R2List.insert(self.deletedIndex[-1], self.deletedR2[-1])
             self.deletedIndex.pop(-1)
             self.deletedCount.pop(-1)
             self.deletedBVD.pop(-1)
+            self.deletedR1.pop(-1)
+            self.deletedR2.pop(-1)
         if loop is None:
             self.plotBVD()
 
-    def replotDeleted(self):
+    def replotAll(self):
         looped = False
         while(self.deletedCount):
             self.restoreDeleted(loop=True)
