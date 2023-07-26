@@ -94,6 +94,7 @@ class Ui_mainWindow(object):
 
         self.bvdCount = []
         self.deletedIndex = []
+        self.deletedCount = []
         self.deletedBVD = []
 
     # Set up for the labels
@@ -815,9 +816,6 @@ class Ui_mainWindow(object):
         self.BVDtwin2.set_axisbelow(True)
         self.BVDtwin2.grid(zorder=0)
 
-        for i in count:
-            self.plotCountCombo.addItem(f'Count {i}')
-
         self.BVDax3.hist(self.bvd.bvdList, bins=20, orientation='horizontal', color='r', edgecolor='k')
         self.BVDax3.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
         self.BVDax3.set_title('BVD Histogram')
@@ -976,8 +974,10 @@ class Ui_mainWindow(object):
         self.SkewnessEdit.setText(str("{:.3f}".format(skewness(self.bvd.bvdList))))
         self.KurtosisEdit.setText(str("{:.3f}".format(kurtosis(self.bvd.bvdList))))
 
+        self.bvdCount = []
         for i in range(len(self.bvd.bvdList)):
             self.bvdCount.append(i)
+            self.plotCountCombo.addItem(f'Count {i}')
 
         self.stdR(self.RButStatus)
 
@@ -1045,8 +1045,12 @@ class Ui_mainWindow(object):
         self.KurtosisEdit.setText("")
 
         self.deletedIndex = []
+        self.deletedCount = []
         self.deletedBVD = []
         self.bvdCount = []
+
+        self.plotCountCombo.clear()
+
         if self.plottedBVD or self.plottedAllan:
             self.plottedBVD = False
             self.plottedAllan = False
@@ -1196,28 +1200,38 @@ class Ui_mainWindow(object):
     def deleteBut(self):
         if self.plottedBVD:
             curIndex = self.plotCountCombo.currentIndex()
-            self.deletedIndex.append(int(self.plotCountCombo.currentText().replace('Count ', '')))
+            self.deletedIndex.append(curIndex)
+            self.deletedCount.append(int(self.plotCountCombo.currentText().replace('Count ', '')))
             self.deletedBVD.append(self.bvd.bvdList[curIndex])
             self.plotCountCombo.removeItem(curIndex)
             self.bvd.bvdList.pop(curIndex)
+            self.bvdCount.pop(curIndex)
             self.plotBVD()
 
     def restoreDeleted(self):
-        if self.deletedIndex:
-            for i in range(self.plotCountCombo.count()):
-                if self.deletedBVD[-1] < int(self.plotCountCombo.itemText(i).replace('Count ', '')):
-                    self.plotCountCombo.insertItem(i, f'Count {self.deletedIndex[-1]}')
-                    self.bvd.bvdList.insert(i, self.deletedBVD[-1])
-                    self.deletedIndex.pop(-1)
-                    self.deletedBVD.pop(-1)
-                    self.plotBVD()
-                    return
-            self.plotCountCombo.insertItem(self.plotCountCombo.count()+1, f'Count {self.deletedIndex[-1]}')
-            self.bvd.bvdList.insert(self.plotCountCombo.count()+1, self.deletedBVD[-1])
+        if self.deletedCount:
+            self.plotCountCombo.insertItem(self.deletedIndex[-1], f'Count {self.deletedCount[-1]}')
             self.deletedIndex.pop(-1)
-            self.deletedBVD.pop(-1)
-            self.plotBVD()
-            return
+            self.deletedCount.pop(-1)
+
+
+
+
+
+            # for i in range(self.plotCountCombo.count()):
+            #     if self.deletedBVD[-1] < int(self.plotCountCombo.itemText(i).replace('Count ', '')):
+            #         self.plotCountCombo.insertItem(i, f'Count {self.deletedCount[-1]}')
+            #         self.bvd.bvdList.insert(i, self.deletedBVD[-1])
+            #         self.deletedCount.pop(-1)
+            #         self.deletedBVD.pop(-1)
+            #         self.plotBVD()
+            #         return
+            # self.plotCountCombo.insertItem(self.plotCountCombo.count()+1, f'Count {self.deletedCount[-1]}')
+            # self.bvd.bvdList.insert(self.plotCountCombo.count()+1, self.deletedBVD[-1])
+            # self.deletedCount.pop(-1)
+            # self.deletedBVD.pop(-1)
+            # self.plotBVD()
+            # return
 
     def replotDeleted(self):
         self.plotCountCombo.clear()
