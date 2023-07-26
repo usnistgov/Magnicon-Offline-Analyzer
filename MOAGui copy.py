@@ -917,7 +917,7 @@ class Ui_mainWindow(object):
             self.plottedAllan = False
             self.clearPlots()
 
-    def stdR(self, R):
+    def stdR(self, R: str):
         if R == 'R1':
             self.R1ValueLineEdit.setText(str("{:5.10f}".format(self.bvd.R1)))
             self.R2ValueLineEdit.setText(str("{:5.10f}".format(self.dat.R2NomVal)))
@@ -1088,7 +1088,7 @@ class Ui_mainWindow(object):
         if looped:
             self.plotBVD()
 
-def is_overlapping(overlapping):
+def is_overlapping(overlapping: str) -> bool:
     if overlapping == 'overlapping':
         return True
     else:

@@ -1,16 +1,16 @@
 from numpy import sum, sqrt
 
-def skewness(array):
+def skewness(array: list):
     r1, r2, l = default(array)
     return r2 * (sqrt(l * (l-1))/(l-2))
 
 
 
-def kurtosis(array):
+def kurtosis(array: list):
     r1, r2, l = default(array)
     return ((((r1-3)*(l+1))+6) * (l-1) * 1/((l-2)*(l-3))) + 3
 
-def default(array):
+def default(array: list):
     l = len(array)
     s = sum(array)
     temp1 = []

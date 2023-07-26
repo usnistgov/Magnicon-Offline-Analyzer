@@ -17,7 +17,7 @@ else:
 
 # Class for parsing CCC files
 class magnicon_ccc:
-    def __init__(self, text):
+    def __init__(self, text: str):
         # Reads in file and checks that it is a .txt file
         if '.txt' in text:
             # If the file is a .txt file, it will parse it along with the bvd and cfg files after it
@@ -238,7 +238,7 @@ class magnicon_ccc:
             self.measTime = self.fullCyc*self.measCyc
             self.measTimeStamp = self.sec2ts(self.measTime)
 
-    def sec2ts(self, sec):
+    def sec2ts(self, sec: float):
         a = [3600, 60, 60]
         ts = []
         for i in a:

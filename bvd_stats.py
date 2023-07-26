@@ -5,7 +5,7 @@ bp = os.getcwd()
 
 # Class that does calculations on the raw data
 class bvd_stat:
-    def __init__(self, text, T1, T2, P1, P2):
+    def __init__(self, text: str, T1: float, T2: float, P1: float, P2: float):
         mag = magnicon_ccc(text)
         i = 0
         self.V1 = []
@@ -82,11 +82,7 @@ class bvd_stat:
         self.results(mag, T1, T2, P1, P2)
 
     # Results from data
-    def results(self, mag, T1, T2, P1, P2):
-        # Only here for VSCode, delete when done
-        if 1 != 1:
-            mag = magnicon_ccc()
-        
+    def results(self, mag: magnicon_ccc, T1: float, T2: float, P1: float, P2: float):
         self.k = mag.deltaNApN1/mag.NA
         R1corr = (mag.R1alpha*(T1-mag.R1stdTemp) + mag.R1beta*(T1-mag.R1stdTemp)**2) - (mag.R1pcr*(P1-101325))/1000
         R2corr = (mag.R2alpha*(T2-mag.R2stdTemp) + mag.R2beta*(T2-mag.R2stdTemp)**2) - (mag.R2pcr*(P2-101325))/1000

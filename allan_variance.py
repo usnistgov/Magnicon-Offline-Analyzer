@@ -5,7 +5,7 @@ import os
 bp = os.getcwd()
 
 class allan:
-    def __init__(self, input_array, allan_type, overlapping):
+    def __init__(self, input_array: list, allan_type: str, overlapping: bool):
 
         tau = floor(len(input_array)/2)
         
@@ -17,7 +17,7 @@ class allan:
 
         self.x_fit, self.y_fit = fit_line(self.samples, self.tau_array)
 
-    def allTau(self, input_array, tau, overlapping):
+    def allTau(self, input_array: list, tau: int, overlapping: bool):
         self.samples = []
         self.tau_array = []
         if overlapping:
@@ -31,7 +31,7 @@ class allan:
                 tau_out = self.non_overlapping(input_array, i+1)
                 self.tau_array.append(sqrt(tau_out))
     
-    def twoCaretn(self, input_array, tau, overlapping):
+    def twoCaretn(self, input_array: list, tau: int, overlapping: bool):
         self.samples = []
         self.tau_array = []
         if overlapping:
@@ -47,7 +47,7 @@ class allan:
                     self.samples.append(i+1)
                     self.tau_array.append(sqrt(tau_out))
 
-    def non_overlapping(self, input_array, tau):
+    def non_overlapping(self, input_array: list, tau: int):
         N = floor(len(input_array)/tau)
         prev_array = input_array
         prev_mean = 0
@@ -65,7 +65,7 @@ class allan:
         else:
             return False
     
-    def overlapping(self, input_array, tau):
+    def overlapping(self, input_array: list, tau: int):
         csum = self.cumsum(input_array)
         i = 0
         n = 1
@@ -93,7 +93,7 @@ class allan:
         temp_array.append((temp1 - temp2 + temp3)**2)
         return ((sum(temp_array)/n)/(tau*2*tau))
     
-    def cumsum(self, input_array):
+    def cumsum(self, input_array: list):
         N = len(input_array)
         cumsum = []
         for i in range(N):
@@ -101,13 +101,13 @@ class allan:
             cumsum.append(sum(temp_array))
         return cumsum
 
-def LabViewArray(input_array, index):
+def LabViewArray(input_array: list, index: int):
     if index < len(input_array):
         return input_array[index]
     else:
         return 0
     
-def fit_line(samples, tau_array):
+def fit_line(samples: list, tau_array: list):
     end = floor(len(samples)/2)
     m = (tau_array[end]-tau_array[0])/(samples[end]-samples[0])
     c = tau_array[0] - m*samples[0]

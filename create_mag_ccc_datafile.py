@@ -6,15 +6,11 @@ bp = os.getcwd()
 
 # Class writes the MDSS.txt file
 class writeDataFile():
-    def __init__(self, text, dat_obj, bvd_stat_obj, RStatus, R1Temp, R2Temp, R1Pres, R2Pres, I, polarity, system, probe):
+    def __init__(self, text: str, dat_obj: magnicon_ccc, bvd_stat_obj: bvd_stat, RStatus: str, R1Temp: float, R2Temp: float, R1Pres: float,
+                R2Pres:float, I: str, polarity: str, system: str, probe: str):
         # Creates the MDSS file name according to the input .txt file's name
         dataFileName = text.replace('.txt', "")
         dataFileName = f'{dataFileName}_MDSS.txt'
-
-        # For VSCode, delete when done
-        if 1 != 1:
-            bvd_stat_obj = bvd_stat()
-            dat_obj = magnicon_ccc()
         
         # Writes the data to the MDSS file
         os.chdir(bp + r'\MDSS Folder')
