@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib.ticker import StrMethodFormatter, NullFormatter
-from allan_variance import allan
+from allan_deviation import allan
 import numpy as np
 
 class Ui_mainWindow(object):
@@ -41,6 +41,7 @@ class Ui_mainWindow(object):
         self.tabWidget = QTabWidget(parent=self.centralwidget)
         self.tabWidget.setGeometry(QRect(0, 0, 961, 791))
         self.SetResTab = QWidget()
+        self.tabWidget.addTab(self.SetResTab, "")
 
         self.setLabels()
         self.setLineEdits()
@@ -50,6 +51,7 @@ class Ui_mainWindow(object):
         self.setButtons()
         self.BVDTabSetUp()
         self.AllanTabSetUp()
+        self.FourierTabSetUp()
 
         self.tabWidget.currentChanged.connect(self.tabIndexChanged)
         
@@ -394,7 +396,6 @@ class Ui_mainWindow(object):
         self.txtFileLineEdit.returnPressed.connect(self.folderEdited)
 
     def BVDTabSetUp(self):
-        self.tabWidget.addTab(self.SetResTab, "")
         self.BVDTab = QWidget()
         self.tabWidget.addTab(self.BVDTab, "")
         self.BVDVerticalLayoutWidget = QWidget(parent=self.BVDTab)
@@ -494,6 +495,13 @@ class Ui_mainWindow(object):
         self.AllanHorizontalLayout.addItem(self.AllanHorizontalSpacer)
         self.AllanHorizontalLayout.addWidget(self.OverlappingComboBox)
         self.AllanVerticalLayout.addLayout(self.AllanHorizontalLayout)
+
+    def FourierTabSetUp(self):
+        self.FourierTab = QWidget()
+        self.tabWidget.addTab(self.FourierTab, "")
+        self.FouierVerticalLayoutWidget = QWidget(parent=self.FourierTab)
+        self.FouierVerticalLayoutWidget.setGeometry(QRect(0, 0, 951, 761))
+        self.FouierVerticalLayout = QVBoxLayout(self.FouierVerticalLayoutWidget)
 
     def setButtons(self):
         self.StandardRBut = QPushButton(parent=self.SetResTab)
@@ -633,6 +641,7 @@ class Ui_mainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.BVDTab), _translate("mainWindow", "BVD"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.AllanTab), _translate("mainWindow", "Allan Dev."))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.FourierTab), _translate("mainWindow", "Fourier/Power Spec."))
         self.txtFileLabel.setText(_translate("mainWindow", ".txt File"))
         self.VMeanChkLabel.setText(_translate("mainWindow", "Mean Chk [V]"))
         self.StdDevChkLabel.setText(_translate("mainWindow", "Std. Dev. Chk"))
