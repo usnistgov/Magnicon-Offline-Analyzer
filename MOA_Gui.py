@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib.ticker import StrMethodFormatter, NullFormatter
-from allan_variance import allan
+from allan_deviation import allan
 import numpy as np
 
 class Window(QMainWindow):
