@@ -1101,8 +1101,8 @@ class Ui_mainWindow(object):
             self.deletedBVD.pop(-1)
             self.deletedR1.pop(-1)
             self.deletedR2.pop(-1)
-        if loop is None:
-            self.plotBVD()
+            if loop is None:
+                self.plotBVD()
 
     def replotAll(self):
         looped = False
