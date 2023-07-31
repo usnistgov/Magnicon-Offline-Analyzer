@@ -28,7 +28,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.ticker import StrMethodFormatter, NullFormatter, MaxNLocator
 from allan_deviation import allan
-import numpy as np
+from numpy import sqrt, std, ones
 
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
@@ -680,25 +680,28 @@ class Ui_mainWindow(object):
         else:
             self.BVDax2.scatter(self.bvdCount, self.bvd.R2List, color='b', zorder=3)
 
-        self.BVDax2.set_title(f'BVD [{self.RButStatus}]')
+        self.BVDax2.set_title('BVD')
         self.BVDax2.set_xlabel('Count')
-        self.BVDax2.set_ylabel('Resistance [ppm]')
+        if self.RButStatus == 'R1':
+            self.BVDax2.set_ylabel('R2 [ppm]')
+        else:
+            self.BVDax2.set_ylabel('R1 [ppm]')
 
         self.BVDtwin2 = self.BVDax2.twinx()
         self.BVDtwin2.tick_params(direction='in')
         if self.bvd.bvdList:
-            # self.BVDtwin2.plot(self.bvdCount, 3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-            # self.BVDtwin2.plot(self.bvdCount, -3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-            self.BVDtwin2.plot(self.bvdCount, 3*np.std(self.bvd.bvdList)*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-            self.BVDtwin2.plot(self.bvdCount, -3*np.std(self.bvd.bvdList)*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            # self.BVDtwin2.plot(self.bvdCount, 3*self.bvd.std*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            # self.BVDtwin2.plot(self.bvdCount, -3*self.bvd.std*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            self.BVDtwin2.plot(self.bvdCount, 3*std(self.bvd.bvdList)*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            self.BVDtwin2.plot(self.bvdCount, -3*std(self.bvd.bvdList)*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
             self.BVDtwin2.scatter(self.bvdCount, self.bvd.bvdList, color='r')
             # self.BVDtwin2.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
-            self.BVDtwin2.set_ylim([-3.2*np.std(self.bvd.bvdList), 3.2*np.std(self.bvd.bvdList)])
+            self.BVDtwin2.set_ylim([-3.2*std(self.bvd.bvdList), 3.2*std(self.bvd.bvdList)])
 
-            self.BVDax3.hist(self.bvd.bvdList, bins=20, orientation='horizontal', color='r', edgecolor='k')
+            self.BVDax3.hist(self.bvd.bvdList, bins=self.bins, orientation='horizontal', color='r', edgecolor='k')
             self.BVDax3.xaxis.set_major_locator(MaxNLocator(integer=True))
             # self.BVDax3.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
-            self.BVDax3.set_ylim([-3.2*np.std(self.bvd.bvdList), 3.2*np.std(self.bvd.bvdList)])
+            self.BVDax3.set_ylim([-3.2*std(self.bvd.bvdList), 3.2*std(self.bvd.bvdList)])
             self.BVDax3.set_title('BVD Histogram')
         else:
             self.BVDax2.cla()
@@ -729,26 +732,41 @@ class Ui_mainWindow(object):
         self.Allanax1.xaxis.set_minor_formatter(StrMethodFormatter('{x:.0f}'))
         self.Allanax1.set_yscale('log')
 
-        self.Allanax1.set_ylim([1E-9, 1E-8])
+        # self.Allanax1.set_ylim([1E-9, 1E-8])
 
-        x = False
-        if x and self.validFile:
-            bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
-            C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
-            C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
-            self.Allanax1.plot(bvd.samples, bvd.tau_array, C1.samples, C1.tau_array, C2.samples, C2.tau_array)
-        elif not x and self.validFile:
-            bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
-            self.Allanax1.plot(bvd.samples, bvd.tau_array)
+        bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
+        C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
+        C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
+        I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
+        I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
+
+        self.Allanax1.plot(bvd.samples, bvd.tau_array)
+        self.Allanax2.plot(C1.samples, C1.tau_array)
+        self.Allanax3.plot(C2.samples, C2.tau_array)
+        self.Allanax4.plot(I1.samples, I1.tau_array, color='b')
+        self.Allanax4.plot(I2.samples, I2.tau_array, color='r')
 
         if self.validFile:
-            self.Allanax1.set_title(f'Allan Deviation vs. Samples [{self.RButStatus}]')
+            self.Allanax1.set_title('Allan Deviation vs. Samples')
             self.Allanax1.set_ylabel('Allan Deviation')
             self.Allanax1.set_xlabel('\u03C4 (samples)')
 
-            self.Allanax2.set_title('Power Spectrum')
-            self.Allanax2.set_ylabel('Power Spectrum from FFT')
-            self.Allanax2.set_xlabel('Frequency (Hz)')
+            self.Allanax2.set_title('Allan Deviation of C1')
+            self.Allanax2.set_ylabel('Allan Deviation')
+            self.Allanax2.set_xlabel('\u03C4 (samples)')
+
+            self.Allanax3.set_title('Allan Deviation of C2')
+            self.Allanax3.set_ylabel('Allan Deviation')
+            self.Allanax3.set_xlabel('\u03C4 (samples)')
+
+            self.Allanax4.set_title('Allan Deviation of Bridge Voltage')
+            self.Allanax4.set_ylabel('Allan Deviation')
+            self.Allanax4.set_xlabel('\u03C4 (samples)')
+            self.Allanax4.legend(['I+', 'I-'])
+
+            # self.Allanax2.set_title('Power Spectrum')
+            # self.Allanax2.set_ylabel('Power Spectrum from FFT')
+            # self.Allanax2.set_xlabel('Frequency (Hz)')
 
             self.Allanfig.tight_layout()
             self.AllanCanvas.draw()
@@ -756,11 +774,14 @@ class Ui_mainWindow(object):
     def clearPlots(self):
         self.BVDax1.cla()
         self.BVDax2.cla()
+        # try:
+        #     self.BVDtwin2.remove()
+        # except KeyError:
+        #     pass
+
+        # KEY ERROR
         try:
             self.BVDtwin2.remove()
-        except KeyError:
-            pass
-        try:
             self.BVDtwin2.set_visible(False)
         except AttributeError:
             pass
@@ -770,6 +791,8 @@ class Ui_mainWindow(object):
 
         self.Allanax1.cla()
         self.Allanax2.cla()
+        self.Allanax3.cla()
+        self.Allanax4.cla()
         self.AllanCanvas.draw()
 
     def RButClicked(self):
@@ -872,6 +895,11 @@ class Ui_mainWindow(object):
         for i in range(len(self.bvd.bvdList)):
             self.bvdCount.append(i)
             self.plotCountCombo.addItem(f'Count {i}')
+
+        if len(self.bvd.bvdList) > 400:
+            self.bins = int(sqrt(len(self.bvd.bvdList)))
+        else:
+            self.bins = 20
 
         self.stdR(self.RButStatus)
 
