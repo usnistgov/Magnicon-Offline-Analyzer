@@ -26,7 +26,7 @@ from tkinter import filedialog
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from matplotlib.ticker import StrMethodFormatter, NullFormatter
+from matplotlib.ticker import StrMethodFormatter, NullFormatter, MaxNLocator
 from allan_deviation import allan
 import numpy as np
 
@@ -407,6 +407,9 @@ class Ui_mainWindow(object):
         self.BVDax1 = self.BVDfig.add_subplot(2,1,1)
         self.BVDax2 = self.BVDfig.add_subplot(2,2,3)
         self.BVDax3 = self.BVDfig.add_subplot(2,2,4)
+        self.BVDax1.tick_params(direction='in')
+        self.BVDax2.tick_params(direction='in')
+        self.BVDax3.tick_params(direction='in')
         self.BVDcanvas = FigureCanvas(self.BVDfig)
         self.BVDVerticalLayout.addWidget(NavigationToolbar(self.BVDcanvas))
         self.BVDVerticalLayout.addWidget(self.BVDcanvas)
@@ -469,8 +472,14 @@ class Ui_mainWindow(object):
         self.AllanVerticalLayout = QVBoxLayout(self.AllanVerticalLayoutWidget)
         
         self.Allanfig = plt.figure()
-        self.Allanax1 = self.Allanfig.add_subplot(2,1,1)
-        self.Allanax2 = self.Allanfig.add_subplot(2,1,2)
+        self.Allanax1 = self.Allanfig.add_subplot(2,2,1)
+        self.Allanax2 = self.Allanfig.add_subplot(2,2,2)
+        self.Allanax3 = self.Allanfig.add_subplot(2,2,3)
+        self.Allanax4 = self.Allanfig.add_subplot(2,2,4)
+        self.Allanax1.tick_params(axis='both', which='both', direction='in')
+        self.Allanax2.tick_params(direction='in')
+        self.Allanax3.tick_params(direction='in')
+        self.Allanax4.tick_params(direction='in')
         self.AllanCanvas = FigureCanvas(self.Allanfig)
         self.AllanVerticalLayout.addWidget(NavigationToolbar(self.AllanCanvas))
         self.AllanVerticalLayout.addWidget(self.AllanCanvas)
@@ -676,6 +685,7 @@ class Ui_mainWindow(object):
         self.BVDax2.set_ylabel('Resistance [ppm]')
 
         self.BVDtwin2 = self.BVDax2.twinx()
+        self.BVDtwin2.tick_params(direction='in')
         if self.bvd.bvdList:
             # self.BVDtwin2.plot(self.bvdCount, 3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
             # self.BVDtwin2.plot(self.bvdCount, -3*self.bvd.std*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
@@ -683,9 +693,10 @@ class Ui_mainWindow(object):
             self.BVDtwin2.plot(self.bvdCount, -3*np.std(self.bvd.bvdList)*np.ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
             self.BVDtwin2.scatter(self.bvdCount, self.bvd.bvdList, color='r')
             # self.BVDtwin2.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
-
             self.BVDtwin2.set_ylim([-3.2*np.std(self.bvd.bvdList), 3.2*np.std(self.bvd.bvdList)])
+
             self.BVDax3.hist(self.bvd.bvdList, bins=20, orientation='horizontal', color='r', edgecolor='k')
+            self.BVDax3.xaxis.set_major_locator(MaxNLocator(integer=True))
             # self.BVDax3.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
             self.BVDax3.set_ylim([-3.2*np.std(self.bvd.bvdList), 3.2*np.std(self.bvd.bvdList)])
             self.BVDax3.set_title('BVD Histogram')
@@ -728,7 +739,7 @@ class Ui_mainWindow(object):
             self.Allanax1.plot(bvd.samples, bvd.tau_array, C1.samples, C1.tau_array, C2.samples, C2.tau_array)
         elif not x and self.validFile:
             bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
-            self.Allanax1.plot(bvd.samples, bvd.tau_array, bvd.samples, bvd.y_fit)
+            self.Allanax1.plot(bvd.samples, bvd.tau_array)
 
         if self.validFile:
             self.Allanax1.set_title(f'Allan Deviation vs. Samples [{self.RButStatus}]')
