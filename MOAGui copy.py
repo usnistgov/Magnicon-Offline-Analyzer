@@ -75,6 +75,7 @@ class Ui_mainWindow(object):
         self.txtFilePath = ''
         self.plottedBVD = False
         self.plottedAllan = False
+        self.plottedFourier = False
         self.data = False
 
         self.R1Temp = 25.0000
@@ -457,13 +458,6 @@ class Ui_mainWindow(object):
         grid.addWidget(KurtosisLabel, 1, 7)
         grid.addWidget(self.KurtosisEdit, 2, 7)
 
-        # grid.addWidget(SkewnessLabel, 1, 1)
-        # grid.addItem(Spacer1, 1, 2)
-        # grid.addWidget(KurtosisLabel, 1, 3)
-        # grid.addWidget(self.SkewnessEdit, 2, 1)
-        # grid.addItem(Spacer1, 2, 2)
-        # grid.addWidget(self.KurtosisEdit, 2, 3)
-
     def AllanTabSetUp(self):
         self.AllanTab = QWidget()
         self.tabWidget.addTab(self.AllanTab, "")
@@ -508,9 +502,18 @@ class Ui_mainWindow(object):
     def FourierTabSetUp(self):
         self.FourierTab = QWidget()
         self.tabWidget.addTab(self.FourierTab, "")
-        self.FouierVerticalLayoutWidget = QWidget(parent=self.FourierTab)
-        self.FouierVerticalLayoutWidget.setGeometry(QRect(0, 0, 951, 761))
-        self.FouierVerticalLayout = QVBoxLayout(self.FouierVerticalLayoutWidget)
+        self.FourierVerticalLayoutWidget = QWidget(parent=self.FourierTab)
+        self.FourierVerticalLayoutWidget.setGeometry(QRect(0, 0, 951, 761))
+        self.FourierVerticalLayout = QVBoxLayout(self.FourierVerticalLayoutWidget)
+
+        self.Fourierfig = plt.figure()
+        self.FourierAx = self.Fourierfig.add_subplot(2,1,1)
+        self.FourierAx.tick_params(direction='in')
+        self.PowerSpecAx = self.Fourierfig.add_subplot(2,1,2)
+        self.PowerSpecAx.tick_params(direction='in')
+        self.FourierCanvas = FigureCanvas(self.Fourierfig)
+        self.FourierVerticalLayout.addWidget(NavigationToolbar(self.FourierCanvas))
+        self.FourierVerticalLayout.addWidget(self.FourierCanvas)
 
     def setButtons(self):
         self.StandardRBut = QPushButton(parent=self.SetResTab)
@@ -713,7 +716,8 @@ class Ui_mainWindow(object):
         self.BVDtwin2.set_axisbelow(True)
         self.BVDtwin2.grid(zorder=0)
 
-        self.BVDfig.tight_layout()
+        # self.BVDfig.tight_layout()
+        self.BVDfig.set_tight_layout(True)
         self.BVDcanvas.draw()
 
         self.SkewnessEdit.setText(str("{:.3f}".format(skewness(self.bvd.bvdList))))
@@ -764,26 +768,33 @@ class Ui_mainWindow(object):
             self.Allanax4.set_xlabel('\u03C4 (samples)')
             self.Allanax4.legend(['I+', 'I-'])
 
-            # self.Allanax2.set_title('Power Spectrum')
-            # self.Allanax2.set_ylabel('Power Spectrum from FFT')
-            # self.Allanax2.set_xlabel('Frequency (Hz)')
-
-            self.Allanfig.tight_layout()
+            self.Allanfig.set_tight_layout(True)
             self.AllanCanvas.draw()
+
+    def plotFourier(self):
+        if self.plottedFourier:
+            self.clearPlots()
+
+        # self.plottedFourier = True
+
+        self.FourierAx.set_title('Fast Fourier Transform')
+        self.FourierAx.set_ylabel('Magnitude')
+        self.FourierAx.set_xlabel('Frequency (Hz)')
+
+        self.PowerSpecAx.set_title('Power Spectrum')
+        self.PowerSpecAx.set_ylabel('Power Spectrum from FFT')
+        self.PowerSpecAx.set_xlabel('Frequency (Hz)')
+
+        self.Fourierfig.set_tight_layout(True)
+        self.FourierCanvas.draw()
 
     def clearPlots(self):
         self.BVDax1.cla()
         self.BVDax2.cla()
-        # try:
-        #     self.BVDtwin2.remove()
-        # except KeyError:
-        #     pass
-
-        # KEY ERROR
         try:
             self.BVDtwin2.remove()
             self.BVDtwin2.set_visible(False)
-        except AttributeError:
+        except (AttributeError, KeyError):
             pass
         self.BVDax3.cla()
         # self.fig.tight_layout()
@@ -975,9 +986,10 @@ class Ui_mainWindow(object):
 
         self.plotCountCombo.clear()
 
-        if self.plottedBVD or self.plottedAllan:
+        if self.plottedBVD or self.plottedAllan or self.plottedFourier:
             self.plottedBVD = False
             self.plottedAllan = False
+            self.plottedFourier = False
             self.clearPlots()
 
     def stdR(self, R: str):
@@ -1120,6 +1132,8 @@ class Ui_mainWindow(object):
             self.plotBVD()
         elif self.tabWidget.currentIndex() == 2 and self.validFile:
             self.plotAllan()
+        elif self.tabWidget.currentIndex() == 3 and self.validFile:
+            self.plotFourier()
 
     def deleteBut(self):
         if self.plottedBVD and self.plotCountCombo.count():
@@ -1151,6 +1165,7 @@ class Ui_mainWindow(object):
             self.deletedR2.pop(-1)
             if loop is None:
                 self.plotBVD()
+            self.testefsf
 
     def replotAll(self):
         looped = False
