@@ -2,18 +2,22 @@ from time import mktime
 from datetime import datetime, timedelta
 import sys, os
 from numpy import std, floor
+
 bp = os.getcwd()
-if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
-    sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
-    from ResDataBase import ResData
-else:
-    os.chdir('..')
-    os.chdir('ResDatabase')
-    ResDataDir = os.getcwd()
-    os.chdir('..')
-    os.chdir('Magnicon-Offline-Analyzer')
-    sys.path.append(ResDataDir)
-    from ResDataBase import ResData
+# if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
+#     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
+#     from ResDataBase import ResData
+# else:
+#     os.chdir('..')
+#     os.chdir('ResDatabase')
+#     ResDataDir = os.getcwd()
+#     os.chdir('..')
+#     os.chdir('Magnicon-Offline-Analyzer')
+#     sys.path.append(ResDataDir)
+#     from ResDataBase import ResData
+
+# Put ResDataBase.py in branch to use on non-NIST computers
+from ResDataBase import ResData
 
 # Class for parsing CCC files
 class magnicon_ccc:
@@ -208,10 +212,11 @@ class magnicon_ccc:
 
     # Calculations using the parsed data
     def calculations(self):
-        try:
-            R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
-        except FileNotFoundError:
-            R = ResData(ResDataDir)
+        # try:
+        #     R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
+        # except FileNotFoundError:
+        #     R = ResData(ResDataDir)
+        R = ResData(bp)
         self.R1Pred = R.predictedValueUnix(self.R1SN, self.timeStamp)
         self.R2Pred = R.predictedValueUnix(self.R2SN, self.timeStamp)
         R1index = R.getSNindex(self.R1SN)

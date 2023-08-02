@@ -1,0 +1,3676 @@
+[Number]
+ResNum = 334
+
+[Resistor0]
+CalDate = 0.000000    
+SN = ""
+NomVal = 0.000000    
+CalVal = 0.000000    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 0.000000    
+
+[Resistor1]
+CalDate = 3641169600.000000    
+SN = "1001"
+NomVal = 1.000000    
+CalVal = -0.839754    
+Alpha = 2.114800    
+Beta = -0.523000    
+PCR = 0.004900    
+Drift = -0.010700    
+StdTemp = 25.000000    
+
+[Resistor2]
+CalDate = 3641169600.000000    
+SN = "1002"
+NomVal = 1.000000    
+CalVal = -1.649276    
+Alpha = 2.182000    
+Beta = -0.542900    
+PCR = 0.005800    
+Drift = -0.032700    
+StdTemp = 25.000000    
+
+[Resistor3]
+CalDate = 3641169600.000000    
+SN = "1003"
+NomVal = 1.000000    
+CalVal = 1.016769    
+Alpha = 2.135100    
+Beta = -0.521000    
+PCR = 0.008700    
+Drift = 0.007600    
+StdTemp = 25.000000    
+
+[Resistor4]
+CalDate = 3641169600.000000    
+SN = "1004"
+NomVal = 1.000000    
+CalVal = 0.362664    
+Alpha = 2.169800    
+Beta = -0.523500    
+PCR = 0.007700    
+Drift = -0.005100    
+StdTemp = 25.000000    
+
+[Resistor5]
+CalDate = 3641169600.000000    
+SN = "1005"
+NomVal = 1.000000    
+CalVal = -0.347058    
+Alpha = 2.054200    
+Beta = -0.546700    
+PCR = 0.006000    
+Drift = -0.000400    
+StdTemp = 25.000000    
+
+[Resistor6]
+CalDate = 3641169600.000000    
+SN = "100Gx2"
+NomVal = 100000000000.000000    
+CalVal = -1268.416398    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 5.375200    
+StdTemp = 23.000000    
+
+[Resistor7]
+CalDate = 3641169600.000000    
+SN = "100Gx3"
+NomVal = 100000000000.000000    
+CalVal = -2391.439779    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 2.989800    
+StdTemp = 23.000000    
+
+[Resistor8]
+CalDate = 3641169600.000000    
+SN = "1011101"
+NomVal = 1.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor9]
+CalDate = 3641169600.000000    
+SN = "1014"
+NomVal = 1.000000    
+CalVal = 0.735022    
+Alpha = 2.813200    
+Beta = -0.523400    
+PCR = 0.023500    
+Drift = -0.017900    
+StdTemp = 25.000000    
+
+[Resistor10]
+CalDate = 3641169600.000000    
+SN = "1015"
+NomVal = 1.000000    
+CalVal = -3.660806    
+Alpha = 2.645500    
+Beta = -0.539800    
+PCR = 0.002800    
+Drift = -0.030400    
+StdTemp = 25.000000    
+
+[Resistor11]
+CalDate = 3641169600.000000    
+SN = "1016"
+NomVal = 1.000000    
+CalVal = -2.532379    
+Alpha = 2.078200    
+Beta = -0.537500    
+PCR = 0.023700    
+Drift = -0.003100    
+StdTemp = 25.000000    
+
+[Resistor12]
+CalDate = 3641169600.000000    
+SN = "1017"
+NomVal = 1.000000    
+CalVal = -1.798570    
+Alpha = 2.525100    
+Beta = -0.541100    
+PCR = 0.023600    
+Drift = -0.015500    
+StdTemp = 25.000000    
+
+[Resistor13]
+CalDate = 3641169600.000000    
+SN = "1018"
+NomVal = 1.000000    
+CalVal = -14.214090    
+Alpha = 2.584100    
+Beta = -0.502000    
+PCR = 0.003500    
+Drift = -0.357100    
+StdTemp = 25.000000    
+
+[Resistor14]
+CalDate = 3641169600.000000    
+SN = "1019"
+NomVal = 1.000000    
+CalVal = 0.713224    
+Alpha = 2.324000    
+Beta = -0.506000    
+PCR = 0.006200    
+Drift = 0.077800    
+StdTemp = 25.000000    
+
+[Resistor15]
+CalDate = 3641169600.000000    
+SN = "1020"
+NomVal = 1.000000    
+CalVal = -4.558964    
+Alpha = 2.554200    
+Beta = -0.488000    
+PCR = 0.005800    
+Drift = -0.105100    
+StdTemp = 25.000000    
+
+[Resistor16]
+CalDate = 3641169600.000000    
+SN = "1022"
+NomVal = 1.000000    
+CalVal = 0.811938    
+Alpha = 4.994100    
+Beta = -0.500000    
+PCR = 0.007500    
+Drift = 0.047700    
+StdTemp = 25.000000    
+
+[Resistor17]
+CalDate = 3641169600.000000    
+SN = "1023"
+NomVal = 1.000000    
+CalVal = -1.629633    
+Alpha = 4.983600    
+Beta = -0.533000    
+PCR = 0.007500    
+Drift = -0.004300    
+StdTemp = 25.000000    
+
+[Resistor18]
+CalDate = 3641169600.000000    
+SN = "1024"
+NomVal = 1.000000    
+CalVal = 3.709197    
+Alpha = 3.994100    
+Beta = -0.500000    
+PCR = 0.004200    
+Drift = 0.073500    
+StdTemp = 25.000000    
+
+[Resistor19]
+CalDate = 3641169600.000000    
+SN = "1025"
+NomVal = 1.000000    
+CalVal = -0.913506    
+Alpha = 3.994100    
+Beta = -0.500000    
+PCR = 0.007500    
+Drift = 0.023000    
+StdTemp = 25.000000    
+
+[Resistor20]
+CalDate = 3641169600.000000    
+SN = "1026"
+NomVal = 1.000000    
+CalVal = 0.326168    
+Alpha = 2.994100    
+Beta = -0.500000    
+PCR = 0.006900    
+Drift = 0.033900    
+StdTemp = 25.000000    
+
+[Resistor21]
+CalDate = 3641169600.000000    
+SN = "1027"
+NomVal = 1.000000    
+CalVal = 2.888014    
+Alpha = 2.471000    
+Beta = -0.529800    
+PCR = 0.022600    
+Drift = 0.040500    
+StdTemp = 25.000000    
+
+[Resistor22]
+CalDate = 3641169600.000000    
+SN = "1030603"
+NomVal = 1.000000    
+CalVal = -1.869330    
+Alpha = 0.000300    
+Beta = -0.024500    
+PCR = -0.000700    
+Drift = -0.003500    
+StdTemp = 25.000000    
+
+[Resistor23]
+CalDate = 3641169600.000000    
+SN = "1030605"
+NomVal = 1.000000    
+CalVal = -6.954706    
+Alpha = 0.022900    
+Beta = -0.025700    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor24]
+CalDate = 3641169600.000000    
+SN = "1030607"
+NomVal = 1.000000    
+CalVal = 2.418101    
+Alpha = 0.000600    
+Beta = -0.025000    
+PCR = 0.000100    
+Drift = 0.006100    
+StdTemp = 25.000000    
+
+[Resistor25]
+CalDate = 3641169600.000000    
+SN = "10A"
+NomVal = 10.000000    
+CalVal = 20.526902    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -0.115500    
+StdTemp = 25.000000    
+
+[Resistor26]
+CalDate = 3641169600.000000    
+SN = "10B"
+NomVal = 10.000000    
+CalVal = 4.015113    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -0.165700    
+StdTemp = 25.000000    
+
+[Resistor27]
+CalDate = 3641169600.000000    
+SN = "1100577"
+NomVal = 1.000000    
+CalVal = -29.265164    
+Alpha = 0.037000    
+Beta = -0.023000    
+PCR = 0.000000    
+Drift = 0.005400    
+StdTemp = 25.000000    
+
+[Resistor28]
+CalDate = 3641169600.000000    
+SN = "1100587"
+NomVal = 100000000.000000    
+CalVal = 24.167101    
+Alpha = 2.548300    
+Beta = -0.009800    
+PCR = 0.000000    
+Drift = 0.786900    
+StdTemp = 23.000000    
+
+[Resistor29]
+CalDate = 3641169600.000000    
+SN = "1100820"
+NomVal = 100000000.000000    
+CalVal = 23.846759    
+Alpha = 3.310400    
+Beta = -0.030400    
+PCR = 0.000000    
+Drift = 0.558800    
+StdTemp = 23.000000    
+
+[Resistor30]
+CalDate = 3641169600.000000    
+SN = "1100955"
+NomVal = 10000000.000000    
+CalVal = 16.462386    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.858900    
+StdTemp = 23.000000    
+
+[Resistor31]
+CalDate = 3641169600.000000    
+SN = "1100956"
+NomVal = 10000000.000000    
+CalVal = 16.110596    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.691100    
+StdTemp = 23.000000    
+
+[Resistor32]
+CalDate = 3641169600.000000    
+SN = "1101040"
+NomVal = 1.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor33]
+CalDate = 3641169600.000000    
+SN = "1101151"
+NomVal = 10000000000.000000    
+CalVal = 4226.166662    
+Alpha = 52.597000    
+Beta = 0.142600    
+PCR = 0.000000    
+Drift = -5.854200    
+StdTemp = 23.000000    
+
+[Resistor34]
+CalDate = 3641169600.000000    
+SN = "1101169"
+NomVal = 100000000000000.000000    
+CalVal = -60853.387935    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -768.510000    
+StdTemp = 23.000000    
+
+[Resistor35]
+CalDate = 3641169600.000000    
+SN = "1101173"
+NomVal = 100000000000000.000000    
+CalVal = -47999.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor36]
+CalDate = 3641169600.000000    
+SN = "1102350"
+NomVal = 100000000.000000    
+CalVal = 23.162211    
+Alpha = 1.184300    
+Beta = -0.010900    
+PCR = 0.000000    
+Drift = 3.258400    
+StdTemp = 23.000000    
+
+[Resistor37]
+CalDate = 3641169600.000000    
+SN = "1102351"
+NomVal = 100000000.000000    
+CalVal = 21.761816    
+Alpha = 0.429500    
+Beta = -0.013100    
+PCR = 0.000000    
+Drift = 2.386300    
+StdTemp = 23.000000    
+
+[Resistor38]
+CalDate = 3641169600.000000    
+SN = "1102530"
+NomVal = 10000000.000000    
+CalVal = 10.455223    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1.070100    
+StdTemp = 23.000000    
+
+[Resistor39]
+CalDate = 3641169600.000000    
+SN = "1102531"
+NomVal = 10000000.000000    
+CalVal = 14.082375    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1.928100    
+StdTemp = 23.000000    
+
+[Resistor40]
+CalDate = 3641169600.000000    
+SN = "1121"
+NomVal = 10.000000    
+CalVal = -34.476256    
+Alpha = 0.793900    
+Beta = -0.520000    
+PCR = 0.000000    
+Drift = -0.506900    
+StdTemp = 25.000000    
+
+[Resistor41]
+CalDate = 3641169600.000000    
+SN = "1122"
+NomVal = 10.000000    
+CalVal = -2.978242    
+Alpha = 0.793700    
+Beta = -0.530000    
+PCR = 0.000000    
+Drift = 0.389300    
+StdTemp = 25.000000    
+
+[Resistor42]
+CalDate = 3641169600.000000    
+SN = "1123"
+NomVal = 10.000000    
+CalVal = 18.712636    
+Alpha = 0.793900    
+Beta = -0.520000    
+PCR = 0.000000    
+Drift = 1.712600    
+StdTemp = 25.000000    
+
+[Resistor43]
+CalDate = 3641169600.000000    
+SN = "1124"
+NomVal = 10.000000    
+CalVal = -37.722412    
+Alpha = 0.893700    
+Beta = -0.530000    
+PCR = 0.000000    
+Drift = -0.630500    
+StdTemp = 25.000000    
+
+[Resistor44]
+CalDate = 2714014800.000000    
+SN = "1202T"
+NomVal = 100.000000    
+CalVal = 0.591300    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor45]
+CalDate = 3641169600.000000    
+SN = "1205"
+NomVal = 100.000000    
+CalVal = 20.981622    
+Alpha = -0.280400    
+Beta = -0.035000    
+PCR = 0.000000    
+Drift = 0.100000    
+StdTemp = 25.000000    
+
+[Resistor46]
+CalDate = 3641169600.000000    
+SN = "1206"
+NomVal = 100.000000    
+CalVal = -1.261015    
+Alpha = 0.219700    
+Beta = -0.027000    
+PCR = 0.000000    
+Drift = 0.064800    
+StdTemp = 25.000000    
+
+[Resistor47]
+CalDate = 3641169600.000000    
+SN = "1207"
+NomVal = 100.000000    
+CalVal = 2.069699    
+Alpha = -0.370300    
+Beta = -0.026000    
+PCR = 0.000000    
+Drift = 0.033600    
+StdTemp = 25.000000    
+
+[Resistor48]
+CalDate = 3641169600.000000    
+SN = "12075"
+NomVal = 10000000.000000    
+CalVal = 27.602770    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 3.415300    
+StdTemp = 23.000000    
+
+[Resistor49]
+CalDate = 3641169600.000000    
+SN = "12076"
+NomVal = 10000000.000000    
+CalVal = 58.517544    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 5.124100    
+StdTemp = 23.000000    
+
+[Resistor50]
+CalDate = 3641169600.000000    
+SN = "12077"
+NomVal = 100000000.000000    
+CalVal = 16.068322    
+Alpha = -10.810000    
+Beta = 0.359400    
+PCR = 0.000000    
+Drift = 2.040900    
+StdTemp = 23.000000    
+
+[Resistor51]
+CalDate = 3641169600.000000    
+SN = "12078"
+NomVal = 100000000.000000    
+CalVal = 16.653690    
+Alpha = -13.077000    
+Beta = 0.390500    
+PCR = 0.000000    
+Drift = 2.370400    
+StdTemp = 23.000000    
+
+[Resistor52]
+CalDate = 3641169600.000000    
+SN = "1208"
+NomVal = 100.000000    
+CalVal = 3.308514    
+Alpha = 0.032700    
+Beta = -0.024000    
+PCR = 0.000000    
+Drift = 0.191900    
+StdTemp = 25.000000    
+
+[Resistor53]
+CalDate = 3641169600.000000    
+SN = "1209"
+NomVal = 100.000000    
+CalVal = 10.746120    
+Alpha = 0.271700    
+Beta = -0.022000    
+PCR = 0.000000    
+Drift = 0.335800    
+StdTemp = 25.000000    
+
+[Resistor54]
+CalDate = 3641169600.000000    
+SN = "1210"
+NomVal = 100.000000    
+CalVal = 1.416892    
+Alpha = 0.449700    
+Beta = -0.026000    
+PCR = 0.000000    
+Drift = 0.018500    
+StdTemp = 25.000000    
+
+[Resistor55]
+CalDate = 3641169600.000000    
+SN = "1211"
+NomVal = 100.000000    
+CalVal = 5.629069    
+Alpha = 0.137700    
+Beta = -0.028000    
+PCR = 0.000000    
+Drift = 0.088000    
+StdTemp = 25.000000    
+
+[Resistor56]
+CalDate = 3641169600.000000    
+SN = "1212"
+NomVal = 100.000000    
+CalVal = 4.255628    
+Alpha = -0.007400    
+Beta = -0.032000    
+PCR = 0.000000    
+Drift = 0.067500    
+StdTemp = 25.000000    
+
+[Resistor57]
+CalDate = 3641169600.000000    
+SN = "1214"
+NomVal = 100.000000    
+CalVal = 2.018477    
+Alpha = -0.046790    
+Beta = -0.026542    
+PCR = 0.000000    
+Drift = 0.0825018    
+StdTemp = 25.000000    
+
+[Resistor58]
+CalDate = 3641169600.000000    
+SN = "1215"
+NomVal = 100.000000    
+CalVal = -0.077101  
+Alpha = -0.078000    
+Beta = -0.031000    
+PCR = 0.000000    
+Drift = 0.031971  
+StdTemp = 25.000000    
+
+[Resistor59]
+CalDate = 3641169600.000000    
+SN = "1216"
+NomVal = 100.000000    
+CalVal = 1.360873    
+Alpha = -0.081000    
+Beta = -0.026100    
+PCR = 0.000000    
+Drift = 0.049556  
+StdTemp = 25.000000    
+
+[Resistor60]
+CalDate = 3641169600.000000    
+SN = "1217"
+NomVal = 100.000000    
+CalVal = 26.054450    
+Alpha = -0.008000    
+Beta = -0.027400    
+PCR = 0.000000    
+Drift = 0.989100    
+StdTemp = 25.000000    
+
+[Resistor61]
+CalDate = 3641169600.000000    
+SN = "1218"
+NomVal = 100.000000    
+CalVal = 21.714657    
+Alpha = -0.021000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.355774   
+StdTemp = 25.000000    
+
+[Resistor62]
+CalDate = 3641169600.000000    
+SN = "1303"
+NomVal = 1000.000000    
+CalVal = 0.506183    
+Alpha = 0.018600    
+Beta = -0.034000    
+PCR = 0.000000    
+Drift = 0.084300    
+StdTemp = 25.000000    
+
+[Resistor63]
+CalDate = 3641169600.000000    
+SN = "1304"
+NomVal = 1000.000000    
+CalVal = 2.082484    
+Alpha = 0.082700    
+Beta = -0.029000    
+PCR = 0.000000    
+Drift = 0.039100    
+StdTemp = 25.000000    
+
+[Resistor64]
+CalDate = 3641169600.000000    
+SN = "1305"
+NomVal = 1000.000000    
+CalVal = 4.895925    
+Alpha = -0.028300    
+Beta = -0.029000    
+PCR = 0.000000    
+Drift = 0.040000    
+StdTemp = 25.000000    
+
+[Resistor65]
+CalDate = 3641169600.000000    
+SN = "1306"
+NomVal = 1000.000000    
+CalVal = 8.236820    
+Alpha = -0.196300    
+Beta = -0.027000    
+PCR = 0.000000    
+Drift = 0.065100    
+StdTemp = 25.000000    
+
+[Resistor66]
+CalDate = 3641169600.000000    
+SN = "1307"
+NomVal = 1000.000000    
+CalVal = 15.991685    
+Alpha = -0.124300    
+Beta = -0.027000    
+PCR = 0.000000    
+Drift = 0.172600    
+StdTemp = 25.000000    
+
+[Resistor67]
+CalDate = 3641169600.000000    
+SN = "1308"
+NomVal = 1000.000000    
+CalVal = 6.908128    
+Alpha = -0.273300    
+Beta = -0.029000    
+PCR = 0.000000    
+Drift = 0.063800    
+StdTemp = 25.000000    
+
+[Resistor68]
+CalDate = 3641169600.000000    
+SN = "1311"
+NomVal = 1000.000000    
+CalVal = 0.354915  
+Alpha = -0.009871    
+Beta = -0.030065    
+PCR = 0.000000    
+Drift = 0.043474  
+StdTemp = 25.000000    
+
+[Resistor69]
+CalDate = 3641169600.000000    
+SN = "1405"
+NomVal = 10000.000000    
+CalVal = 1.123516    
+Alpha = -0.000300    
+Beta = -0.027000    
+PCR = 0.000000    
+Drift = 0.033500    
+StdTemp = 23.000000    
+
+[Resistor70]
+CalDate = 3641169600.000000    
+SN = "1406"
+NomVal = 10000.000000    
+CalVal = 3.748288    
+Alpha = 0.009700    
+Beta = -0.028000    
+PCR = 0.000000    
+Drift = 0.040800    
+StdTemp = 23.000000    
+
+[Resistor71]
+CalDate = 3641169600.000000    
+SN = "1407"
+NomVal = 10000.000000    
+CalVal = 9.300343    
+Alpha = 0.017600    
+Beta = -0.031000    
+PCR = 0.000000    
+Drift = 0.293300    
+StdTemp = 25.000000    
+
+[Resistor72]
+CalDate = 3641169600.000000    
+SN = "1408"
+NomVal = 10000.000000    
+CalVal = 17.866948    
+Alpha = -0.013300    
+Beta = -0.029000    
+PCR = 0.000000    
+Drift = 0.191800    
+StdTemp = 25.000000    
+
+[Resistor73]
+CalDate = 3641169600.000000    
+SN = "1409"
+NomVal = 10000.000000    
+CalVal = -3.570705    
+Alpha = 0.011700    
+Beta = -0.028200    
+PCR = 0.000000    
+Drift = 0.015600    
+StdTemp = 25.000000    
+
+[Resistor74]
+CalDate = 3641169600.000000    
+SN = "1410"
+NomVal = 10000.000000    
+CalVal = 0.911213    
+Alpha = 0.088600    
+Beta = -0.030000    
+PCR = 0.000000    
+Drift = 0.051400    
+StdTemp = 23.000000    
+
+[Resistor75]
+CalDate = 3641169600.000000    
+SN = "1412"
+NomVal = 10000.000000    
+CalVal = 0.735526    
+Alpha = -0.044300    
+Beta = -0.027000    
+PCR = 0.000000    
+Drift = 0.025200    
+StdTemp = 25.000000    
+
+[Resistor76]
+CalDate = 3641169600.000000    
+SN = "1413"
+NomVal = 10000.000000    
+CalVal = 5.482471    
+Alpha = 0.029700    
+Beta = -0.029000    
+PCR = 0.000000    
+Drift = 0.122600    
+StdTemp = 25.000000    
+
+[Resistor77]
+CalDate = 3641169600.000000    
+SN = "1414"
+NomVal = 10000.000000    
+CalVal = 8.466916    
+Alpha = 0.014700    
+Beta = -0.028000    
+PCR = 0.000000    
+Drift = 0.071700    
+StdTemp = 25.000000    
+
+[Resistor78]
+CalDate = 3641169600.000000    
+SN = "1415"
+NomVal = 10000.000000    
+CalVal = 5.912184    
+Alpha = -0.020300    
+Beta = -0.028000    
+PCR = 0.000000    
+Drift = 0.069500    
+StdTemp = 25.000000    
+
+[Resistor79]
+CalDate = 3641169600.000000    
+SN = "1416"
+NomVal = 10000.000000    
+CalVal = 7.615259    
+Alpha = 0.020600    
+Beta = -0.030000    
+PCR = 0.000000    
+Drift = 0.054100    
+StdTemp = 25.000000    
+
+[Resistor80]
+CalDate = 3641169600.000000    
+SN = "1417"
+NomVal = 10000.000000    
+CalVal = 14.230662    
+Alpha = 0.023700    
+Beta = -0.023000    
+PCR = 0.000000    
+Drift = 0.131300    
+StdTemp = 25.000000    
+
+[Resistor81]
+CalDate = 3641169600.000000    
+SN = "1418"
+NomVal = 10000.000000    
+CalVal = -10.620317    
+Alpha = 0.092700    
+Beta = -0.034300    
+PCR = 0.000000    
+Drift = 0.076900    
+StdTemp = 25.000000    
+
+[Resistor82]
+CalDate = 3641169600.000000    
+SN = "1419"
+NomVal = 10000.000000    
+CalVal = 2.924517    
+Alpha = -0.019200    
+Beta = -0.020000    
+PCR = 0.000000    
+Drift = 0.064300    
+StdTemp = 25.000000    
+
+[Resistor83]
+CalDate = 3641169600.000000    
+SN = "1420"
+NomVal = 10000.000000    
+CalVal = 6.122464    
+Alpha = 0.039700    
+Beta = -0.024000    
+PCR = 0.000000    
+Drift = 0.055700    
+StdTemp = 25.000000    
+
+[Resistor84]
+CalDate = 3641169600.000000    
+SN = "1421"
+NomVal = 10000.000000    
+CalVal = 1.180932    
+Alpha = 0.049600    
+Beta = -0.030000    
+PCR = 0.000000    
+Drift = 0.099500    
+StdTemp = 25.000000    
+
+[Resistor85]
+CalDate = 3641169600.000000    
+SN = "1422"
+NomVal = 10000.000000    
+CalVal = 18.183840    
+Alpha = 0.078000    
+Beta = -0.031200    
+PCR = 0.000000    
+Drift = 0.118700    
+StdTemp = 25.000000    
+
+[Resistor86]
+CalDate = 3641169600.000000    
+SN = "1423"
+NomVal = 10000.000000    
+CalVal = 21.864777    
+Alpha = 0.106200    
+Beta = -0.040000    
+PCR = 0.000000    
+Drift = 0.125100    
+StdTemp = 25.000000    
+
+[Resistor87]
+CalDate = 3641169600.000000    
+SN = "1424"
+NomVal = 10000.000000    
+CalVal = 13.708365    
+Alpha = 0.148900    
+Beta = -0.036000    
+PCR = 0.000000    
+Drift = 0.124700    
+StdTemp = 25.000000    
+
+[Resistor88]
+CalDate = 3641169600.000000    
+SN = "1425"
+NomVal = 10000.000000    
+CalVal = 5.360022    
+Alpha = 0.295100    
+Beta = -0.030100    
+PCR = 0.000000    
+Drift = 0.126700    
+StdTemp = 25.000000    
+
+[Resistor89]
+CalDate = 3641169600.000000    
+SN = "1426"
+NomVal = 10000.000000    
+CalVal = 0.697437    
+Alpha = 0.029600    
+Beta = -0.030000    
+PCR = 0.000000    
+Drift = 0.035400    
+StdTemp = 23.000000    
+
+[Resistor90]
+CalDate = 3641169600.000000    
+SN = "1427"
+NomVal = 10000.000000    
+CalVal = 0.926174    
+Alpha = 0.099700    
+Beta = -0.025000    
+PCR = 0.000000    
+Drift = 0.032600    
+StdTemp = 23.000000    
+
+[Resistor91]
+CalDate = 3641169600.000000    
+SN = "1430"
+NomVal = 10000.000000    
+CalVal = 3.573024    
+Alpha = 0.758700    
+Beta = -0.026800    
+PCR = 0.000000    
+Drift = 0.074100    
+StdTemp = 25.000000    
+
+[Resistor92]
+CalDate = 3641169600.000000    
+SN = "1431"
+NomVal = 10000.000000    
+CalVal = 0.620058    
+Alpha = -0.266900    
+Beta = -0.023100    
+PCR = 0.000000    
+Drift = 0.057800    
+StdTemp = 25.000000    
+
+[Resistor93]
+CalDate = 3641169600.000000    
+SN = "1432"
+NomVal = 10000.000000    
+CalVal = 0.908533    
+Alpha = -0.396200    
+Beta = -0.025800    
+PCR = 0.000000    
+Drift = 0.042400    
+StdTemp = 25.000000    
+
+[Resistor94]
+CalDate = 3641169600.000000    
+SN = "1433"
+NomVal = 10000.000000    
+CalVal = 0.327365    
+Alpha = 0.246700    
+Beta = -0.026500    
+PCR = 0.000000    
+Drift = 0.021600    
+StdTemp = 25.000000    
+
+[Resistor95]
+CalDate = 3641169600.000000    
+SN = "1434"
+NomVal = 10000.000000    
+CalVal = 1.966466    
+Alpha = 0.241400    
+Beta = -0.027000    
+PCR = 0.000000    
+Drift = 0.033500    
+StdTemp = 25.000000    
+
+[Resistor96]
+CalDate = 3641169600.000000    
+SN = "1435"
+NomVal = 10000.000000    
+CalVal = 1.741970    
+Alpha = 0.228400    
+Beta = -0.026400    
+PCR = 0.000000    
+Drift = 0.072900    
+StdTemp = 25.000000    
+
+[Resistor97]
+CalDate = 3641169600.000000    
+SN = "1436"
+NomVal = 10000.000000    
+CalVal = 1.152278    
+Alpha = 0.310700    
+Beta = -0.026800    
+PCR = 0.000000    
+Drift = 0.048600    
+StdTemp = 25.000000    
+
+[Resistor98]
+CalDate = 3641169600.000000    
+SN = "1437"
+NomVal = 10000.000000    
+CalVal = 1.703305    
+Alpha = 0.240700    
+Beta = -0.026100    
+PCR = 0.000000    
+Drift = 0.079600    
+StdTemp = 25.000000    
+
+[Resistor99]
+CalDate = 3641169600.000000    
+SN = "1438"
+NomVal = 10000.000000    
+CalVal = 78.872319    
+Alpha = 0.040000    
+Beta = -0.012000    
+PCR = 0.000000    
+Drift = 2.866200    
+StdTemp = 25.000000    
+
+[Resistor100]
+CalDate = 3641169600.000000    
+SN = "1439"
+NomVal = 10000.000000    
+CalVal = 36.505363    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1.301600    
+StdTemp = 25.000000    
+
+[Resistor101]
+CalDate = 3641169600.000000    
+SN = "1440"
+NomVal = 10000.000000    
+CalVal = 48.659308    
+Alpha = -0.120000    
+Beta = -0.052000    
+PCR = 0.000000    
+Drift = 1.689000    
+StdTemp = 25.000000    
+
+[Resistor102]
+CalDate = 3641169600.000000    
+SN = "1441"
+NomVal = 10000.000000    
+CalVal = 33.189907    
+Alpha = 0.080000    
+Beta = -0.052000    
+PCR = 0.000000    
+Drift = 1.235100    
+StdTemp = 25.000000    
+
+[Resistor103]
+CalDate = 3641169600.000000    
+SN = "1442"
+NomVal = 10000.000000    
+CalVal = 53.878350    
+Alpha = 0.070000    
+Beta = 0.006000    
+PCR = 0.000000    
+Drift = 2.109700    
+StdTemp = 25.000000    
+
+[Resistor104]
+CalDate = 3641169600.000000    
+SN = "1443"
+NomVal = 10000.000000    
+CalVal = 37.086989    
+Alpha = -0.060000    
+Beta = 0.004000    
+PCR = 0.000000    
+Drift = 1.256200    
+StdTemp = 25.000000    
+
+[Resistor105]
+CalDate = 3641169600.000000    
+SN = "1444"
+NomVal = 10000.000000    
+CalVal = 36.879343    
+Alpha = 0.078800    
+Beta = -0.018400    
+PCR = 0.000000    
+Drift = 1.200300    
+StdTemp = 25.000000    
+
+[Resistor106]
+CalDate = 3641169600.000000    
+SN = "1445"
+NomVal = 10000.000000    
+CalVal = 34.363307    
+Alpha = -0.290600    
+Beta = -0.034900    
+PCR = 0.000000    
+Drift = 0.701000    
+StdTemp = 25.000000    
+
+[Resistor107]
+CalDate = 3641169600.000000    
+SN = "1446"
+NomVal = 10000.000000    
+CalVal = 0.692295    
+Alpha = -0.030000    
+Beta = -0.023000    
+PCR = 0.000000    
+Drift = 0.026600    
+StdTemp = 23.000000    
+
+[Resistor108]
+CalDate = 3641169600.000000    
+SN = "1447"
+NomVal = 10000.000000    
+CalVal = 0.978436    
+Alpha = 0.000000    
+Beta = -0.027000    
+PCR = 0.000000    
+Drift = 0.039500    
+StdTemp = 25.000000    
+
+[Resistor109]
+CalDate = 3641169600.000000    
+SN = "1448"
+NomVal = 10000.000000    
+CalVal = 1.671728    
+Alpha = -0.060000    
+Beta = -0.023000    
+PCR = 0.000000    
+Drift = 0.030900    
+StdTemp = 23.000000    
+
+[Resistor110]
+CalDate = 3641169600.000000    
+SN = "1501"
+NomVal = 100000.000000    
+CalVal = 18.601430    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.232200    
+StdTemp = 25.000000    
+
+[Resistor111]
+CalDate = 3641169600.000000    
+SN = "1502"
+NomVal = 100000.000000    
+CalVal = 27.216311    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.367500    
+StdTemp = 25.000000    
+
+[Resistor112]
+CalDate = 3641169600.000000    
+SN = "1700"
+NomVal = 10000000.000000    
+CalVal = 115.565386    
+Alpha = 1.390000    
+Beta = -0.200000    
+PCR = 0.000000    
+Drift = 1.364300    
+StdTemp = 23.000000    
+
+[Resistor113]
+CalDate = 3641169600.000000    
+SN = "1701"
+NomVal = 10000000.000000    
+CalVal = -3718.255094    
+Alpha = 3.660000    
+Beta = 0.300000    
+PCR = 0.000000    
+Drift = 0.548200    
+StdTemp = 23.000000    
+
+[Resistor114]
+CalDate = 3641169600.000000    
+SN = "1702"
+NomVal = 10000000.000000    
+CalVal = 150.703294    
+Alpha = 1.700000    
+Beta = -0.200000    
+PCR = 0.000000    
+Drift = 3.441400    
+StdTemp = 23.000000    
+
+[Resistor115]
+CalDate = 3641169600.000000    
+SN = "1703"
+NomVal = 10000000.000000    
+CalVal = -1333.807551    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.179500    
+StdTemp = 23.000000    
+
+[Resistor116]
+CalDate = 3641169600.000000    
+SN = "1705"
+NomVal = 10000000.000000    
+CalVal = -1100.661168    
+Alpha = -13.750000    
+Beta = 0.340000    
+PCR = 0.000000    
+Drift = 3.160000    
+StdTemp = 23.000000    
+
+[Resistor117]
+CalDate = 3641169600.000000    
+SN = "1800"
+NomVal = 100000000.000000    
+CalVal = 16.777555    
+Alpha = -1.360000    
+Beta = -0.100000    
+PCR = 0.000000    
+Drift = -10.592000    
+StdTemp = 23.000000    
+
+[Resistor118]
+CalDate = 3641169600.000000    
+SN = "1801"
+NomVal = 100000000.000000    
+CalVal = 3169.146604    
+Alpha = -15.970000    
+Beta = 0.700000    
+PCR = 0.000000    
+Drift = 1.738900    
+StdTemp = 23.000000    
+
+[Resistor119]
+CalDate = 3641169600.000000    
+SN = "1803"
+NomVal = 100000000.000000    
+CalVal = -528.609739    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1.206300    
+StdTemp = 23.000000    
+
+[Resistor120]
+CalDate = 3641169600.000000    
+SN = "1805"
+NomVal = 100000000.000000    
+CalVal = -2262.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor121]
+CalDate = 3641169600.000000    
+SN = "1870619"
+NomVal = 1.000000    
+CalVal = -1.223992    
+Alpha = 2.000000    
+Beta = -0.500000    
+PCR = 0.007500    
+Drift = 0.015900    
+StdTemp = 25.000000    
+
+[Resistor122]
+CalDate = 3641169600.000000    
+SN = "1883403"
+NomVal = 1.000000    
+CalVal = -0.757336    
+Alpha = 2.397600    
+Beta = -0.496200    
+PCR = 0.004000    
+Drift = -0.031800    
+StdTemp = 25.000000    
+
+[Resistor123]
+CalDate = 3641169600.000000    
+SN = "1883409"
+NomVal = 1.000000    
+CalVal = 0.017794    
+Alpha = 3.128400    
+Beta = -0.496600    
+PCR = 0.007500    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor124]
+CalDate = 3641169600.000000    
+SN = "1883416"
+NomVal = 1.000000    
+CalVal = 0.017794    
+Alpha = 2.000000    
+Beta = -0.500000    
+PCR = 0.007500    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor125]
+CalDate = 3641169600.000000    
+SN = "1883417"
+NomVal = 1.000000    
+CalVal = 0.017794    
+Alpha = 2.000000    
+Beta = -0.500000    
+PCR = 0.004000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor126]
+CalDate = 3641169600.000000    
+SN = "1883418"
+NomVal = 1.000000    
+CalVal = 0.017794    
+Alpha = 2.137400    
+Beta = -0.496200    
+PCR = 0.004000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor127]
+CalDate = 3641169600.000000    
+SN = "1883429"
+NomVal = 1.000000    
+CalVal = -1.151220    
+Alpha = 3.857000    
+Beta = -0.524900    
+PCR = 0.023400    
+Drift = -0.050000    
+StdTemp = 25.000000    
+
+[Resistor128]
+CalDate = 3641169600.000000    
+SN = "1901"
+NomVal = 1000000000.000000    
+CalVal = -10.440687    
+Alpha = 5.140000    
+Beta = 0.200000    
+PCR = 0.000000    
+Drift = 1.489100    
+StdTemp = 23.000000    
+
+[Resistor129]
+CalDate = 3641169600.000000    
+SN = "1903"
+NomVal = 1000000000.000000    
+CalVal = -94.132206    
+Alpha = 2.700000    
+Beta = -0.100000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor130]
+CalDate = 3641169600.000000    
+SN = "1905"
+NomVal = 1000000000.000000    
+CalVal = -1155.072206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor131]
+CalDate = 3641169600.000000    
+SN = "1907"
+NomVal = 1000000000.000000    
+CalVal = -1152.322206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor132]
+CalDate = 3641169600.000000    
+SN = "1D2"
+NomVal = 0.100000    
+CalVal = 34.998410    
+Alpha = 7.693600    
+Beta = -0.540000    
+PCR = 0.000000    
+Drift = 0.328900    
+StdTemp = 25.000000    
+
+[Resistor133]
+CalDate = 3641169600.000000    
+SN = "1D3"
+NomVal = 0.100000    
+CalVal = 41.123673    
+Alpha = -0.806100    
+Beta = -0.520000    
+PCR = 0.000000    
+Drift = -0.231100    
+StdTemp = 25.000000    
+
+[Resistor134]
+CalDate = 3641169600.000000    
+SN = "1D8"
+NomVal = 0.100000    
+CalVal = -99.726343    
+Alpha = 2.793900    
+Beta = -0.520000    
+PCR = 0.000000    
+Drift = -0.316000    
+StdTemp = 25.000000    
+
+[Resistor135]
+CalDate = 3641169600.000000    
+SN = "1MX1"
+NomVal = 1000000.000000    
+CalVal = -12.015580    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -0.811500    
+StdTemp = 25.000000    
+
+[Resistor136]
+CalDate = 3641169600.000000    
+SN = "1MX6"
+NomVal = 1000000.000000    
+CalVal = -8.481486    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -0.477900    
+StdTemp = 25.000000    
+
+[Resistor137]
+CalDate = 3641169600.000000    
+SN = "207"
+NomVal = 10000.000000    
+CalVal = 32.909243    
+Alpha = 1.400000    
+Beta = -0.510000    
+PCR = 0.000000    
+Drift = 0.320000    
+StdTemp = 25.000000    
+
+[Resistor138]
+CalDate = 3641169600.000000    
+SN = "253995"
+NomVal = 10000.000000    
+CalVal = -6.614936    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.055700    
+StdTemp = 25.000000    
+
+[Resistor139]
+CalDate = 3641169600.000000    
+SN = "260649"
+NomVal = 10.000000    
+CalVal = 23.078591    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1.070100    
+StdTemp = 25.000000    
+
+[Resistor140]
+CalDate = 3641169600.000000    
+SN = "2835"
+NomVal = 10.000000    
+CalVal = -81.056891    
+Alpha = 6.460000    
+Beta = -0.468000    
+PCR = 0.000000    
+Drift = -0.814700    
+StdTemp = 25.000000    
+
+[Resistor141]
+CalDate = 3641169600.000000    
+SN = "2D1"
+NomVal = 0.010000    
+CalVal = 128.335838    
+Alpha = 4.094100    
+Beta = -0.500000    
+PCR = 0.000000    
+Drift = 0.322100    
+StdTemp = 25.000000    
+
+[Resistor142]
+CalDate = 3641169600.000000    
+SN = "2D3"
+NomVal = 0.010000    
+CalVal = 77.378063    
+Alpha = 2.993400    
+Beta = -0.560000    
+PCR = 0.000000    
+Drift = 0.501400    
+StdTemp = 25.000000    
+
+[Resistor143]
+CalDate = 3641169600.000000    
+SN = "301"
+NomVal = 100.000000    
+CalVal = -14.963879    
+Alpha = 6.800000    
+Beta = -0.500000    
+PCR = 0.000000    
+Drift = -0.086900    
+StdTemp = 25.000000    
+
+[Resistor144]
+CalDate = 3641169600.000000    
+SN = "304"
+NomVal = 100.000000    
+CalVal = -5.176243    
+Alpha = 7.500000    
+Beta = -0.590000    
+PCR = 0.000000    
+Drift = 0.045900    
+StdTemp = 25.000000    
+
+[Resistor145]
+CalDate = 3641169600.000000    
+SN = "307"
+NomVal = 100.000000    
+CalVal = -13.656729    
+Alpha = 7.600000    
+Beta = -0.580000    
+PCR = 0.000000    
+Drift = -0.121400    
+StdTemp = 25.000000    
+
+[Resistor146]
+CalDate = 3641169600.000000    
+SN = "314"
+NomVal = 100.000000    
+CalVal = -0.911453    
+Alpha = 5.100000    
+Beta = -0.570000    
+PCR = 0.000000    
+Drift = 0.004900    
+StdTemp = 25.000000    
+
+[Resistor147]
+CalDate = 3641169600.000000    
+SN = "324"
+NomVal = 100.000000    
+CalVal = 27.427972    
+Alpha = -1.400000    
+Beta = -0.510000    
+PCR = 0.000000    
+Drift = 0.523100    
+StdTemp = 25.000000    
+
+[Resistor148]
+CalDate = 3641169600.000000    
+SN = "334041"
+NomVal = 100.000000    
+CalVal = 13.096674 
+Alpha = 0.159700    
+Beta = -0.025300    
+PCR = -0.001800    
+Drift = 0.019920   
+StdTemp = 25.000000    
+
+[Resistor149]
+CalDate = 3641169600.000000    
+SN = "334042"
+NomVal = 100.000000    
+CalVal = 0.017794    
+Alpha = 0.142800    
+Beta = -0.019600    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor150]
+CalDate = 3641169600.000000    
+SN = "334043"
+NomVal = 100.000000    
+CalVal = -0.480089    
+Alpha = 0.125800    
+Beta = -0.023000    
+PCR = 0.000000    
+Drift = 0.025200    
+StdTemp = 25.000000    
+
+[Resistor151]
+CalDate = 3641169600.000000    
+SN = "334050"
+NomVal = 100.000000    
+CalVal = 0.017794    
+Alpha = 0.129200    
+Beta = -0.023700    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor152]
+CalDate = 3641169600.000000    
+SN = "349"
+NomVal = 100000.000000    
+CalVal = 63.395565    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1.854900    
+StdTemp = 25.000000    
+
+[Resistor153]
+CalDate = 3641169600.000000    
+SN = "3D2"
+NomVal = 0.001000    
+CalVal = -51.357336    
+Alpha = 10.392900    
+Beta = -0.600000    
+PCR = 0.000000    
+Drift = -0.134900    
+StdTemp = 25.000000    
+
+[Resistor154]
+CalDate = 3641169600.000000    
+SN = "3D3"
+NomVal = 0.001000    
+CalVal = 521.657686    
+Alpha = 11.396200    
+Beta = -0.320000    
+PCR = 0.000000    
+Drift = -0.551200    
+StdTemp = 25.000000    
+
+[Resistor155]
+CalDate = 3641169600.000000    
+SN = "3D5"
+NomVal = 0.001000    
+CalVal = 120.111876    
+Alpha = -0.405100    
+Beta = -0.430000    
+PCR = 0.000000    
+Drift = 1.900400    
+StdTemp = 25.000000    
+
+[Resistor156]
+CalDate = 3641169600.000000    
+SN = "427"
+NomVal = 1000.000000    
+CalVal = 2.740816    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.185900    
+StdTemp = 25.000000    
+
+[Resistor157]
+CalDate = 3641169600.000000    
+SN = "430"
+NomVal = 1000.000000    
+CalVal = -2.434317    
+Alpha = -2.300000    
+Beta = -0.550000    
+PCR = 0.000000    
+Drift = -0.026200    
+StdTemp = 25.000000    
+
+[Resistor158]
+CalDate = 3641169600.000000    
+SN = "431"
+NomVal = 1000.000000    
+CalVal = 11.490788    
+Alpha = -2.200000    
+Beta = -0.570000    
+PCR = 0.000000    
+Drift = 0.497500    
+StdTemp = 25.000000    
+
+[Resistor159]
+CalDate = 3641169600.000000    
+SN = "432"
+NomVal = 1000.000000    
+CalVal = -6.714700    
+Alpha = -1.400000    
+Beta = -0.530000    
+PCR = 0.000000    
+Drift = 0.044000    
+StdTemp = 25.000000    
+
+[Resistor160]
+CalDate = 3641169600.000000    
+SN = "4D2"
+NomVal = 0.000100    
+CalVal = 258.872800    
+Alpha = -35.704700    
+Beta = -0.400000    
+PCR = 0.000000    
+Drift = -2.196000    
+StdTemp = 25.000000    
+
+[Resistor161]
+CalDate = 3641169600.000000    
+SN = "4D3"
+NomVal = 0.000100    
+CalVal = -246.663106    
+Alpha = -3.003500    
+Beta = -0.300000    
+PCR = 0.000000    
+Drift = -0.465000    
+StdTemp = 25.000000    
+
+[Resistor162]
+CalDate = 3641169600.000000    
+SN = "4D4"
+NomVal = 0.000100    
+CalVal = 68.522766    
+Alpha = -18.304700    
+Beta = -0.400000    
+PCR = 0.000000    
+Drift = -1.914000    
+StdTemp = 25.000000    
+
+[Resistor163]
+CalDate = 3641169600.000000    
+SN = "501"
+NomVal = 10000.000000    
+CalVal = -0.045268    
+Alpha = 6.000000    
+Beta = -0.600000    
+PCR = 0.000000    
+Drift = 0.190700    
+StdTemp = 25.000000    
+
+[Resistor164]
+CalDate = 3641169600.000000    
+SN = "502"
+NomVal = 100000.000000    
+CalVal = -11.754658    
+Alpha = 4.500000    
+Beta = -0.560000    
+PCR = 0.000000    
+Drift = 0.411200    
+StdTemp = 25.000000    
+
+[Resistor165]
+CalDate = 3641169600.000000    
+SN = "512"
+NomVal = 10000.000000    
+CalVal = 13.564327    
+Alpha = 4.892900    
+Beta = -0.600000    
+PCR = 0.000000    
+Drift = 0.269200    
+StdTemp = 25.000000    
+
+[Resistor166]
+CalDate = 3641169600.000000    
+SN = "513"
+NomVal = 10000.000000    
+CalVal = 18.665609    
+Alpha = 4.892900    
+Beta = -0.600000    
+PCR = 0.000000    
+Drift = 0.420100    
+StdTemp = 25.000000    
+
+[Resistor167]
+CalDate = 3641169600.000000    
+SN = "515"
+NomVal = 10000.000000    
+CalVal = 4.710900    
+Alpha = 4.600000    
+Beta = -0.580000    
+PCR = 0.000000    
+Drift = 0.287900    
+StdTemp = 25.000000    
+
+[Resistor168]
+CalDate = 3641169600.000000    
+SN = "5155-6005"
+NomVal = 1000000000000.000000    
+CalVal = -7023.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor169]
+CalDate = 3641169600.000000    
+SN = "517"
+NomVal = 10000.000000    
+CalVal = -20.305709    
+Alpha = 4.693500    
+Beta = -0.550000    
+PCR = 0.000000    
+Drift = 0.166800    
+StdTemp = 25.000000    
+
+[Resistor170]
+CalDate = 3641169600.000000    
+SN = "5280"
+NomVal = 10000.000000    
+CalVal = 15.459014    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.090200    
+StdTemp = 25.000000    
+
+[Resistor171]
+CalDate = 3641169600.000000    
+SN = "5865-02"
+NomVal = 100.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor172]
+CalDate = 3641169600.000000    
+SN = "600"
+NomVal = 100000.000000    
+CalVal = -2.245312    
+Alpha = 6.393900    
+Beta = -0.520000    
+PCR = 0.000000    
+Drift = 0.082200    
+StdTemp = 25.000000    
+
+[Resistor173]
+CalDate = 3641169600.000000    
+SN = "602"
+NomVal = 100000.000000    
+CalVal = 21.284612    
+Alpha = 3.993500    
+Beta = -0.550000    
+PCR = 0.000000    
+Drift = 0.146500    
+StdTemp = 25.000000    
+
+[Resistor174]
+CalDate = 3641169600.000000    
+SN = "60659"
+NomVal = 1.000000    
+CalVal = 0.263294    
+Alpha = -0.227400    
+Beta = -0.027300    
+PCR = -0.000400    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor175]
+CalDate = 3641169600.000000    
+SN = "60906"
+NomVal = 1.000000    
+CalVal = 4.594742    
+Alpha = -0.242100    
+Beta = -0.026600    
+PCR = 0.000000    
+Drift = 0.003300    
+StdTemp = 25.000000    
+
+[Resistor176]
+CalDate = 3641169600.000000    
+SN = "612"
+NomVal = 100000.000000    
+CalVal = 70.966151    
+Alpha = 6.793600    
+Beta = -0.540000    
+PCR = 0.000000    
+Drift = 1.031400    
+StdTemp = 25.000000    
+
+[Resistor177]
+CalDate = 3641169600.000000    
+SN = "615"
+NomVal = 100000.000000    
+CalVal = 112.557501    
+Alpha = 7.193000    
+Beta = -0.590000    
+PCR = 0.000000    
+Drift = 1.568700    
+StdTemp = 25.000000    
+
+[Resistor178]
+CalDate = 3641169600.000000    
+SN = "616"
+NomVal = 100000.000000    
+CalVal = 96.158586    
+Alpha = 8.092900    
+Beta = -0.600000    
+PCR = 0.000000    
+Drift = 1.251700    
+StdTemp = 25.000000    
+
+[Resistor179]
+CalDate = 3641169600.000000    
+SN = "62382"
+NomVal = 1000000000000.000000    
+CalVal = 17000.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor180]
+CalDate = 3641169600.000000    
+SN = "64183"
+NomVal = 1.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor181]
+CalDate = 3641169600.000000    
+SN = "66"
+NomVal = 1.000000    
+CalVal = 7.439305    
+Alpha = 0.794300    
+Beta = -0.480000    
+PCR = 0.022200    
+Drift = -0.194800    
+StdTemp = 25.000000    
+
+[Resistor182]
+CalDate = 3641169600.000000    
+SN = "67"
+NomVal = 1.000000    
+CalVal = 26.229758    
+Alpha = 1.593900    
+Beta = -0.520000    
+PCR = 0.068900    
+Drift = -0.186200    
+StdTemp = 25.000000    
+
+[Resistor183]
+CalDate = 3641169600.000000    
+SN = "68"
+NomVal = 1.000000    
+CalVal = 37.183125    
+Alpha = 1.293600    
+Beta = -0.540000    
+PCR = 0.032100    
+Drift = -0.020800    
+StdTemp = 25.000000    
+
+[Resistor184]
+CalDate = 3641169600.000000    
+SN = "69"
+NomVal = 1.000000    
+CalVal = 28.747254    
+Alpha = 1.093600    
+Beta = -0.540000    
+PCR = 0.026700    
+Drift = -0.035000    
+StdTemp = 25.000000    
+
+[Resistor185]
+CalDate = 3641169600.000000    
+SN = "6920007"
+NomVal = 1000000.000000    
+CalVal = 2.623354    
+Alpha = 0.180000    
+Beta = -0.040000    
+PCR = 0.000000    
+Drift = 0.0039968520    
+StdTemp = 23.000000    
+
+[Resistor186]
+CalDate = 3641169600.000000    
+SN = "69318"
+NomVal = 100000000.000000    
+CalVal = 59.776466    
+Alpha = 5.298500    
+Beta = -0.005300    
+PCR = 0.000000    
+Drift = 3.795800    
+StdTemp = 23.000000    
+
+[Resistor187]
+CalDate = 3641169600.000000    
+SN = "70"
+NomVal = 1.000000    
+CalVal = 36.313544    
+Alpha = 1.393900    
+Beta = -0.520000    
+PCR = 0.066600    
+Drift = -0.015200    
+StdTemp = 25.000000    
+
+[Resistor188]
+CalDate = 3641169600.000000    
+SN = "700"
+NomVal = 1000000.000000    
+CalVal = 70.200599    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.741000    
+StdTemp = 25.000000    
+
+[Resistor189]
+CalDate = 3641169600.000000    
+SN = "701"
+NomVal = 1000000.000000    
+CalVal = 82.998705    
+Alpha = -0.800500    
+Beta = -0.040000    
+PCR = 0.000000    
+Drift = 0.735200    
+StdTemp = 25.000000    
+
+[Resistor190]
+CalDate = 3641169600.000000    
+SN = "702"
+NomVal = 1000000.000000    
+CalVal = 66.492493    
+Alpha = -0.300800    
+Beta = -0.070000    
+PCR = 0.000000    
+Drift = 0.613300    
+StdTemp = 25.000000    
+
+[Resistor191]
+CalDate = 3641169600.000000    
+SN = "707"
+NomVal = 1000000.000000    
+CalVal = 100.986928    
+Alpha = 5.995300    
+Beta = -0.400000    
+PCR = 0.000000    
+Drift = 1.039300    
+StdTemp = 23.000000    
+
+[Resistor192]
+CalDate = 3641169600.000000    
+SN = "708"
+NomVal = 1000000.000000    
+CalVal = 55.152767    
+Alpha = -2.300000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.765500    
+StdTemp = 25.000000    
+
+[Resistor193]
+CalDate = 3641169600.000000    
+SN = "709"
+NomVal = 1000000.000000    
+CalVal = 30.824572    
+Alpha = -0.300600    
+Beta = -0.050000    
+PCR = 0.000000    
+Drift = 0.652900    
+StdTemp = 25.000000    
+
+[Resistor194]
+CalDate = 3641169600.000000    
+SN = "710"
+NomVal = 1000000.000000    
+CalVal = 28.724344    
+Alpha = -3.601200    
+Beta = -0.100000    
+PCR = 0.000000    
+Drift = 0.389000    
+StdTemp = 25.000000    
+
+[Resistor195]
+CalDate = 3641169600.000000    
+SN = "713"
+NomVal = 1000000.000000    
+CalVal = 74.034480    
+Alpha = 0.300000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.247400    
+StdTemp = 25.000000    
+
+[Resistor196]
+CalDate = 3641169600.000000    
+SN = "72"
+NomVal = 1.000000    
+CalVal = 30.521142    
+Alpha = 1.693600    
+Beta = -0.540000    
+PCR = 0.050000    
+Drift = -0.027100    
+StdTemp = 25.000000    
+
+[Resistor197]
+CalDate = 3641169600.000000    
+SN = "73"
+NomVal = 1.000000    
+CalVal = 3.189322    
+Alpha = -0.816400    
+Beta = -0.465300    
+PCR = 0.089300    
+Drift = -0.696500    
+StdTemp = 25.000000    
+
+[Resistor198]
+CalDate = 3641169600.000000    
+SN = "77"
+NomVal = 1.000000    
+CalVal = 16.936243    
+Alpha = 0.439300    
+Beta = -0.483000    
+PCR = 0.092400    
+Drift = -0.057500    
+StdTemp = 25.000000    
+
+[Resistor199]
+CalDate = 3641169600.000000    
+SN = "78"
+NomVal = 1.000000    
+CalVal = 32.759808    
+Alpha = 1.194300    
+Beta = -0.480000    
+PCR = 0.097800    
+Drift = -0.007100    
+StdTemp = 25.000000    
+
+[Resistor200]
+CalDate = 3641169600.000000    
+SN = "82"
+NomVal = 1.000000    
+CalVal = 62.718432    
+Alpha = 1.393400    
+Beta = -0.560000    
+PCR = 0.050600    
+Drift = -0.003600    
+StdTemp = 25.000000    
+
+[Resistor201]
+CalDate = 3641169600.000000    
+SN = "83"
+NomVal = 1.000000    
+CalVal = 15.007342    
+Alpha = -0.005500    
+Beta = -0.470000    
+PCR = 0.092300    
+Drift = -0.019700    
+StdTemp = 25.000000    
+
+[Resistor202]
+CalDate = 3641169600.000000    
+SN = "84"
+NomVal = 1.000000    
+CalVal = 26.144438    
+Alpha = -0.805700    
+Beta = -0.480000    
+PCR = 0.087400    
+Drift = -0.013100    
+StdTemp = 25.000000    
+
+[Resistor203]
+CalDate = 3641169600.000000    
+SN = "8409001"
+NomVal = 10000000.000000    
+CalVal = 17.938222    
+Alpha = 0.166000    
+Beta = -0.008000    
+PCR = 0.000000    
+Drift = 0.218300    
+StdTemp = 23.000000    
+
+[Resistor204]
+CalDate = 3641169600.000000    
+SN = "8409002"
+NomVal = 10000000.000000    
+CalVal = 10.699309    
+Alpha = 0.360000    
+Beta = 0.017000    
+PCR = 0.000000    
+Drift = 0.303500    
+StdTemp = 23.000000    
+
+[Resistor205]
+CalDate = 3641169600.000000    
+SN = "8409003"
+NomVal = 10000000.000000    
+CalVal = 17.225048    
+Alpha = 0.351000    
+Beta = 0.004000    
+PCR = 0.000000    
+Drift = 0.300700    
+StdTemp = 23.000000    
+
+[Resistor206]
+CalDate = 3641169600.000000    
+SN = "8409005"
+NomVal = 1000000.000000    
+CalVal = 6.873598372    
+Alpha = 0.209000    
+Beta = -0.008000    
+PCR = 0.000000    
+Drift = 0.370072    
+StdTemp = 23.000000    
+
+[Resistor207]
+CalDate = 3641169600.000000    
+SN = "8409006"
+NomVal = 1000000.000000    
+CalVal = 3.658333778    
+Alpha = 0.020000    
+Beta = -0.020000    
+PCR = 0.000000    
+Drift = 0.06971    
+StdTemp = 23.000000    
+
+[Resistor208]
+CalDate = 3641169600.000000    
+SN = "8409007"
+NomVal = 1000000.000000    
+CalVal = 3.515067    
+Alpha = 0.086000    
+Beta = -0.130000    
+PCR = 0.000000    
+Drift = 0.1636471281    
+StdTemp = 23.000000    
+
+[Resistor209]
+CalDate = 3641169600.000000    
+SN = "8409008"
+NomVal = 1000000.000000    
+CalVal = 6.256582    
+Alpha = 0.036000    
+Beta = -0.008000    
+PCR = 0.000000    
+Drift = 0.038622    
+StdTemp = 23.000000    
+
+[Resistor210]
+CalDate = 3641169600.000000    
+SN = "8426008"
+NomVal = 10000000.000000    
+CalVal = 33.259938    
+Alpha = 0.210000    
+Beta = 0.019000    
+PCR = 0.000000    
+Drift = 0.998100    
+StdTemp = 23.000000    
+
+[Resistor211]
+CalDate = 3641169600.000000    
+SN = "8897005"
+NomVal = 100000.000000    
+CalVal = 6.484174    
+Alpha = 0.099000    
+Beta = 0.004000    
+PCR = 0.000000    
+Drift = 0.290138    
+StdTemp = 23.000000    
+
+[Resistor212]
+CalDate = 3641169600.000000    
+SN = "8897006"
+NomVal = 1000000.000000    
+CalVal = 6.311129    
+Alpha = 0.070000    
+Beta = 0.003000    
+PCR = 0.000000    
+Drift = 0.274588    
+StdTemp = 23.000000    
+
+[Resistor213]
+CalDate = 3641169600.000000    
+SN = "8897007"
+NomVal = 100000.000000    
+CalVal = 8.112584   
+Alpha = 0.293000    
+Beta = -0.012000    
+PCR = 0.000000    
+Drift = 0.257591    
+StdTemp = 23.000000    
+
+[Resistor214]
+CalDate = 3641169600.000000    
+SN = "89"
+NomVal = 1.000000    
+CalVal = 39.967590    
+Alpha = 2.194300    
+Beta = -0.480000    
+PCR = 0.026200    
+Drift = -0.043100    
+StdTemp = 25.000000    
+
+[Resistor215]
+CalDate = 3641169600.000000    
+SN = "9152"
+NomVal = 10000000000.000000    
+CalVal = 107.770599    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 12.217000    
+StdTemp = 23.000000    
+
+[Resistor216]
+CalDate = 3641169600.000000    
+SN = "93"
+NomVal = 1.000000    
+CalVal = -0.357414    
+Alpha = 2.424100    
+Beta = -0.500000    
+PCR = 0.024900    
+Drift = -0.002400    
+StdTemp = 25.000000    
+
+[Resistor217]
+CalDate = 3641169600.000000    
+SN = "971208-2"
+NomVal = 100000000000000.000000    
+CalVal = -81800.112836    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 88.188000    
+StdTemp = 23.000000    
+
+[Resistor218]
+CalDate = 3641169600.000000    
+SN = "BS10"
+NomVal = 10000000000.000000    
+CalVal = 525.081857    
+Alpha = 6.030000    
+Beta = 0.200000    
+PCR = 0.000000    
+Drift = 1.494300    
+StdTemp = 23.000000    
+
+[Resistor219]
+CalDate = 3641169600.000000    
+SN = "BS990"
+NomVal = 1000000.000000    
+CalVal = -394.415907    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.680000    
+StdTemp = 23.000000    
+
+[Resistor220]
+CalDate = 3641169600.000000    
+SN = "C/10"
+NomVal = 10000000000.000000    
+CalVal = -3016.990917    
+Alpha = -32.130000    
+Beta = 0.600000    
+PCR = 0.000000    
+Drift = 0.137700    
+StdTemp = 23.000000    
+
+[Resistor221]
+CalDate = 3641169600.000000    
+SN = "C1098"
+NomVal = 10000000000.000000    
+CalVal = 1200.392805    
+Alpha = 4.376000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.822800    
+StdTemp = 23.000000    
+
+[Resistor222]
+CalDate = 3641169600.000000    
+SN = "C1198"
+NomVal = 100000000000.000000    
+CalVal = -1766.039555    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 9.832200    
+StdTemp = 23.000000    
+
+[Resistor223]
+CalDate = 3641169600.000000    
+SN = "F005A"
+NomVal = 100.000000    
+CalVal = -0.739536    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.007257  
+StdTemp = 23.000000    
+
+[Resistor224]
+CalDate = 3641169600.000000    
+SN = "F028A"
+NomVal = 100.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor225]
+CalDate = 3641169600.000000    
+SN = "F030A"
+NomVal = 100.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor226]
+CalDate = 3641169600.000000    
+SN = "F035A"
+NomVal = 100.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor227]
+CalDate = 3641169600.000000    
+SN = "F036A"
+NomVal = 100.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor228]
+CalDate = 3641169600.000000    
+SN = "F054A"
+NomVal = 100.000000    
+CalVal = 0.139334
+Alpha = 0.004892    
+Beta = 0.000264   
+PCR = 0.000000    
+Drift = 0.002184    
+StdTemp = 23.000000    
+
+[Resistor229]
+CalDate = 2714083200.000000    
+SN = "F058A"
+NomVal = 100.000000    
+CalVal = 0.000000    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor230]
+CalDate = 2714083200.000000    
+SN = "F059A"
+NomVal = 100.000000    
+CalVal = 0.000000    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor231]
+CalDate = 2714083200.000000    
+SN = "F060A"
+NomVal = 100.000000    
+CalVal = 0.000000    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor232]
+CalDate = 2714083200.000000    
+SN = "F061A"
+NomVal = 100.000000    
+CalVal = 0.000000    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor233]
+CalDate = 2714083200.000000    
+SN = "F062A"
+NomVal = 100.000000    
+CalVal = 0.000000    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor234]
+CalDate = 2714083200.000000    
+SN = "F063A"
+NomVal = 100.000000    
+CalVal = 0.000000    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor235]
+CalDate = 2714083200.000000    
+SN = "F064A"
+NomVal = 100.000000    
+CalVal = 0.000000    
+Alpha = 0.008124    
+Beta = 0.001267    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor236]
+CalDate = 3641169600.000000    
+SN = "H1KD"
+NomVal = 10000.000000    
+CalVal = 27.068681    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.705000    
+StdTemp = 25.000000    
+
+[Resistor237]
+CalDate = 3641169600.000000    
+SN = "H4P"
+NomVal = 1.000000    
+CalVal = -11.767519    
+Alpha = 1.070100    
+Beta = -0.527100    
+PCR = 0.000000    
+Drift = -0.282100    
+StdTemp = 25.000000    
+
+[Resistor238]
+CalDate = 3641169600.000000    
+SN = "H4S"
+NomVal = 100.000000    
+CalVal = -11.767519    
+Alpha = 1.070100    
+Beta = -0.527100    
+PCR = 0.000000    
+Drift = -0.282100    
+StdTemp = 25.000000    
+
+[Resistor239]
+CalDate = 3641169600.000000    
+SN = "HD1M"
+NomVal = 1000000.000000    
+CalVal = 29.537861    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.580700    
+StdTemp = 25.000000    
+
+[Resistor240]
+CalDate = 3641169600.000000    
+SN = "HR10148"
+NomVal = 10000000000.000000    
+CalVal = 4937.418225    
+Alpha = -84.045000    
+Beta = 0.098800    
+PCR = 0.000000    
+Drift = 29.434000    
+StdTemp = 23.000000    
+
+[Resistor241]
+CalDate = 3641169600.000000    
+SN = "HR10149"
+NomVal = 10000000000.000000    
+CalVal = -1199.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor242]
+CalDate = 3641169600.000000    
+SN = "HR10163"
+NomVal = 10000000000.000000    
+CalVal = 444.070794    
+Alpha = -31.941000    
+Beta = -0.987300    
+PCR = 0.000000    
+Drift = 115.850000    
+StdTemp = 23.000000    
+
+[Resistor243]
+CalDate = 3641169600.000000    
+SN = "HR10164"
+NomVal = 10000000000.000000    
+CalVal = 1187.211743    
+Alpha = -49.131000    
+Beta = -0.508800    
+PCR = 0.000000    
+Drift = 228.660000    
+StdTemp = 23.000000    
+
+[Resistor244]
+CalDate = 3641169600.000000    
+SN = "HR10431"
+NomVal = 10000000000.000000    
+CalVal = 226.716313    
+Alpha = -4.497500    
+Beta = 0.351600    
+PCR = 0.000000    
+Drift = 14.131000    
+StdTemp = 23.000000    
+
+[Resistor245]
+CalDate = 3641169600.000000    
+SN = "HR10432"
+NomVal = 10000000000.000000    
+CalVal = 206.715122    
+Alpha = -3.105300    
+Beta = 0.344100    
+PCR = 0.000000    
+Drift = 10.369000    
+StdTemp = 23.000000    
+
+[Resistor246]
+CalDate = 3641169600.000000    
+SN = "HR10433"
+NomVal = 10000000000.000000    
+CalVal = 69.180728    
+Alpha = -3.455300    
+Beta = 0.410900    
+PCR = 0.000000    
+Drift = 3.357400    
+StdTemp = 23.000000    
+
+[Resistor247]
+CalDate = 3641169600.000000    
+SN = "HR10434"
+NomVal = 10000000000.000000    
+CalVal = 64.269019    
+Alpha = -3.931300    
+Beta = 0.327100    
+PCR = 0.000000    
+Drift = 4.168300    
+StdTemp = 23.000000    
+
+[Resistor248]
+CalDate = 3641169600.000000    
+SN = "HR10435"
+NomVal = 10000000000.000000    
+CalVal = -20.453956    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.930300    
+StdTemp = 23.000000    
+
+[Resistor249]
+CalDate = 3641169600.000000    
+SN = "HR10436"
+NomVal = 10000000000.000000    
+CalVal = 278.715654    
+Alpha = -2.815900    
+Beta = 0.388400    
+PCR = 0.000000    
+Drift = 19.370000    
+StdTemp = 23.000000    
+
+[Resistor250]
+CalDate = 3641169600.000000    
+SN = "HR10461"
+NomVal = 10000000000.000000    
+CalVal = -470.027675    
+Alpha = 20.273000    
+Beta = -0.103900    
+PCR = 0.000000    
+Drift = 60.424000    
+StdTemp = 23.000000    
+
+[Resistor251]
+CalDate = 3641169600.000000    
+SN = "HR10462"
+NomVal = 10000000000.000000    
+CalVal = -656.550185    
+Alpha = 26.896000    
+Beta = -1.377700    
+PCR = 0.000000    
+Drift = 41.975000    
+StdTemp = 23.000000    
+
+[Resistor252]
+CalDate = 3641169600.000000    
+SN = "HR11203"
+NomVal = 100000000000.000000    
+CalVal = -1824.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor253]
+CalDate = 3641169600.000000    
+SN = "HR11204"
+NomVal = 100000000000.000000    
+CalVal = -3078.782994    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 2.115800    
+StdTemp = 23.000000    
+
+[Resistor254]
+CalDate = 3641169600.000000    
+SN = "HR11205"
+NomVal = 100000000000.000000    
+CalVal = -7472.182665    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 8.896200    
+StdTemp = 23.000000    
+
+[Resistor255]
+CalDate = 3641169600.000000    
+SN = "HR11206"
+NomVal = 100000000000.000000    
+CalVal = 2662.344786    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 5.878900    
+StdTemp = 23.000000    
+
+[Resistor256]
+CalDate = 3641169600.000000    
+SN = "HR11211"
+NomVal = 100000000000.000000    
+CalVal = -7374.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor257]
+CalDate = 3641169600.000000    
+SN = "HR11213"
+NomVal = 100000000000.000000    
+CalVal = -4226.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor258]
+CalDate = 3641169600.000000    
+SN = "HR1204"
+NomVal = 1000000000000.000000    
+CalVal = -3542.209055    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 3.765400    
+StdTemp = 23.000000    
+
+[Resistor259]
+CalDate = 3641169600.000000    
+SN = "HR12351"
+NomVal = 1000000000000.000000    
+CalVal = 4008.617794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor260]
+CalDate = 3641169600.000000    
+SN = "HR12352"
+NomVal = 1000000000000.000000    
+CalVal = -20137.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor261]
+CalDate = 3641169600.000000    
+SN = "HR12353"
+NomVal = 1000000000000.000000    
+CalVal = -10914.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor262]
+CalDate = 3641169600.000000    
+SN = "HR12354"
+NomVal = 1000000000000.000000    
+CalVal = -7820.982206    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor263]
+CalDate = 3641169600.000000    
+SN = "HR12362"
+NomVal = 1000000000000.000000    
+CalVal = -7692.881261    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 13.009000    
+StdTemp = 23.000000    
+
+[Resistor264]
+CalDate = 3641169600.000000    
+SN = "HR12363"
+NomVal = 1000000000000.000000    
+CalVal = 32945.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor265]
+CalDate = 3641169600.000000    
+SN = "HR12366"
+NomVal = 1000000000000.000000    
+CalVal = 29481.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor266]
+CalDate = 3641169600.000000    
+SN = "HR12369"
+NomVal = 1000000000000.000000    
+CalVal = 33392.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor267]
+CalDate = 3641169600.000000    
+SN = "HR12372"
+NomVal = 1000000000000.000000    
+CalVal = 14214.371638    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 33.921000    
+StdTemp = 23.000000    
+
+[Resistor268]
+CalDate = 3641169600.000000    
+SN = "HR12373"
+NomVal = 1000000000000.000000    
+CalVal = 4444.154275    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 34.271000    
+StdTemp = 23.000000    
+
+[Resistor269]
+CalDate = 3641169600.000000    
+SN = "HR12374"
+NomVal = 1000000000000.000000    
+CalVal = 20600.619514    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 20.930000    
+StdTemp = 23.000000    
+
+[Resistor270]
+CalDate = 3641169600.000000    
+SN = "HR12380"
+NomVal = 1000000000000.000000    
+CalVal = 48406.261830    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 30.974000    
+StdTemp = 23.000000    
+
+[Resistor271]
+CalDate = 3641169600.000000    
+SN = "HR1305"
+NomVal = 10000000000000.000000    
+CalVal = 33680.022258    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 30.136000    
+StdTemp = 23.000000    
+
+[Resistor272]
+CalDate = 3641169600.000000    
+SN = "HR13301"
+NomVal = 10000000000000.000000    
+CalVal = -571.355135    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 36.154000    
+StdTemp = 23.000000    
+
+[Resistor273]
+CalDate = 3641169600.000000    
+SN = "HR13304"
+NomVal = 10000000000000.000000    
+CalVal = -37377.030559    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -251.402000    
+StdTemp = 23.000000    
+
+[Resistor274]
+CalDate = 3641169600.000000    
+SN = "HR13306"
+NomVal = 10000000000000.000000    
+CalVal = 40400.750211    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 57.368000    
+StdTemp = 23.000000    
+
+[Resistor275]
+CalDate = 3641169600.000000    
+SN = "HR14283"
+NomVal = 100000000000000.000000    
+CalVal = 63077.563895    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -63.064000    
+StdTemp = 23.000000    
+
+[Resistor276]
+CalDate = 3641169600.000000    
+SN = "HR7111"
+NomVal = 10000000.000000    
+CalVal = 44.279931    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1.607500    
+StdTemp = 23.000000    
+
+[Resistor277]
+CalDate = 3641169600.000000    
+SN = "HR7112"
+NomVal = 10000000.000000    
+CalVal = 77.560467    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.972000    
+StdTemp = 23.000000    
+
+[Resistor278]
+CalDate = 3641169600.000000    
+SN = "HR7549"
+NomVal = 10000000.000000    
+CalVal = 19.651197    
+Alpha = 0.850500    
+Beta = -0.042300    
+PCR = 0.000000    
+Drift = -0.143800    
+StdTemp = 23.000000    
+
+[Resistor279]
+CalDate = 3641169600.000000    
+SN = "HR7550"
+NomVal = 10000000.000000    
+CalVal = 80.518640    
+Alpha = 1.500000    
+Beta = -0.009000    
+PCR = 0.000000    
+Drift = 2.430600    
+StdTemp = 23.000000    
+
+[Resistor280]
+CalDate = 3641169600.000000    
+SN = "HR7551"
+NomVal = 10000000.000000    
+CalVal = 32.005076    
+Alpha = 3.230000    
+Beta = -0.015000    
+PCR = 0.000000    
+Drift = 1.191400    
+StdTemp = 23.000000    
+
+[Resistor281]
+CalDate = 3641169600.000000    
+SN = "HR7552"
+NomVal = 10000000.000000    
+CalVal = 63.460910    
+Alpha = 1.370000    
+Beta = -0.011800    
+PCR = 0.000000    
+Drift = 1.674200    
+StdTemp = 23.000000    
+
+[Resistor282]
+CalDate = 3641169600.000000    
+SN = "HR7677"
+NomVal = 10000000.000000    
+CalVal = -19.986546    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -0.353700    
+StdTemp = 23.000000    
+
+[Resistor283]
+CalDate = 3641169600.000000    
+SN = "HR8030"
+NomVal = 100000000.000000    
+CalVal = 39.883679    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 2.232700    
+StdTemp = 23.000000    
+
+[Resistor284]
+CalDate = 3641169600.000000    
+SN = "HR8131"
+NomVal = 100000000.000000    
+CalVal = 135.574075    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 3.185700    
+StdTemp = 23.000000    
+
+[Resistor285]
+CalDate = 3641169600.000000    
+SN = "HR8132"
+NomVal = 100000000.000000    
+CalVal = 120.937546    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 2.962000    
+StdTemp = 23.000000    
+
+[Resistor286]
+CalDate = 3641169600.000000    
+SN = "HR8133"
+NomVal = 1000000.000000    
+CalVal = 68.974438    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.739500    
+StdTemp = 23.000000    
+
+[Resistor287]
+CalDate = 3641169600.000000    
+SN = "HR8134"
+NomVal = 100000000.000000    
+CalVal = 84.407466    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.916900    
+StdTemp = 23.000000    
+
+[Resistor288]
+CalDate = 3641169600.000000    
+SN = "HR8145"
+NomVal = 100000000.000000    
+CalVal = -282.973879    
+Alpha = 3.284600    
+Beta = -0.000900    
+PCR = 0.000000    
+Drift = 25.750000    
+StdTemp = 23.000000    
+
+[Resistor289]
+CalDate = 3641169600.000000    
+SN = "HR8146"
+NomVal = 100000000.000000    
+CalVal = -89.684040    
+Alpha = 2.119600    
+Beta = -0.033300    
+PCR = 0.000000    
+Drift = 48.728000    
+StdTemp = 23.000000    
+
+[Resistor290]
+CalDate = 3641169600.000000    
+SN = "HR8147"
+NomVal = 100000000.000000    
+CalVal = -236.666439    
+Alpha = -2.211100    
+Beta = -0.002100    
+PCR = 0.000000    
+Drift = 33.145000    
+StdTemp = 23.000000    
+
+[Resistor291]
+CalDate = 3641169600.000000    
+SN = "HR8148"
+NomVal = 100000000.000000    
+CalVal = -484.870518    
+Alpha = -1.416600    
+Beta = 0.005000    
+PCR = 0.000000    
+Drift = 22.814000    
+StdTemp = 23.000000    
+
+[Resistor292]
+CalDate = 3641169600.000000    
+SN = "HR8149"
+NomVal = 100000000.000000    
+CalVal = -267.006170    
+Alpha = 5.807100    
+Beta = -0.017300    
+PCR = 0.000000    
+Drift = 22.807000    
+StdTemp = 23.000000    
+
+[Resistor293]
+CalDate = 3641169600.000000    
+SN = "HR815A"
+NomVal = 10000000000.000000    
+CalVal = 1967.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor294]
+CalDate = 3641169600.000000    
+SN = "HR8301"
+NomVal = 100000000.000000    
+CalVal = 4486.200115    
+Alpha = -98.470000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -8.020200    
+StdTemp = 23.000000    
+
+[Resistor295]
+CalDate = 3641169600.000000    
+SN = "HR8303"
+NomVal = 100000000.000000    
+CalVal = -892.718048    
+Alpha = -3.140000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -16.442000    
+StdTemp = 23.000000    
+
+[Resistor296]
+CalDate = 3641169600.000000    
+SN = "HR8304"
+NomVal = 100000000.000000    
+CalVal = -857.510988    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = -7.365400    
+StdTemp = 23.000000    
+
+[Resistor297]
+CalDate = 3641169600.000000    
+SN = "HR9101"
+NomVal = 1000000000.000000    
+CalVal = 130.820091    
+Alpha = -26.915000    
+Beta = 0.789800    
+PCR = 0.000000    
+Drift = 6.192400    
+StdTemp = 23.000000    
+
+[Resistor298]
+CalDate = 3641169600.000000    
+SN = "HR9102"
+NomVal = 1000000000.000000    
+CalVal = -28.902203    
+Alpha = -29.226000    
+Beta = 0.776600    
+PCR = 0.000000    
+Drift = 2.460400    
+StdTemp = 23.000000    
+
+[Resistor299]
+CalDate = 3641169600.000000    
+SN = "HR9104"
+NomVal = 1000000000.000000    
+CalVal = 37.615275    
+Alpha = -22.081000    
+Beta = 0.761500    
+PCR = 0.000000    
+Drift = 1.099000    
+StdTemp = 23.000000    
+
+[Resistor300]
+CalDate = 3641169600.000000    
+SN = "HR9105"
+NomVal = 1000000000.000000    
+CalVal = 10.288641    
+Alpha = -30.064000    
+Beta = 0.544400    
+PCR = 0.000000    
+Drift = 2.294800    
+StdTemp = 23.000000    
+
+[Resistor301]
+CalDate = 3641169600.000000    
+SN = "HR9106"
+NomVal = 1000000000.000000    
+CalVal = 807.124804    
+Alpha = -23.314000    
+Beta = 0.682200    
+PCR = 0.000000    
+Drift = 2.162500    
+StdTemp = 23.000000    
+
+[Resistor302]
+CalDate = 3641169600.000000    
+SN = "HR9107"
+NomVal = 1000000000.000000    
+CalVal = -112.839239    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 22.506000    
+StdTemp = 23.000000    
+
+[Resistor303]
+CalDate = 3641169600.000000    
+SN = "HR9120"
+NomVal = 1000000000.000000    
+CalVal = 155.025766    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 2.389600    
+StdTemp = 23.000000    
+
+[Resistor304]
+CalDate = 3641169600.000000    
+SN = "HR9122"
+NomVal = 1000000000.000000    
+CalVal = 513.017794    
+Alpha = 0.793000    
+Beta = -0.069100    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor305]
+CalDate = 3641169600.000000    
+SN = "HR9133"
+NomVal = 1000000000.000000    
+CalVal = 865.017794    
+Alpha = 5.843600    
+Beta = 0.150400    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor306]
+CalDate = 3641169600.000000    
+SN = "HR9155"
+NomVal = 10000000.000000    
+CalVal = 60.767111    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1.215200    
+StdTemp = 23.000000    
+
+[Resistor307]
+CalDate = 3641169600.000000    
+SN = "HR9166"
+NomVal = 1000000000.000000    
+CalVal = 735.017794    
+Alpha = 6.506400    
+Beta = -0.039800    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor308]
+CalDate = 3641169600.000000    
+SN = "HR9203"
+NomVal = 1000000000.000000    
+CalVal = -588.266709    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 7.488300    
+StdTemp = 23.000000    
+
+[Resistor309]
+CalDate = 3641169600.000000    
+SN = "HR9411"
+NomVal = 1000000000.000000    
+CalVal = -427.244356    
+Alpha = -1.825800    
+Beta = 0.444400    
+PCR = 0.000000    
+Drift = 60.000000    
+StdTemp = 23.000000    
+
+[Resistor310]
+CalDate = 3641169600.000000    
+SN = "HR9422"
+NomVal = 1000000000.000000    
+CalVal = 307.489790    
+Alpha = 5.856800    
+Beta = 0.302600    
+PCR = 0.000000    
+Drift = 12.024000    
+StdTemp = 23.000000    
+
+[Resistor311]
+CalDate = 3641169600.000000    
+SN = "HR9423"
+NomVal = 1000000000.000000    
+CalVal = 92.530518    
+Alpha = 1.842100    
+Beta = 0.332800    
+PCR = 0.000000    
+Drift = 5.795600    
+StdTemp = 23.000000    
+
+[Resistor312]
+CalDate = 3641169600.000000    
+SN = "HR9424"
+NomVal = 1000000000.000000    
+CalVal = 66.576767    
+Alpha = 6.218000    
+Beta = 0.355000    
+PCR = 0.000000    
+Drift = 5.655500    
+StdTemp = 23.000000    
+
+[Resistor313]
+CalDate = 3641169600.000000    
+SN = "HR9425"
+NomVal = 1000000000.000000    
+CalVal = 1.255866    
+Alpha = -0.025500    
+Beta = 0.332700    
+PCR = 0.000000    
+Drift = 2.540800    
+StdTemp = 23.000000    
+
+[Resistor314]
+CalDate = 3641169600.000000    
+SN = "HR9426"
+NomVal = 1000000000.000000    
+CalVal = 151.453562    
+Alpha = 3.496600    
+Beta = 0.360800    
+PCR = 0.000000    
+Drift = 8.576000    
+StdTemp = 23.000000    
+
+[Resistor315]
+CalDate = 3641169600.000000    
+SN = "HR9427"
+NomVal = 1000000000.000000    
+CalVal = 68.523678    
+Alpha = -4.475900    
+Beta = 0.294000    
+PCR = 0.000000    
+Drift = 3.926000    
+StdTemp = 23.000000    
+
+[Resistor316]
+CalDate = 3641169600.000000    
+SN = "HR9444"
+NomVal = 1000000000.000000    
+CalVal = -1769.982206    
+Alpha = -17.367000    
+Beta = 0.392600    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 23.000000    
+
+[Resistor317]
+CalDate = 3641169600.000000    
+SN = "J/6"
+NomVal = 1000000.000000    
+CalVal = 39.855819    
+Alpha = 3.204500    
+Beta = -0.089500    
+PCR = 0.000000    
+Drift = 0.471500    
+StdTemp = 23.000000    
+
+[Resistor318]
+CalDate = 3641169600.000000    
+SN = "J/7"
+NomVal = 10000000.000000    
+CalVal = 5.562648    
+Alpha = 0.360000    
+Beta = -0.050000    
+PCR = 0.000000    
+Drift = -9.559600    
+StdTemp = 23.000000    
+
+[Resistor319]
+CalDate = 3641169600.000000    
+SN = "J/8"
+NomVal = 100000000.000000    
+CalVal = 106.553692    
+Alpha = 0.076400    
+Beta = -0.005700    
+PCR = 0.000000    
+Drift = 1.488000    
+StdTemp = 23.000000    
+
+[Resistor320]
+CalDate = 3641169600.000000    
+SN = "J/895"
+NomVal = 100000000.000000    
+CalVal = 12.546177    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.427700    
+StdTemp = 23.000000    
+
+[Resistor321]
+CalDate = 3641169600.000000    
+SN = "J/9"
+NomVal = 1000000000.000000    
+CalVal = 99.218558    
+Alpha = 0.010000    
+Beta = -0.200000    
+PCR = 0.000000    
+Drift = -0.075300    
+StdTemp = 23.000000    
+
+[Resistor322]
+CalDate = 3641169600.000000    
+SN = "MCSRES-9"
+NomVal = 1000000000.000000    
+CalVal = -752.258351    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 9.274500    
+StdTemp = 23.000000    
+
+[Resistor323]
+CalDate = 3641169600.000000    
+SN = "NA03"
+NomVal = 10000000000.000000    
+CalVal = 8817.223572    
+Alpha = -1658.320000    
+Beta = -6.800000    
+PCR = 0.000000    
+Drift = 170.282000    
+StdTemp = 23.000000    
+
+[Resistor324]
+CalDate = 3641169600.000000    
+SN = "NB01"
+NomVal = 100000000000.000000    
+CalVal = 13680.455040    
+Alpha = -1644.780000    
+Beta = -0.650000    
+PCR = 0.000000    
+Drift = 107.517500    
+StdTemp = 23.000000    
+
+[Resistor325]
+CalDate = 3641169600.000000    
+SN = "NBS13"
+NomVal = 10000000000000.000000    
+CalVal = -40313.872620    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 972.933600    
+StdTemp = 23.000000    
+
+[Resistor326]
+CalDate = 3641169600.000000    
+SN = "NC01"
+NomVal = 1000000000000.000000    
+CalVal = 5514.055687    
+Alpha = -735.380000    
+Beta = -3.880000    
+PCR = 0.000000    
+Drift = 8.919600    
+StdTemp = 23.000000    
+
+[Resistor327]
+CalDate = 3641169600.000000    
+SN = "ND01"
+NomVal = 10000000000000.000000    
+CalVal = 61437.756084    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 1793.288300    
+StdTemp = 23.000000    
+
+[Resistor328]
+CalDate = 3641169600.000000    
+SN = "QHR"
+NomVal = 12906.403500    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 0.000000    
+
+[Resistor329]
+CalDate = 3641169600.000000    
+SN = "SP036"
+NomVal = 12906.403500    
+CalVal = -3.421254   
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = -0.005400    
+Drift = 0.023961    
+StdTemp = 25.000000    
+
+[Resistor330]
+CalDate = 3641169600.000000    
+SN = "SP55"
+NomVal = 1000.000000    
+CalVal = -2.142950    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.025100    
+StdTemp = 25.000000    
+
+[Resistor331]
+CalDate = 3641169600.000000    
+SN = "SPO036"
+NomVal = 12906.000000    
+CalVal = 0.017794    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000    
+StdTemp = 25.000000    
+
+[Resistor332]
+CalDate = 3641169600.000000
+SN = "VH4B"
+NomVal = 12906.000000
+CalVal = 0.017794
+Alpha = -0.504971
+Beta = 0.007561
+PCR = 0.000000
+Drift = 0.000000
+StdTemp = 23.000000
+
+[Resistor333]
+CalDate = 3641169600.000000    
+SN = "334045"
+NomVal = 100.000000    
+CalVal = 0.000000    
+Alpha = 0.000000    
+Beta = 0.000000    
+PCR = 0.000000    
+Drift = 0.000000   
+StdTemp = 25.000000  

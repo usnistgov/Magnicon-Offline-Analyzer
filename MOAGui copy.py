@@ -6,17 +6,20 @@ from create_mag_ccc_datafile import writeDataFile
 import sys, os
 
 bp = os.getcwd()
-if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
-    sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
-    from ResDataBase import ResData
-else:
-    os.chdir('..')
-    os.chdir('ResDatabase')
-    ResDataDir = os.getcwd()
-    os.chdir('..')
-    os.chdir('Magnicon-Offline-Analyzer')
-    sys.path.append(ResDataDir)
-    from ResDataBase import ResData
+# if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
+#     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
+#     from ResDataBase import ResData
+# else:
+#     os.chdir('..')
+#     os.chdir('ResDatabase')
+#     ResDataDir = os.getcwd()
+#     os.chdir('..')
+#     os.chdir('Magnicon-Offline-Analyzer')
+#     sys.path.append(ResDataDir)
+#     from ResDataBase import ResData
+
+# Put ResDataBase.py in branch to use on non-NIST computers
+from ResDataBase import ResData
 
 from bvd_stats import bvd_stat
 from skew_and_kurt import skewness, kurtosis
@@ -51,7 +54,7 @@ class Ui_mainWindow(object):
         self.setButtons()
         self.BVDTabSetUp()
         self.AllanTabSetUp()
-        self.FourierTabSetUp()
+        self.SpecTabSetUp()
 
         self.tabWidget.currentChanged.connect(self.tabIndexChanged)
         
@@ -67,15 +70,16 @@ class Ui_mainWindow(object):
         QMetaObject.connectSlotsByName(mainWindow)
 
     def initializations(self):
-        try:
-            self.R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
-        except FileNotFoundError:
-            self.R = ResData(ResDataDir)
+        # try:
+        #     self.R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
+        # except FileNotFoundError:
+        #     self.R = ResData(ResDataDir)
+        self.R = ResData(bp)
         self.validFile = False
         self.txtFilePath = ''
         self.plottedBVD = False
         self.plottedAllan = False
-        self.plottedFourier = False
+        self.plottedSpec = False
         self.data = False
 
         self.R1Temp = 25.0000
@@ -499,21 +503,21 @@ class Ui_mainWindow(object):
         self.AllanHorizontalLayout.addWidget(self.OverlappingComboBox)
         self.AllanVerticalLayout.addLayout(self.AllanHorizontalLayout)
 
-    def FourierTabSetUp(self):
-        self.FourierTab = QWidget()
-        self.tabWidget.addTab(self.FourierTab, "")
-        self.FourierVerticalLayoutWidget = QWidget(parent=self.FourierTab)
-        self.FourierVerticalLayoutWidget.setGeometry(QRect(0, 0, 951, 761))
-        self.FourierVerticalLayout = QVBoxLayout(self.FourierVerticalLayoutWidget)
+    def SpecTabSetUp(self):
+        self.SpecTab = QWidget()
+        self.tabWidget.addTab(self.SpecTab, "")
+        self.SpecVerticalLayoutWidget = QWidget(parent=self.SpecTab)
+        self.SpecVerticalLayoutWidget.setGeometry(QRect(0, 0, 951, 761))
+        self.SpecVerticalLayout = QVBoxLayout(self.SpecVerticalLayoutWidget)
 
-        self.Fourierfig = plt.figure()
-        self.FourierAx = self.Fourierfig.add_subplot(2,1,1)
-        self.FourierAx.tick_params(direction='in')
-        self.PowerSpecAx = self.Fourierfig.add_subplot(2,1,2)
+        self.Specfig = plt.figure()
+        self.SpecAx = self.Specfig.add_subplot(2,1,1)
+        self.SpecAx.tick_params(direction='in')
+        self.PowerSpecAx = self.Specfig.add_subplot(2,1,2)
         self.PowerSpecAx.tick_params(direction='in')
-        self.FourierCanvas = FigureCanvas(self.Fourierfig)
-        self.FourierVerticalLayout.addWidget(NavigationToolbar(self.FourierCanvas))
-        self.FourierVerticalLayout.addWidget(self.FourierCanvas)
+        self.SpecCanvas = FigureCanvas(self.Specfig)
+        self.SpecVerticalLayout.addWidget(NavigationToolbar(self.SpecCanvas))
+        self.SpecVerticalLayout.addWidget(self.SpecCanvas)
 
     def setButtons(self):
         self.StandardRBut = QPushButton(parent=self.SetResTab)
@@ -653,7 +657,7 @@ class Ui_mainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.BVDTab), _translate("mainWindow", "BVD"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.AllanTab), _translate("mainWindow", "Allan Dev."))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.FourierTab), _translate("mainWindow", "Fourier/Power Spec."))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.SpecTab), _translate("mainWindow", "Spec/Power Spec."))
         self.txtFileLabel.setText(_translate("mainWindow", ".txt File"))
         self.VMeanChkLabel.setText(_translate("mainWindow", "Mean Chk [V]"))
         self.StdDevChkLabel.setText(_translate("mainWindow", "Std. Dev. Chk"))
@@ -771,22 +775,22 @@ class Ui_mainWindow(object):
             self.Allanfig.set_tight_layout(True)
             self.AllanCanvas.draw()
 
-    def plotFourier(self):
-        if self.plottedFourier:
+    def plotSpec(self):
+        if self.plottedSpec:
             self.clearPlots()
 
-        # self.plottedFourier = True
+        # self.plottedSpec = True
 
-        self.FourierAx.set_title('Fast Fourier Transform')
-        self.FourierAx.set_ylabel('Magnitude')
-        self.FourierAx.set_xlabel('Frequency (Hz)')
+        self.SpecAx.set_title('Power Spectrum')
+        self.SpecAx.set_ylabel('Magnitude')
+        self.SpecAx.set_xlabel('Frequency (Hz)')
 
-        self.PowerSpecAx.set_title('Power Spectrum')
-        self.PowerSpecAx.set_ylabel('Power Spectrum from FFT')
+        self.PowerSpecAx.set_title('Power Spectrum from FFT')
+        self.PowerSpecAx.set_ylabel('Magnitude')
         self.PowerSpecAx.set_xlabel('Frequency (Hz)')
 
-        self.Fourierfig.set_tight_layout(True)
-        self.FourierCanvas.draw()
+        self.Specfig.set_tight_layout(True)
+        self.SpecCanvas.draw()
 
     def clearPlots(self):
         self.BVDax1.cla()
@@ -986,10 +990,10 @@ class Ui_mainWindow(object):
 
         self.plotCountCombo.clear()
 
-        if self.plottedBVD or self.plottedAllan or self.plottedFourier:
+        if self.plottedBVD or self.plottedAllan or self.plottedSpec:
             self.plottedBVD = False
             self.plottedAllan = False
-            self.plottedFourier = False
+            self.plottedSpec = False
             self.clearPlots()
 
     def stdR(self, R: str):
@@ -1133,7 +1137,7 @@ class Ui_mainWindow(object):
         elif self.tabWidget.currentIndex() == 2 and self.validFile:
             self.plotAllan()
         elif self.tabWidget.currentIndex() == 3 and self.validFile:
-            self.plotFourier()
+            self.plotSpec()
 
     def deleteBut(self):
         if self.plottedBVD and self.plotCountCombo.count():
