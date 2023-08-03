@@ -28,8 +28,8 @@ from tkinter import filedialog
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
-from matplotlib.ticker import StrMethodFormatter, NullFormatter, MaxNLocator
+# from matplotlib.figure import Figure
+from matplotlib.ticker import StrMethodFormatter, MaxNLocator
 from allan_deviation import allan
 from numpy import sqrt, std, ones
 
@@ -741,18 +741,20 @@ class Ui_mainWindow(object):
         self.Allanax1.set_yscale('log')
 
         # self.Allanax1.set_ylim([1E-9, 1E-8])
+        if self.bvd.bvdList:
+            bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
+            C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
+            C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
+            I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
+            I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
 
-        bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
-        C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
-        C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
-        I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
-        I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
-
-        self.Allanax1.plot(bvd.samples, bvd.tau_array)
-        self.Allanax2.plot(C1.samples, C1.tau_array)
-        self.Allanax3.plot(C2.samples, C2.tau_array)
-        self.Allanax4.plot(I1.samples, I1.tau_array, color='b')
-        self.Allanax4.plot(I2.samples, I2.tau_array, color='r')
+            self.Allanax1.plot(bvd.samples, bvd.tau_array)
+            self.Allanax2.plot(C1.samples, C1.tau_array)
+            self.Allanax3.plot(C2.samples, C2.tau_array)
+            self.Allanax4.plot(I1.samples, I1.tau_array, color='b')
+            self.Allanax4.plot(I2.samples, I2.tau_array, color='r')
+        else:
+            self.clearPlots()
 
         if self.validFile:
             self.Allanax1.set_title('Allan Deviation vs. Samples')
@@ -1169,7 +1171,6 @@ class Ui_mainWindow(object):
             self.deletedR2.pop(-1)
             if loop is None:
                 self.plotBVD()
-            self.testefsf
 
     def replotAll(self):
         looped = False
