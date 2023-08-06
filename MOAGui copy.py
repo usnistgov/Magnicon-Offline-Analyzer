@@ -743,8 +743,12 @@ class Ui_mainWindow(object):
         # self.Allanax1.set_ylim([1E-9, 1E-8])
         if self.bvd.bvdList:
             bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
-            C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
-            C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
+            if self.RButStatus == 'R1':
+                C1 = allan(input_array=self.bvd.C1R2List, allan_type=allan_type, overlapping=overlapping)
+                C2 = allan(input_array=self.bvd.C2R2List, allan_type=allan_type, overlapping=overlapping)
+            else:
+                C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
+                C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
             I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
             I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
 
