@@ -747,7 +747,7 @@ class Ui_mainWindow(object):
             I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
             I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
 
-            if allan_type != '2^n':
+            if allan_type != '2^n' and overlapping != 'overlapping':
                 self.Allanax1.set_xscale('log')
                 self.Allanax1.xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
                 self.Allanax1.xaxis.set_minor_formatter(StrMethodFormatter('{x:.0f}'))
@@ -773,9 +773,9 @@ class Ui_mainWindow(object):
             self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-            self.Allanax1.plot(bvd.samples, bvd.tau_array)
-            self.Allanax2.plot(C1.samples, C1.tau_array)
-            self.Allanax3.plot(C2.samples, C2.tau_array)
+            self.Allanax1.plot(bvd.samples, bvd.tau_array, color='b')
+            self.Allanax2.plot(C1.samples, C1.tau_array, color='b')
+            self.Allanax3.plot(C2.samples, C2.tau_array, color='b')
             self.Allanax4.plot(I1.samples, I1.tau_array, color='b')
             self.Allanax4.plot(I2.samples, I2.tau_array, color='r')
         else:
