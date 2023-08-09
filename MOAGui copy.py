@@ -739,11 +739,6 @@ class Ui_mainWindow(object):
             self.clearPlots()
         self.plottedAllan = True
         overlapping = is_overlapping(self.OverlappingComboBox.currentText())
-<<<<<<< HEAD
-=======
-
-        # self.Allanax1.set_ylim([1E-9, 1E-8])
->>>>>>> 3698515f1f8eab058d7fc6fd0a11f6baeaff07dd
         if self.bvd.bvdList:
             if self.AllanTypeComboBox.currentText() == '2^n':
                 tau_list = powers_of_2(int(len(self.bvd.bvdList)//2))
@@ -780,48 +775,15 @@ class Ui_mainWindow(object):
             # I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
             # I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
 
-<<<<<<< HEAD
-=======
-            if allan_type != '2^n' and overlapping != 'overlapping':
-                self.Allanax1.set_xscale('log')
-                self.Allanax1.xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax1.xaxis.set_minor_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax1.set_yscale('log')
-                self.Allanax2.set_xscale('log')
-                self.Allanax2.xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax2.xaxis.set_minor_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax2.set_yscale('log')
-                self.Allanax3.set_xscale('log')
-                self.Allanax3.xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax3.xaxis.set_minor_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax3.set_yscale('log')
-                self.Allanax4.set_xscale('log')
-                self.Allanax4.xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax4.set_yscale('log')
-            else:
-                self.Allanax4.set_xscale('log')
-                self.Allanax4.xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax4.xaxis.set_minor_formatter(StrMethodFormatter('{x:.0f}'))
-                self.Allanax4.set_yscale('log')
-
->>>>>>> 3698515f1f8eab058d7fc6fd0a11f6baeaff07dd
             self.Allanax1.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-<<<<<<< HEAD
             self.Allanax1.plot(bvd_tau, bvd_adev)
             self.Allanax2.plot(C1_tau, C1_adev)
             self.Allanax3.plot(C2_tau, C2_adev)
             self.Allanax4.plot(bvda_tau, bvda_adev, color='b')
             self.Allanax4.plot(bvdb_tau, bvdb_adev, color='r')
-=======
-            self.Allanax1.plot(bvd.samples, bvd.tau_array, color='b')
-            self.Allanax2.plot(C1.samples, C1.tau_array, color='b')
-            self.Allanax3.plot(C2.samples, C2.tau_array, color='b')
-            self.Allanax4.plot(I1.samples, I1.tau_array, color='b')
-            self.Allanax4.plot(I2.samples, I2.tau_array, color='r')
->>>>>>> 3698515f1f8eab058d7fc6fd0a11f6baeaff07dd
         else:
             self.clearPlots()
 
