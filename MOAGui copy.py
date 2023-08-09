@@ -1,9 +1,14 @@
-from PyQt6.QtWidgets import *
 from PyQt6.QtCore import QRect, QMetaObject, QCoreApplication
 from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,\
+                             QLabel, QPushButton, QComboBox, QTextBrowser, \
+                             QTabWidget, QSpacerItem, QGridLayout, \
+                             QLineEdit, QFrame, QSizePolicy, QMenuBar, QSpinBox, \
+                             QProgressBar, QToolButton, QStatusBar)
 from magnicon_ccc import magnicon_ccc
 from create_mag_ccc_datafile import writeDataFile
 import sys, os
+from numpy import linspace, array
 
 bp = os.getcwd()
 # if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
@@ -32,6 +37,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.ticker import StrMethodFormatter, MaxNLocator
 from allan_deviation import allan
 from numpy import sqrt, std, ones
+import mystat
 
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
@@ -463,12 +469,17 @@ class Ui_mainWindow(object):
         grid.addWidget(self.KurtosisEdit, 2, 7)
 
     def AllanTabSetUp(self):
+        """Set up the tab widget for showing allan deviation plots
+        Returns
+        -------
+        None.
+
+        """
         self.AllanTab = QWidget()
         self.tabWidget.addTab(self.AllanTab, "")
         self.AllanVerticalLayoutWidget = QWidget(parent=self.AllanTab)
         self.AllanVerticalLayoutWidget.setGeometry(QRect(0, 0, 951, 761))
-        self.AllanVerticalLayout = QVBoxLayout(self.AllanVerticalLayoutWidget)
-        
+        self.AllanVerticalLayout = QVBoxLayout(self.AllanVerticalLayoutWidget) 
         self.Allanfig = plt.figure()
         self.Allanax1 = self.Allanfig.add_subplot(2,2,1)
         self.Allanax2 = self.Allanfig.add_subplot(2,2,2)
@@ -481,9 +492,7 @@ class Ui_mainWindow(object):
         self.AllanCanvas = FigureCanvas(self.Allanfig)
         self.AllanVerticalLayout.addWidget(NavigationToolbar(self.AllanCanvas))
         self.AllanVerticalLayout.addWidget(self.AllanCanvas)
-
         self.AllanHorizontalLayout = QHBoxLayout()
-
         self.AllanTypeComboBox = QComboBox(parent=self.AllanTab)
         self.AllanTypeComboBox.setEditable(False)
         self.AllanTypeComboBox.addItem('all')
@@ -495,7 +504,6 @@ class Ui_mainWindow(object):
         self.OverlappingComboBox.addItem('non-overlapping')
         self.OverlappingComboBox.addItem('overlapping')
         self.OverlappingComboBox.currentIndexChanged.connect(self.plotAllan)
-
         self.AllanHorizontalSpacer = QSpacerItem(600, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.AllanHorizontalLayout.addWidget(self.AllanTypeComboBox)
@@ -680,7 +688,6 @@ class Ui_mainWindow(object):
         self.BVDax1.set_xlabel('Count')
         self.BVDax1.set_ylabel('Amplitude [V]')
         self.BVDax1.legend(['I+', 'I-'])
-
         # count = range(len(self.bvd.bvdList))
         if self.RButStatus == 'R1':
             self.BVDax2.scatter(self.bvdCount, self.bvd.R1List, color='b', zorder=3)
@@ -730,23 +737,51 @@ class Ui_mainWindow(object):
     def plotAllan(self):
         if self.plottedAllan:
             self.clearPlots()
-        
         self.plottedAllan = True
-        allan_type = self.AllanTypeComboBox.currentText()
         overlapping = is_overlapping(self.OverlappingComboBox.currentText())
+<<<<<<< HEAD
+=======
 
         # self.Allanax1.set_ylim([1E-9, 1E-8])
+>>>>>>> 3698515f1f8eab058d7fc6fd0a11f6baeaff07dd
         if self.bvd.bvdList:
-            bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
+            if self.AllanTypeComboBox.currentText() == '2^n':
+                tau_list = powers_of_2(int(len(self.bvd.bvdList)//2))
+            elif self.AllanTypeComboBox.currentText() == 'all':
+                tau_list = list(map(int, linspace(1, len(self.bvd.bvdList)//2, len(self.bvd.bvdList)//2)))
+            bvd_tau, bvd_adev, bvd_aerr = mystat.adev(array(self.bvd.bvdList), overlapping, tau_list)
+            # bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
             if self.RButStatus == 'R1':
-                C1 = allan(input_array=self.bvd.C1R2List, allan_type=allan_type, overlapping=overlapping)
-                C2 = allan(input_array=self.bvd.C2R2List, allan_type=allan_type, overlapping=overlapping)
+                if self.AllanTypeComboBox.currentText() == '2^n':
+                    tau_list_C1 = powers_of_2(int(len(self.bvd.C1R2List)//2))
+                    tau_list_C2 = powers_of_2(int(len(self.bvd.C2R2List)//2))
+                elif self.AllanTypeComboBox.currentText() == 'all':
+                    tau_list_C1 = list(map(int, linspace(1, len(self.bvd.C1R2List)//2, len(self.bvd.C1R2List)//2)))
+                    tau_list_C2 = list(map(int, linspace(1, len(self.bvd.C2R2List)//2, len(self.bvd.C2R2List)//2)))
+                C1_tau, C1_adev, C1_aerr = mystat.adev(array(self.bvd.C1R2List), overlapping, tau_list_C1)
+                C2_tau, C2_adev, C2_aerr = mystat.adev(array(self.bvd.C2R2List), overlapping, tau_list_C2)
             else:
-                C1 = allan(input_array=self.bvd.C1R1List, allan_type=allan_type, overlapping=overlapping)
-                C2 = allan(input_array=self.bvd.C2R1List, allan_type=allan_type, overlapping=overlapping)
-            I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
-            I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
+                if self.AllanTypeComboBox.currentText() == '2^n':
+                    tau_list_C1 = powers_of_2(int(len(self.bvd.C1R1List)//2))
+                    tau_list_C2 = powers_of_2(int(len(self.bvd.C2R1List)//2))
+                elif self.AllanTypeComboBox.currentText() == 'all':
+                    tau_list_C1 = list(map(int, linspace(1, len(self.bvd.C1R1List)//2, len(self.bvd.C1R1List)//2)))
+                    tau_list_C2 = list(map(int, linspace(1, len(self.bvd.C2R1List)//2, len(self.bvd.C2R1List)//2)))
+                C1_tau, C1_adev, C1_aerr = mystat.adev(array(self.bvd.C1R1List), overlapping, tau_list_C1)
+                C2_tau, C2_adev, C2_aerr = mystat.adev(array(self.bvd.C2R1List), overlapping, tau_list_C2)
+            if self.AllanTypeComboBox.currentText() == '2^n':
+                tau_list_bvda = powers_of_2(int(len(self.bvd.A)//2))
+                tau_list_bvdb = powers_of_2(int(len(self.bvd.B)//2))
+            elif self.AllanTypeComboBox.currentText() == 'all':
+                tau_list_bvda = list(map(int, linspace(1, len(self.bvd.A)//2, len(self.bvd.A)//2)))
+                tau_list_bvdb = list(map(int, linspace(1, len(self.bvd.B)//2, len(self.bvd.B)//2)))
+            bvda_tau, bvda_adev, bvda_aerr = mystat.adev(array(self.bvd.A), overlapping, tau_list_bvda)
+            bvdb_tau, bvdb_adev, bvdb_aerr = mystat.adev(array(self.bvd.B), overlapping, tau_list_bvdb)
+            # I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
+            # I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
 
+<<<<<<< HEAD
+=======
             if allan_type != '2^n' and overlapping != 'overlapping':
                 self.Allanax1.set_xscale('log')
                 self.Allanax1.xaxis.set_major_formatter(StrMethodFormatter('{x:.0f}'))
@@ -769,15 +804,24 @@ class Ui_mainWindow(object):
                 self.Allanax4.xaxis.set_minor_formatter(StrMethodFormatter('{x:.0f}'))
                 self.Allanax4.set_yscale('log')
 
+>>>>>>> 3698515f1f8eab058d7fc6fd0a11f6baeaff07dd
             self.Allanax1.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
 
+<<<<<<< HEAD
+            self.Allanax1.plot(bvd_tau, bvd_adev)
+            self.Allanax2.plot(C1_tau, C1_adev)
+            self.Allanax3.plot(C2_tau, C2_adev)
+            self.Allanax4.plot(bvda_tau, bvda_adev, color='b')
+            self.Allanax4.plot(bvdb_tau, bvdb_adev, color='r')
+=======
             self.Allanax1.plot(bvd.samples, bvd.tau_array, color='b')
             self.Allanax2.plot(C1.samples, C1.tau_array, color='b')
             self.Allanax3.plot(C2.samples, C2.tau_array, color='b')
             self.Allanax4.plot(I1.samples, I1.tau_array, color='b')
             self.Allanax4.plot(I2.samples, I2.tau_array, color='r')
+>>>>>>> 3698515f1f8eab058d7fc6fd0a11f6baeaff07dd
         else:
             self.clearPlots()
 
@@ -785,29 +829,39 @@ class Ui_mainWindow(object):
             self.Allanax1.set_title('Allan Deviation vs. Samples')
             self.Allanax1.set_ylabel('Allan Deviation')
             self.Allanax1.set_xlabel('\u03C4 (samples)')
+            self.Allanax1.set_yscale('log')
+            self.Allanax1.set_xscale('log')
 
             self.Allanax2.set_title('Allan Deviation of C1')
             self.Allanax2.set_ylabel('Allan Deviation')
             self.Allanax2.set_xlabel('\u03C4 (samples)')
+            self.Allanax2.set_yscale('log')
+            self.Allanax2.set_xscale('log')
 
             self.Allanax3.set_title('Allan Deviation of C2')
             self.Allanax3.set_ylabel('Allan Deviation')
             self.Allanax3.set_xlabel('\u03C4 (samples)')
+            self.Allanax3.set_yscale('log')
+            self.Allanax3.set_xscale('log')
 
             self.Allanax4.set_title('Allan Deviation of Bridge Voltage')
             self.Allanax4.set_ylabel('Allan Deviation')
             self.Allanax4.set_xlabel('\u03C4 (samples)')
+            self.Allanax4.set_yscale('log')
+            self.Allanax4.set_xscale('log')
             self.Allanax4.legend(['I+', 'I-'])
-
+    
             self.Allanfig.set_tight_layout(True)
             self.AllanCanvas.draw()
 
     def plotSpec(self):
+        samp_freq = 1/(self.dat.meas)
+        print (samp_freq)
         if self.plottedSpec:
             self.clearPlots()
-
-        # self.plottedSpec = True
-
+        # create the window function
+        mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvd.bvdList)*float(samp_freq)))
+        freq_bvd, mypsa_bvd = mystat.fft(1./(float(samp_freq)), array(self.bvd.bvdList), array(mywindow_mystat))
         self.SpecAx.set_title('Power Spectrum')
         self.SpecAx.set_ylabel('Magnitude')
         self.SpecAx.set_xlabel('Frequency (Hz)')
@@ -815,7 +869,9 @@ class Ui_mainWindow(object):
         self.PowerSpecAx.set_title('Power Spectrum from FFT')
         self.PowerSpecAx.set_ylabel('Magnitude')
         self.PowerSpecAx.set_xlabel('Frequency (Hz)')
-
+        
+        self.SpecAx.plot(freq_bvd, mypsa_bvd)
+        
         self.Specfig.set_tight_layout(True)
         self.SpecCanvas.draw()
 
@@ -835,7 +891,11 @@ class Ui_mainWindow(object):
         self.Allanax2.cla()
         self.Allanax3.cla()
         self.Allanax4.cla()
+
         self.AllanCanvas.draw()
+
+        self.SpecAx.cla()
+        self.SpecCanvas.draw()
 
     def RButClicked(self):
         if self.StandardRBut.pressed and self.RButStatus == 'R1':
@@ -1159,6 +1219,7 @@ class Ui_mainWindow(object):
                       system=self.MagElecComboBox.currentText(), probe=self.ProbeComboBox.currentText())
 
     def tabIndexChanged(self):
+        # I am not sure why the allan deviation needs to be recalculated everytime the tab is changed?
         if self.tabWidget.currentIndex() == 1 and self.validFile:
             self.plotBVD()
         elif self.tabWidget.currentIndex() == 2 and self.validFile:
@@ -1210,6 +1271,14 @@ def is_overlapping(overlapping: str) -> bool:
         return True
     else:
         return False
+
+def powers_of_2(n):
+    x=1
+    arr = []
+    while(x < n):
+        arr.append(x)
+        x = x*2
+    return arr
 
 def main():
     app = QApplication(sys.argv)
