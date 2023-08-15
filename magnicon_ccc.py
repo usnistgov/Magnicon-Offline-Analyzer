@@ -37,7 +37,7 @@ class magnicon_ccc:
             self.validFile = False
 
     # Parses the raw data (first .txt file)
-    def load_raw(self):
+    def load_raw(self) -> None:
         if not self.validFile:
             return
         self.rawData = []
@@ -115,7 +115,7 @@ class magnicon_ccc:
                     
 
     # Parses the bvd.txt file
-    def load_bvd(self):
+    def load_bvd(self) -> None:
         if not self.validFile:
             return
         with open (self.bvdFile, "r") as file:
@@ -161,7 +161,7 @@ class magnicon_ccc:
             self.bvdStd = std(self.bvd, ddof=1)
 
     # Parses the .cfg file
-    def load_cfg(self):
+    def load_cfg(self) -> None:
         if not self.validFile:
             return
         feedinIndex = [-97, -94.5, -92.0, -89.5, -87.0, -84.5, -82.0, -79.5, -77.0, -74.5, -72.0, -69.5, -67.0, -64.5, -62.0, 
@@ -211,26 +211,38 @@ class magnicon_ccc:
                     self.numCycStop = int(line.split('=')[-1].rstrip(' \n'))
 
     # Calculations using the parsed data
-    def calculations(self):
+    def calculations(self) -> None:
         # try:
         #     R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
         # except FileNotFoundError:
         #     R = ResData(ResDataDir)
         R = ResData(bp)
-        self.R1Pred = R.predictedValueUnix(self.R1SN, self.timeStamp)
-        self.R2Pred = R.predictedValueUnix(self.R2SN, self.timeStamp)
-        R1index = R.getSNindex(self.R1SN)
-        R2index = R.getSNindex(self.R2SN)
 
         # Finds the data on the two resistors in the CCC files from the resistor database
-        self.R1alpha = R.alpha[R1index]
-        self.R1beta = R.beta[R1index]
-        self.R1stdTemp = R.stdTemp[R1index]
-        self.R1pcr = R.pcr[R1index]
-        self.R2alpha = R.alpha[R2index]
-        self.R2beta = R.beta[R2index]
-        self.R2stdTemp = R.stdTemp[R2index]
-        self.R2pcr = R.pcr[R2index]
+        if self.R1SN in R.ResDict:
+            self.R1alpha   = R.ResDict[self.R1SN]['Alpha']
+            self.R1beta    = R.ResDict[self.R1SN]['Beta']
+            self.R1stdTemp = R.ResDict[self.R1SN]['StdTemp']
+            self.R1pcr     = R.ResDict[self.R1SN]['PCR']
+            self.R1Pred    = R.predictedValueUnix(self.R1SN, self.timeStamp)
+        else:
+            self.R1alpha   = 0
+            self.R1beta    = 0
+            self.R1stdTemp = 0
+            self.R1pcr     = 0
+            self.R1Pred    = 0
+        if self.R2SN in R.ResDict:
+            self.R2alpha   = R.ResDict[self.R2SN]['Alpha']
+            self.R2beta    = R.ResDict[self.R2SN]['Beta']
+            self.R2stdTemp = R.ResDict[self.R2SN]['StdTemp']
+            self.R2pcr     = R.ResDict[self.R2SN]['PCR']
+            self.R2Pred    = R.predictedValueUnix(self.R2SN, self.timeStamp)
+        else:
+            self.R2alpha   = 0
+            self.R2beta    = 0
+            self.R2stdTemp = 0
+            self.R2pcr     = 0
+            self.R2Pred    = 0
 
         # Time calculations
         if self.validFile:
@@ -243,7 +255,7 @@ class magnicon_ccc:
             self.measTime = self.fullCyc*self.measCyc
             self.measTimeStamp = self.sec2ts(self.measTime)
 
-    def sec2ts(self, sec: float):
+    def sec2ts(self, sec: float) -> str:
         a = [3600, 60, 60]
         ts = []
         for i in a:
@@ -261,4 +273,4 @@ if __name__ == '__main__':
     diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # mc = magnicon_ccc(file2)
     mc = magnicon_ccc(diffFile)
-    print(mc.measTimeStamp)
+    print(mc.R1Pred)

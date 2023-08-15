@@ -7,7 +7,7 @@ bp = os.getcwd()
 # Class writes the MDSS.txt file
 class writeDataFile():
     def __init__(self, text: str, dat_obj: magnicon_ccc, bvd_stat_obj: bvd_stat, RStatus: str, R1Temp: float, R2Temp: float, R1Pres: float,
-                R2Pres:float, I: str, polarity: str, system: str, probe: str):
+                R2Pres:float, I: str, polarity: str, system: str, probe: str) -> None:
         # Creates the MDSS file name according to the input .txt file's name
         dataFileName = text.replace('.txt', "")
         dataFileName = f'{dataFileName}_MDSS.txt'

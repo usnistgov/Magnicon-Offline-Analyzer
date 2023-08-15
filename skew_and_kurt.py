@@ -1,24 +1,22 @@
 from numpy import sum, sqrt
 
-def skewness(array: list):
+def skewness(array: list) -> float:
     r1, r2, l = default(array)
     return r2 * (sqrt(l * (l-1))/(l-2))
 
-
-
-def kurtosis(array: list):
+def kurtosis(array: list) -> float:
     r1, r2, l = default(array)
     return ((((r1-3)*(l+1))+6) * (l-1) * 1/((l-2)*(l-3))) + 3
 
-def default(array: list):
+def default(array: list) -> tuple[float, float, int]:
     l = len(array)
     s = sum(array)
     temp1 = []
     temp2 = []
     temp3 = []
     temp4 = []
-    for i in range(len(array)):
-        temp1.append(array[i] - (s/l))
+    for i, arr in enumerate(array):
+        temp1.append(arr - (s/l))
         temp2.append((temp1[i])**2)
         temp3.append(temp2[i]*temp2[i])
         temp4.append(temp1[i]*temp2[i])

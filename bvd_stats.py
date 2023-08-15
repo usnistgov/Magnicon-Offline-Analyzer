@@ -82,7 +82,7 @@ class bvd_stat:
         self.results(mag, T1, T2, P1, P2)
 
     # Results from data
-    def results(self, mag: magnicon_ccc, T1: float, T2: float, P1: float, P2: float):
+    def results(self, mag: magnicon_ccc, T1: float, T2: float, P1: float, P2: float) -> None:
         self.k = mag.deltaNApN1/mag.NA
         R1corr = (mag.R1alpha*(T1-mag.R1stdTemp) + mag.R1beta*(T1-mag.R1stdTemp)**2) - (mag.R1pcr*(P1-101325))/1000
         R2corr = (mag.R2alpha*(T2-mag.R2stdTemp) + mag.R2beta*(T2-mag.R2stdTemp)**2) - (mag.R2pcr*(P2-101325))/1000
@@ -100,7 +100,7 @@ class bvd_stat:
         self.C1R2List = []
         self.C2R1List = []
         self.C2R2List = []
-        for i in range(len(self.V1)):
+        for i, V1 in enumerate(self.V1):
             self.bvdList.append((self.V1[i]+self.V2[i])/2)
             ratioMeanList.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvdList[i]/mag.deltaI2R2))
             self.R1List.append((self.R1/ratioMeanList[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)

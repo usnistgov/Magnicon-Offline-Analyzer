@@ -80,7 +80,7 @@ class Ui_mainWindow(object):
         #     self.R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
         # except FileNotFoundError:
         #     self.R = ResData(ResDataDir)
-        self.R = ResData(bp)
+        # self.R = ResData(bp)
         self.validFile = False
         self.txtFilePath = ''
         self.plottedBVD = False
@@ -779,9 +779,9 @@ class Ui_mainWindow(object):
             self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-            self.Allanax1.plot(bvd_tau, bvd_adev)
-            self.Allanax2.plot(C1_tau, C1_adev)
-            self.Allanax3.plot(C2_tau, C2_adev)
+            self.Allanax1.plot(bvd_tau, bvd_adev, color='b')
+            self.Allanax2.plot(C1_tau, C1_adev, color='b')
+            self.Allanax3.plot(C2_tau, C2_adev, color='b')
             self.Allanax4.plot(bvda_tau, bvda_adev, color='b')
             self.Allanax4.plot(bvdb_tau, bvdb_adev, color='r')
         else:
@@ -821,7 +821,7 @@ class Ui_mainWindow(object):
         print (samp_freq)
         if self.plottedSpec:
             self.clearPlots()
-        # create the window function
+        # Create the window function
         mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvd.bvdList)*float(samp_freq)))
         freq_bvd, mypsa_bvd = mystat.fft(1./(float(samp_freq)), array(self.bvd.bvdList), array(mywindow_mystat))
         self.SpecAx.set_title('Power Spectrum')
@@ -967,6 +967,11 @@ class Ui_mainWindow(object):
 
         self.stdR(self.RButStatus)
 
+        self.plotAllan()
+        self.plotSpec()
+        self.plottedAllan = True
+        self.plottedSpec  = True
+
     def setInvalidData(self):
         self.validFile = False
         self.VMeanLineEdit.setText("")
@@ -1035,7 +1040,7 @@ class Ui_mainWindow(object):
         self.deletedBVD = []
         self.bvdCount = []
         self.deletedR1 = []
-        self.deletedR2
+        self.deletedR2 = []
 
         self.plotCountCombo.clear()
 
@@ -1181,13 +1186,12 @@ class Ui_mainWindow(object):
                       system=self.MagElecComboBox.currentText(), probe=self.ProbeComboBox.currentText())
 
     def tabIndexChanged(self):
-        # I am not sure why the allan deviation needs to be recalculated everytime the tab is changed?
         if self.tabWidget.currentIndex() == 1 and self.validFile:
             self.plotBVD()
-        elif self.tabWidget.currentIndex() == 2 and self.validFile:
-            self.plotAllan()
-        elif self.tabWidget.currentIndex() == 3 and self.validFile:
-            self.plotSpec()
+        # elif self.tabWidget.currentIndex() == 2 and self.validFile and not self.plottedAllan:
+        #     self.plotAllan()
+        # elif self.tabWidget.currentIndex() == 3 and self.validFile:
+        #     self.plotSpec()
 
     def deleteBut(self):
         if self.plottedBVD and self.plotCountCombo.count():
@@ -1234,7 +1238,7 @@ def is_overlapping(overlapping: str) -> bool:
     else:
         return False
 
-def powers_of_2(n):
+def powers_of_2(n: int) -> list:
     x=1
     arr = []
     while(x < n):

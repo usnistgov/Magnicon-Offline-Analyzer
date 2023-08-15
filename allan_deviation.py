@@ -1,3 +1,6 @@
+# Copy of LabView Code
+# Use mystat.py instead
+
 from magnicon_ccc import magnicon_ccc
 from numpy import sqrt, mean
 from math import floor
