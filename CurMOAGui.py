@@ -1,30 +1,15 @@
 from PyQt6.QtCore import QRect, QMetaObject, QCoreApplication
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,\
-                             QLabel, QPushButton, QComboBox, QTextBrowser, \
-                             QTabWidget, QSpacerItem, QGridLayout, \
-                             QLineEdit, QFrame, QSizePolicy, QMenuBar, QSpinBox, \
-                             QProgressBar, QToolButton, QStatusBar)
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
+                             QLabel, QPushButton, QComboBox, QTextBrowser, QTabWidget, \
+                             QSpacerItem, QGridLayout, QLineEdit, QFrame, QSizePolicy, \
+                             QMenuBar, QSpinBox, QProgressBar, QToolButton, QStatusBar)
 from magnicon_ccc import magnicon_ccc
 from create_mag_ccc_datafile import writeDataFile
 import sys, os
 from numpy import linspace, array
 
 bp = os.getcwd()
-# if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
-#     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
-#     from ResDataBase import ResData
-# else:
-#     os.chdir('..')
-#     os.chdir('ResDatabase')
-#     ResDataDir = os.getcwd()
-#     os.chdir('..')
-#     os.chdir('Magnicon-Offline-Analyzer')
-#     sys.path.append(ResDataDir)
-#     from ResDataBase import ResData
-
-# Put ResDataBase.py in branch to use on non-NIST computers
-from ResDataBase import ResData
 
 from bvd_stats import bvd_stat
 from skew_and_kurt import skewness, kurtosis
@@ -35,12 +20,11 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 # from matplotlib.figure import Figure
 from matplotlib.ticker import StrMethodFormatter, MaxNLocator
-from allan_deviation import allan
 from numpy import sqrt, std, ones
 import mystat
 
 class Ui_mainWindow(object):
-    def setupUi(self, mainWindow):
+    def setupUi(self, mainWindow) -> None:
         mainWindow.resize(989, 833)
         mainWindow.setWindowIcon(QIcon('analyzer.ico'))
 
@@ -75,12 +59,7 @@ class Ui_mainWindow(object):
         self.tabWidget.setCurrentIndex(0)
         QMetaObject.connectSlotsByName(mainWindow)
 
-    def initializations(self):
-        # try:
-        #     self.R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
-        # except FileNotFoundError:
-        #     self.R = ResData(ResDataDir)
-        # self.R = ResData(bp)
+    def initializations(self) -> None:
         self.validFile = False
         self.txtFilePath = ''
         self.plottedBVD = False
@@ -108,7 +87,7 @@ class Ui_mainWindow(object):
         self.deletedR2 = []
 
     # Set up for the labels
-    def setLabels(self):
+    def setLabels(self) -> None:
         self.R1OilDepthLabel = QLabel(parent=self.SetResTab)
         self.R1OilDepthLabel.setGeometry(QRect(130, 390, 101, 16))
         self.R2OilDepthLabel = QLabel(parent=self.SetResTab)
@@ -237,7 +216,7 @@ class Ui_mainWindow(object):
         self.CurrentButLabel.setGeometry(QRect(470, 710, 51, 16))
 
     # Set up the read only LineEdits
-    def setLineEdits(self):
+    def setLineEdits(self) -> None:
         self.R1TotalPresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1TotalPresLineEdit.setGeometry(QRect(440, 230, 113, 22))
         self.R1TotalPresLineEdit.setReadOnly(True)
@@ -406,7 +385,7 @@ class Ui_mainWindow(object):
         self.txtFileLineEdit.setGeometry(QRect(20, 620, 511, 22))
         self.txtFileLineEdit.returnPressed.connect(self.folderEdited)
 
-    def BVDTabSetUp(self):
+    def BVDTabSetUp(self) -> None:
         self.BVDTab = QWidget()
         self.tabWidget.addTab(self.BVDTab, "")
         self.BVDVerticalLayoutWidget = QWidget(parent=self.BVDTab)
@@ -468,7 +447,7 @@ class Ui_mainWindow(object):
         grid.addWidget(KurtosisLabel, 1, 7)
         grid.addWidget(self.KurtosisEdit, 2, 7)
 
-    def AllanTabSetUp(self):
+    def AllanTabSetUp(self) -> None:
         """Set up the tab widget for showing allan deviation plots
         Returns
         -------
@@ -511,7 +490,7 @@ class Ui_mainWindow(object):
         self.AllanHorizontalLayout.addWidget(self.OverlappingComboBox)
         self.AllanVerticalLayout.addLayout(self.AllanHorizontalLayout)
 
-    def SpecTabSetUp(self):
+    def SpecTabSetUp(self) -> None:
         self.SpecTab = QWidget()
         self.tabWidget.addTab(self.SpecTab, "")
         self.SpecVerticalLayoutWidget = QWidget(parent=self.SpecTab)
@@ -527,7 +506,7 @@ class Ui_mainWindow(object):
         self.SpecVerticalLayout.addWidget(NavigationToolbar(self.SpecCanvas))
         self.SpecVerticalLayout.addWidget(self.SpecCanvas)
 
-    def setButtons(self):
+    def setButtons(self) -> None:
         self.StandardRBut = QPushButton(parent=self.SetResTab)
         self.StandardRBut.setGeometry(QRect(460, 530, 71, 24))
         self.StandardRBut.setStyleSheet("color: white; background-color: red")
@@ -559,7 +538,7 @@ class Ui_mainWindow(object):
         self.folderToolButton.setIcon(QIcon(bp + r'\folder.ico'))
         self.folderToolButton.clicked.connect(self.folderClicked)
 
-    def setSpinBoxes(self):
+    def setSpinBoxes(self) -> None:
         self.ReadingDelaySpinBox = QSpinBox(parent=self.SetResTab)
         self.ReadingDelaySpinBox.setGeometry(QRect(440, 50, 113, 22))
         self.R1OilDepthSpinBox = QSpinBox(parent=self.SetResTab)
@@ -571,7 +550,7 @@ class Ui_mainWindow(object):
         self.R1OilDepthSpinBox.valueChanged.connect(self.oilDepth1Changed)
         self.R2OilDepthSpinBox.valueChanged.connect(self.oilDepth2Changed)
 
-    def setComboBoxes(self):
+    def setComboBoxes(self) -> None:
         self.MagElecComboBox = QComboBox(parent=self.SetResTab)
         self.MagElecComboBox.setGeometry(QRect(20, 680, 151, 22))
         self.MagElecComboBox.setEditable(False)
@@ -584,7 +563,7 @@ class Ui_mainWindow(object):
         self.ProbeComboBox.addItem('Magnicon1')
         self.ProbeComboBox.addItem('NIST1')
 
-    def setMisc(self):
+    def setMisc(self) -> None:
         self.SetResDivider = QFrame(parent=self.SetResTab)
         self.SetResDivider.setGeometry(QRect(580, -10, 20, 781))
         self.SetResDivider.setFrameShape(QFrame.Shape.VLine)
@@ -598,7 +577,7 @@ class Ui_mainWindow(object):
         self.progressBar.setGeometry(QRect(740, 680, 111, 23))
         self.progressBar.setProperty("value", 0)
 
-    def retranslateUi(self, mainWindow):
+    def retranslateUi(self, mainWindow) -> None:
         _translate = QCoreApplication.translate
         mainWindow.setWindowTitle(_translate("mainWindow", "Magnicon Offline Analyzer"))
         self.R1OilDepthLabel.setText(_translate("mainWindow", "R1 Oil Depth [mm]"))
@@ -675,9 +654,9 @@ class Ui_mainWindow(object):
         self.MDSSLabel.setText(_translate("mainWindow", "Save MDSS"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
 
-    def plotBVD(self):
+    def plotBVD(self) -> None:
         if self.plottedBVD:
-            self.clearPlots()
+            self.clearBVDPlot()
 
         self.plottedBVD = True
 
@@ -734,7 +713,7 @@ class Ui_mainWindow(object):
         self.SkewnessEdit.setText(str("{:.3f}".format(skewness(self.bvd.bvdList))))
         self.KurtosisEdit.setText(str("{:.3f}".format(kurtosis(self.bvd.bvdList))))
 
-    def plotAllan(self):
+    def plotAllan(self) -> None:
         if self.plottedAllan:
             self.clearPlots()
         self.plottedAllan = True
@@ -816,7 +795,7 @@ class Ui_mainWindow(object):
             self.Allanfig.set_tight_layout(True)
             self.AllanCanvas.draw()
 
-    def plotSpec(self):
+    def plotSpec(self) -> None:
         samp_freq = 1/(self.dat.meas)
         print (samp_freq)
         if self.plottedSpec:
@@ -837,7 +816,16 @@ class Ui_mainWindow(object):
         self.Specfig.set_tight_layout(True)
         self.SpecCanvas.draw()
 
-    def clearPlots(self):
+    def clearBVDPlot(self) -> None:
+        self.BVDax2.cla()
+        try:
+            self.BVDtwin2.remove()
+            self.BVDtwin2.set_visible(False)
+        except (AttributeError, KeyError):
+            pass
+        self.BVDcanvas.draw()
+
+    def clearPlots(self) -> None:
         self.BVDax1.cla()
         self.BVDax2.cla()
         try:
@@ -859,7 +847,7 @@ class Ui_mainWindow(object):
         self.SpecAx.cla()
         self.SpecCanvas.draw()
 
-    def RButClicked(self):
+    def RButClicked(self) -> None:
         if self.StandardRBut.pressed and self.RButStatus == 'R1':
             self.RButStatus = 'R2'
             self.StandardRBut.setText('R2')
@@ -873,7 +861,7 @@ class Ui_mainWindow(object):
             if self.validFile:
                 self.stdR(self.RButStatus)
 
-    def SquidButClicked(self):
+    def SquidButClicked(self) -> None:
         if self.SquidFeedBut.pressed and self.SquidFeedStatus == 'NEG':
             self.SquidFeedStatus = 'POS'
             self.SquidFeedBut.setText('Positive')
@@ -883,7 +871,7 @@ class Ui_mainWindow(object):
             self.SquidFeedBut.setText('Negative')
             self.SquidFeedBut.setStyleSheet("color: white; background-color: blue")
 
-    def CurrentButClicked(self):
+    def CurrentButClicked(self) -> None:
         if self.CurrentBut.pressed and self.CurrentButStatus == 'I1':
             self.CurrentButStatus = 'I2'
             self.CurrentBut.setText('I2')
@@ -893,7 +881,7 @@ class Ui_mainWindow(object):
             self.CurrentBut.setText('I1')
             self.CurrentBut.setStyleSheet("color: white; background-color: red")
 
-    def getData(self):
+    def getData(self) -> None:
         if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.txt')[0][-1].isnumeric():
             self.data = False
             self.validFile = True
@@ -908,7 +896,7 @@ class Ui_mainWindow(object):
         else:
             self.setInvalidData()
             
-    def setValidData(self):
+    def setValidData(self) -> None:
         self.VMeanLineEdit.setText(str("{:.6e}".format(self.dat.bvdMean)))
         self.VMeanChkLineEdit.setText(str("{:.6e}".format(self.bvd.mean)))
         self.Current1LineEdit.setText(str(self.dat.I1))
@@ -972,7 +960,7 @@ class Ui_mainWindow(object):
         self.plottedAllan = True
         self.plottedSpec  = True
 
-    def setInvalidData(self):
+    def setInvalidData(self) -> None:
         self.validFile = False
         self.VMeanLineEdit.setText("")
         self.VMeanChkLineEdit.setText("")
@@ -1050,7 +1038,7 @@ class Ui_mainWindow(object):
             self.plottedSpec = False
             self.clearPlots()
 
-    def stdR(self, R: str):
+    def stdR(self, R: str) -> None:
         if R == 'R1':
             self.R1ValueLineEdit.setText(str("{:5.10f}".format(self.bvd.R1)))
             self.R2ValueLineEdit.setText(str("{:5.10f}".format(self.dat.R2NomVal)))
@@ -1086,7 +1074,7 @@ class Ui_mainWindow(object):
             else:
                 self.R2PPMLineEdit.setText(str(0))
 
-    def R1PresChanged(self):
+    def R1PresChanged(self) -> None:
         try:
             try:
                 self.R1pres = int(self.R1PresLineEdit.text())
@@ -1097,7 +1085,7 @@ class Ui_mainWindow(object):
         except ValueError:
             self.R1PresLineEdit.setText(str(self.R1pres))
 
-    def R2PresChanged(self):
+    def R2PresChanged(self) -> None:
         try:
             try:
                 self.R2pres = int(self.R2PresLineEdit.text())
@@ -1108,17 +1096,17 @@ class Ui_mainWindow(object):
         except ValueError:
             self.R2PresLineEdit.setText(str(self.R2pres))
 
-    def oilDepth1Changed(self):
+    def oilDepth1Changed(self) -> None:
         self.R1OilDepth = self.R1OilDepthSpinBox.value()
         if self.R1PresLineEdit.text():
             self.updateOilDepth('R1')
 
-    def oilDepth2Changed(self):
+    def oilDepth2Changed(self) -> None:
         self.R2OilDepth = self.R2OilDepthSpinBox.value()
         if self.R2PresLineEdit.text():
             self.updateOilDepth('R2')
 
-    def updateOilDepth(self, R):
+    def updateOilDepth(self, R: str) -> None:
         if R == 'R1' or R == 'both':
             self.R1OilPres = 0.8465*9.81*self.R1OilDepth
             self.R1OilPresLineEdit.setText(str("{:.4f}".format(self.R1OilPres)))
@@ -1133,31 +1121,31 @@ class Ui_mainWindow(object):
             self.R2TotalPresLineEdit.setText(str("{:.4f}".format(self.R2TotPres)))
             self.R2OilDepthSpinBox.setValue(self.R2OilDepth)
 
-    def temp1Changed(self):
+    def temp1Changed(self) -> None:
         try:
             self.R1Temp = float(self.R1TempLineEdit.text())
             self.getData()
         except ValueError:
             self.R1TempLineEdit.setText(str("{:.4f}".format(self.R1Temp)))
 
-    def temp2Changed(self):
+    def temp2Changed(self) -> None:
         try:
             self.R2Temp = float(self.R2TempLineEdit.text())
             self.getData()
         except ValueError:
             self.R2TempLineEdit.setText(str("{:.4f}".format(self.R2Temp)))
 
-    def folderClicked(self):
+    def folderClicked(self) -> None:
         self.txtFilePath = filedialog.askopenfilename()
         tkinter.Tk().withdraw()
         self.txtFileLineEdit.setText(self.txtFilePath)
         self.getData()
 
-    def folderEdited(self):
+    def folderEdited(self) -> None:
         self.txtFilePath = self.txtFileLineEdit.text()
         self.getData()
 
-    def MDSSClicked(self):
+    def MDSSClicked(self) -> None:
         if self.saveStatus:
             self.saveStatus = False
             self.MDSSButton.setStyleSheet("color: white; background-color: red")
@@ -1170,7 +1158,7 @@ class Ui_mainWindow(object):
             self.saveButton.setEnabled(True)
             self.progressBar.setProperty('value', 0)
 
-    def saveMDSS(self):
+    def saveMDSS(self) -> None:
         self.progressBar.setProperty('value', 25)
         self.saveStatus = False
         self.MDSSButton.setStyleSheet("color: white; background-color: red")
@@ -1180,12 +1168,12 @@ class Ui_mainWindow(object):
         self.createDataFile()
         self.progressBar.setProperty('value', 100)
 
-    def createDataFile(self):
+    def createDataFile(self) -> None:
         writeDataFile(text=self.txtFile, dat_obj=self.dat, bvd_stat_obj=self.bvd, RStatus=self.RButStatus, R1Temp=self.R1Temp,
                       R2Temp=self.R2Temp, R1Pres=self.R1TotPres, R2Pres=self.R2TotPres, I=self.CurrentButStatus, polarity=self.SquidFeedStatus,
                       system=self.MagElecComboBox.currentText(), probe=self.ProbeComboBox.currentText())
 
-    def tabIndexChanged(self):
+    def tabIndexChanged(self) -> None:
         if self.tabWidget.currentIndex() == 1 and self.validFile:
             self.plotBVD()
         # elif self.tabWidget.currentIndex() == 2 and self.validFile and not self.plottedAllan:
@@ -1193,7 +1181,7 @@ class Ui_mainWindow(object):
         # elif self.tabWidget.currentIndex() == 3 and self.validFile:
         #     self.plotSpec()
 
-    def deleteBut(self):
+    def deleteBut(self) -> None:
         if self.plottedBVD and self.plotCountCombo.count():
             curIndex = self.plotCountCombo.currentIndex()
             self.deletedIndex.append(curIndex)
@@ -1209,7 +1197,7 @@ class Ui_mainWindow(object):
             self.bvd.R2List.pop(curIndex)
             self.plotBVD()
 
-    def restoreDeleted(self, loop=None):
+    def restoreDeleted(self, loop=None) -> None:
         if self.deletedCount:
             self.plotCountCombo.insertItem(self.deletedIndex[-1], f'Count {self.deletedCount[-1]}')
             self.bvdCount.insert(self.deletedIndex[-1], self.deletedCount[-1])
@@ -1224,7 +1212,7 @@ class Ui_mainWindow(object):
             if loop is None:
                 self.plotBVD()
 
-    def replotAll(self):
+    def replotAll(self) -> None:
         looped = False
         while(self.deletedCount):
             self.restoreDeleted(loop=True)
