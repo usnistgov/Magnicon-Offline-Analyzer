@@ -5,18 +5,19 @@ bp = os.getcwd()
 
 # Class that does calculations on the raw data
 class bvd_stat:
-    def __init__(self, text: str, T1: float, T2: float, P1: float, P2: float):
+    def __init__(self, text: str, T1: float, T2: float, P1: float, P2: float) -> None:
         mag = magnicon_ccc(text)
-        i = 0
-        self.V1 = []
-        self.V2 = []
-        self.A = []
-        self.B = []
-        self.bvdList = []
-        temp = []
-        start = False
+        i      = 0
         points = 0
-        cur = ''
+        start  = False
+        cur    = ''
+
+        self.V1      = []
+        self.V2      = []
+        self.A       = []
+        self.B       = []
+        self.bvdList = []
+        temp         = []
         # Runs through the raw data
         while (i < len(mag.rawData)):
             # Ensures the index is not greater than the length of the data
@@ -24,9 +25,9 @@ class bvd_stat:
                 break
             # Start at the first cycle ramping down
             if mag.phase[i] == 4 and not(start):
-                i += mag.ignored + int((mag.SHC-mag.ignored)/2)
+                i    += mag.ignored + int((mag.SHC-mag.ignored)/2)
                 start = True
-                cur = 'A1'
+                cur   = 'A1'
             # Stores A1 data
             if start and (points != int((mag.SHC-mag.ignored)/2)) and cur == 'A1':
                 temp.append(mag.rawData[i])
@@ -34,10 +35,10 @@ class bvd_stat:
             # On the last data point calulate the mean and prepare for B1 and B2
             elif start and (points == int((mag.SHC-mag.ignored)/2)) and cur == 'A1':
                 # A1 = sum(temp)/len(temp)
-                A1 = mean(temp)
-                temp = []
+                A1     = mean(temp)
+                temp   = []
                 points = 0
-                cur = 'B'
+                cur    = 'B'
                 # Ignored samples
                 i += mag.ignored
                 continue
@@ -49,12 +50,12 @@ class bvd_stat:
             elif start and (points == (mag.SHC-mag.ignored)) and cur == 'B':
                 # B1 = sum(temp[0:int((mag.SHC-mag.ignored)/2)])/len(temp[0:int((mag.SHC-mag.ignored)/2)])
                 # B2 = sum(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])/len(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])
-                B1 = mean(temp[0:int((mag.SHC-mag.ignored)/2)])
-                B2 = mean(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])
-                temp = []
+                B1     = mean(temp[0:int((mag.SHC-mag.ignored)/2)])
+                B2     = mean(temp[int((mag.SHC-mag.ignored)/2):(mag.SHC-mag.ignored)])
+                temp   = []
                 points = 0
-                cur = 'A2'
-                i += mag.ignored
+                cur    = 'A2'
+                i     += mag.ignored
                 continue
             if i > len(mag.rawData):
                 break
@@ -71,9 +72,9 @@ class bvd_stat:
                 self.A.append(A2)
                 self.B.append(B1)
                 self.B.append(B2)
-                temp = []
+                temp   = []
                 points = 0
-                cur = 'A1'
+                cur    = 'A1'
                 continue
             if i > len(mag.rawData):
                 break
@@ -83,19 +84,19 @@ class bvd_stat:
 
     # Results from data
     def results(self, mag: magnicon_ccc, T1: float, T2: float, P1: float, P2: float) -> None:
-        self.k = mag.deltaNApN1/mag.NA
-        R1corr = (mag.R1alpha*(T1-mag.R1stdTemp) + mag.R1beta*(T1-mag.R1stdTemp)**2) - (mag.R1pcr*(P1-101325))/1000
-        R2corr = (mag.R2alpha*(T2-mag.R2stdTemp) + mag.R2beta*(T2-mag.R2stdTemp)**2) - (mag.R2pcr*(P2-101325))/1000
+        self.k     = mag.deltaNApN1/mag.NA
+        R1corr     = (mag.R1alpha*(T1-mag.R1stdTemp) + mag.R1beta*(T1-mag.R1stdTemp)**2) - (mag.R1pcr*(P1-101325))/1000
+        R2corr     = (mag.R2alpha*(T2-mag.R2stdTemp) + mag.R2beta*(T2-mag.R2stdTemp)**2) - (mag.R2pcr*(P2-101325))/1000
         self.R1PPM = R1corr + mag.R1Pred
         self.R2PPM = R2corr + mag.R2Pred
-        self.R1 = (self.R1PPM/1000000 + 1) * mag.R1NomVal
-        self.R2 = (self.R2PPM/1000000 + 1) * mag.R2NomVal
+        self.R1    = (self.R1PPM/1000000 + 1) * mag.R1NomVal
+        self.R2    = (self.R2PPM/1000000 + 1) * mag.R2NomVal
 
         ratioMeanList = []
-        self.R1List = []
-        self.R2List = []
-        ratioMeanC1 = []
-        ratioMeanC2 = []
+        self.R1List   = []
+        self.R2List   = []
+        ratioMeanC1   = []
+        ratioMeanC2   = []
         self.C1R1List = []
         self.C1R2List = []
         self.C2R1List = []
@@ -113,55 +114,54 @@ class bvd_stat:
             self.C2R2List.append((self.R2*ratioMeanC2[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
 
         if self.R1List and self.R2List:
-            self.meanR1 = mean(self.R1List)
-            self.meanR2 = mean(self.R2List)
-            self.stdppm = std(ratioMeanList, ddof=1)/mean(ratioMeanList)
-            self.stdR1ppm = std(self.R1List, ddof=1)
-            self.stdR2ppm = std(self.R2List, ddof=1)
+            self.meanR1     = mean(self.R1List)
+            self.meanR2     = mean(self.R2List)
+            self.stdppm     = std(ratioMeanList, ddof=1)/mean(ratioMeanList)
+            self.stdR1ppm   = std(self.R1List, ddof=1)
+            self.stdR2ppm   = std(self.R2List, ddof=1)
             self.stdMeanPPM = self.stdppm/sqrt(len(self.R1List))
-            self.C1R1 = mean(self.C1R1List)
-            self.C1R2 = mean(self.C1R2List)
-            self.C2R1 = mean(self.C2R1List)
-            self.C2R2 = mean(self.C2R2List)
-            self.stdC1R1 = std(self.C1R1List, ddof=1)
-            self.stdC1R2 = std(self.C1R2List, ddof=1)
-            self.stdC2R1 = std(self.C2R1List, ddof=1)
-            self.stdC2R2 = std(self.C2R2List, ddof=1)
+            self.C1R1       = mean(self.C1R1List)
+            self.C1R2       = mean(self.C1R2List)
+            self.C2R1       = mean(self.C2R1List)
+            self.C2R2       = mean(self.C2R2List)
+            self.stdC1R1    = std(self.C1R1List, ddof=1)
+            self.stdC1R2    = std(self.C1R2List, ddof=1)
+            self.stdC2R1    = std(self.C2R1List, ddof=1)
+            self.stdC2R2    = std(self.C2R2List, ddof=1)
         else:
-            self.meanR1 = 0
-            self.meanR2 = 0
-            self.stdppm = 0
-            self.stdR1ppm = 0
-            self.stdR2ppm = 0
+            self.meanR1     = 0
+            self.meanR2     = 0
+            self.stdppm     = 0
+            self.stdR1ppm   = 0
+            self.stdR2ppm   = 0
             self.stdMeanPPM = 0
-            self.C1R1 = 0
-            self.C1R2 = 0
-            self.C2R1 = 0
-            self.C2R2 = 0
-            self.stdC1R1 = 0
-            self.stdC1R2 = 0
-            self.stdC2R1 = 0
-            self.stdC2R2 = 0
+            self.C1R1       = 0
+            self.C1R2       = 0
+            self.C2R1       = 0
+            self.C2R2       = 0
+            self.stdC1R1    = 0
+            self.stdC1R2    = 0
+            self.stdC2R1    = 0
+            self.stdC2R2    = 0
 
         if len(self.bvdList):
-            self.N = len(self.bvdList)
-            self.mean = mean(self.bvdList)
-            self.std = std(self.bvdList, ddof=1)
-            self.stdMean = self.std/sqrt(len(self.bvdList))
+            self.N         = len(self.bvdList)
+            self.mean      = mean(self.bvdList)
+            self.std       = std(self.bvdList, ddof=1)
+            self.stdMean   = self.std/sqrt(len(self.bvdList))
             self.stdMeanR1 = self.stdR1ppm/sqrt(len(self.R1List))
             self.stdMeanR2 = self.stdR2ppm/sqrt(len(self.R2List))
         # Set these variables to 0 incase there is no data so that the Gui does not raise any errors
         else:
-            self.N = 0
-            self.mean = 0
-            self.std = 0
-            self.stdMean = 0
+            self.N         = 0
+            self.mean      = 0
+            self.std       = 0
+            self.stdMean   = 0
             self.stdMeanR1 = 0
             self.stdMeanR2 = 0
         
         self.ratioMean = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.mean/mag.deltaI2R2)
-
-        ratioMeanChk = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + mag.bvdMean/mag.deltaI2R2)
+        ratioMeanChk   = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + mag.bvdMean/mag.deltaI2R2)
         self.R1MeanChk = (self.R1/ratioMeanChk - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr
         self.R2MeanChk = (self.R2*ratioMeanChk - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr
 
@@ -171,7 +171,7 @@ class bvd_stat:
         self.R1MeanChkOhm = (self.meanR2/1000000 + 1) * mag.R1NomVal
         self.R2MeanChkOhm = (self.meanR1/1000000 + 1) * mag.R2NomVal
 
-        self.remTime = mag.measTime - (self.N*mag.fullCyc)
+        self.remTime      = mag.measTime - (self.N*mag.fullCyc)
         self.remTimeStamp = mag.sec2ts(self.remTime)
         
 if __name__ == '__main__':

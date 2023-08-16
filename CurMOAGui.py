@@ -19,7 +19,7 @@ from tkinter import filedialog
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 # from matplotlib.figure import Figure
-from matplotlib.ticker import StrMethodFormatter, MaxNLocator, ScalarFormatter
+from matplotlib.ticker import MaxNLocator, ScalarFormatter, StrMethodFormatter
 from numpy import sqrt, std, ones
 import mystat
 
@@ -60,31 +60,31 @@ class Ui_mainWindow(object):
         QMetaObject.connectSlotsByName(mainWindow)
 
     def initializations(self) -> None:
-        self.validFile = False
-        self.txtFilePath = ''
-        self.plottedBVD = False
+        self.txtFilePath  = ''
+        self.validFile    = False
+        self.plottedBVD   = False
         self.plottedAllan = False
-        self.plottedSpec = False
-        self.data = False
+        self.plottedSpec  = False
+        self.data         = False
 
-        self.R1Temp = 25.0000
-        self.R2Temp = 25.0000
-        self.R1pres = 101325
-        self.R2pres = 101325
+        self.R1Temp     = 25.0000
+        self.R2Temp     = 25.0000
+        self.R1pres     = 101325
+        self.R2pres     = 101325
         self.R1OilDepth = 203
         self.R2OilDepth = 203
 
-        self.RButStatus = 'R1'
-        self.SquidFeedStatus = 'NEG'
+        self.RButStatus       = 'R1'
+        self.SquidFeedStatus  = 'NEG'
         self.CurrentButStatus = 'I1'
-        self.saveStatus = False
+        self.saveStatus       = False
 
-        self.bvdCount = []
+        self.bvdCount     = []
         self.deletedIndex = []
         self.deletedCount = []
-        self.deletedBVD = []
-        self.deletedR1 = []
-        self.deletedR2 = []
+        self.deletedBVD   = []
+        self.deletedR1    = []
+        self.deletedR2    = []
 
     # Set up for the labels
     def setLabels(self) -> None:
@@ -644,7 +644,7 @@ class Ui_mainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.BVDTab), _translate("mainWindow", "BVD"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.AllanTab), _translate("mainWindow", "Allan Dev."))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.SpecTab), _translate("mainWindow", "Spec/Power Spec."))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.SpecTab), _translate("mainWindow", "Power Spec."))
         self.txtFileLabel.setText(_translate("mainWindow", ".txt File"))
         self.VMeanChkLabel.setText(_translate("mainWindow", "Mean Chk [V]"))
         self.StdDevChkLabel.setText(_translate("mainWindow", "Std. Dev. Chk"))
@@ -798,7 +798,7 @@ class Ui_mainWindow(object):
 
     def plotSpec(self) -> None:
         samp_freq = 1/(self.dat.meas)
-        print (samp_freq)
+        # print (samp_freq)
         if self.plottedSpec:
             self.clearPlots()
         # Create the window function
@@ -825,14 +825,15 @@ class Ui_mainWindow(object):
         except (AttributeError, KeyError):
             pass
         self.BVDcanvas.draw()
+        self.plottedBVD = False
 
     def clearAllanPlot(self) -> None:
         self.Allanax1.cla()
         self.Allanax2.cla()
         self.Allanax3.cla()
         self.Allanax4.cla()
-
         self.AllanCanvas.draw()
+        self.plottedAllan = False
 
     def clearPlots(self) -> None:
         self.BVDax1.cla()
@@ -855,6 +856,8 @@ class Ui_mainWindow(object):
 
         self.SpecAx.cla()
         self.SpecCanvas.draw()
+
+        self.plottedBVD, self.plottedAllan, self.plottedSpec = False, False, False
 
     def RButClicked(self) -> None:
         if self.StandardRBut.pressed and self.RButStatus == 'R1':
@@ -1034,17 +1037,17 @@ class Ui_mainWindow(object):
 
         self.deletedIndex = []
         self.deletedCount = []
-        self.deletedBVD = []
-        self.bvdCount = []
-        self.deletedR1 = []
-        self.deletedR2 = []
+        self.deletedBVD   = []
+        self.bvdCount     = []
+        self.deletedR1    = []
+        self.deletedR2    = []
 
         self.plotCountCombo.clear()
 
         if self.plottedBVD or self.plottedAllan or self.plottedSpec:
-            self.plottedBVD = False
+            self.plottedBVD   = False
             self.plottedAllan = False
-            self.plottedSpec = False
+            self.plottedSpec  = False
             self.clearPlots()
 
     def stdR(self, R: str) -> None:
@@ -1236,7 +1239,7 @@ def is_overlapping(overlapping: str) -> bool:
         return False
 
 def powers_of_2(n: int) -> list:
-    x=1
+    x   = 1
     arr = []
     while(x < n):
         arr.append(x)

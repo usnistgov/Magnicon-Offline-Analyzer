@@ -22,8 +22,8 @@ def default(array: list) -> tuple[float, float, int]:
         temp4.append(temp1[i]*temp2[i])
     temp1 = sum(temp3)
     temp3 = sum(temp2)/l
-    r1 = sum(temp1)/(temp3*temp3*l)
-    r2 = sum(temp4)/(temp3*sqrt(temp3)*l)
+    r1    = sum(temp1)/(temp3*temp3*l)
+    r2    = sum(temp4)/(temp3*sqrt(temp3)*l)
 
     return r1, r2, l
 

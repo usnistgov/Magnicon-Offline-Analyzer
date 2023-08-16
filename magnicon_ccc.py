@@ -21,7 +21,7 @@ from ResDataBase import ResData
 
 # Class for parsing CCC files
 class magnicon_ccc:
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         # Reads in file and checks that it is a .txt file
         if '.txt' in text:
             # If the file is a .txt file, it will parse it along with the bvd and cfg files after it
