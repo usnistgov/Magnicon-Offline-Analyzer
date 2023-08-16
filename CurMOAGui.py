@@ -19,7 +19,7 @@ from tkinter import filedialog
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 # from matplotlib.figure import Figure
-from matplotlib.ticker import StrMethodFormatter, MaxNLocator
+from matplotlib.ticker import StrMethodFormatter, MaxNLocator, ScalarFormatter
 from numpy import sqrt, std, ones
 import mystat
 
@@ -715,7 +715,7 @@ class Ui_mainWindow(object):
 
     def plotAllan(self) -> None:
         if self.plottedAllan:
-            self.clearPlots()
+            self.clearAllanPlot()
         self.plottedAllan = True
         overlapping = is_overlapping(self.OverlappingComboBox.currentText())
         if self.bvd.bvdList:
@@ -724,7 +724,6 @@ class Ui_mainWindow(object):
             elif self.AllanTypeComboBox.currentText() == 'all':
                 tau_list = list(map(int, linspace(1, len(self.bvd.bvdList)//2, len(self.bvd.bvdList)//2)))
             bvd_tau, bvd_adev, bvd_aerr = mystat.adev(array(self.bvd.bvdList), overlapping, tau_list)
-            # bvd = allan(input_array=self.bvd.bvdList, allan_type=allan_type, overlapping=overlapping)
             if self.RButStatus == 'R1':
                 if self.AllanTypeComboBox.currentText() == '2^n':
                     tau_list_C1 = powers_of_2(int(len(self.bvd.C1R2List)//2))
@@ -751,12 +750,6 @@ class Ui_mainWindow(object):
                 tau_list_bvdb = list(map(int, linspace(1, len(self.bvd.B)//2, len(self.bvd.B)//2)))
             bvda_tau, bvda_adev, bvda_aerr = mystat.adev(array(self.bvd.A), overlapping, tau_list_bvda)
             bvdb_tau, bvdb_adev, bvdb_aerr = mystat.adev(array(self.bvd.B), overlapping, tau_list_bvdb)
-            # I1 = allan(input_array=self.bvd.A, allan_type=allan_type, overlapping=overlapping)
-            # I2 = allan(input_array=self.bvd.B, allan_type=allan_type, overlapping=overlapping)
-
-            self.Allanax1.xaxis.set_major_locator(MaxNLocator(integer=True))
-            self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
-            self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
 
             self.Allanax1.plot(bvd_tau, bvd_adev, color='b')
             self.Allanax2.plot(C1_tau, C1_adev, color='b')
@@ -764,7 +757,7 @@ class Ui_mainWindow(object):
             self.Allanax4.plot(bvda_tau, bvda_adev, color='b')
             self.Allanax4.plot(bvdb_tau, bvdb_adev, color='r')
         else:
-            self.clearPlots()
+            self.clearAllanPlot()
 
         if self.validFile:
             self.Allanax1.set_title('Allan Deviation vs. Samples')
@@ -772,18 +765,24 @@ class Ui_mainWindow(object):
             self.Allanax1.set_xlabel('\u03C4 (samples)')
             self.Allanax1.set_yscale('log')
             self.Allanax1.set_xscale('log')
+            self.Allanax1.xaxis.set_major_locator(MaxNLocator(integer=True))
+            self.Allanax1.xaxis.set_major_formatter(ScalarFormatter())
 
             self.Allanax2.set_title('Allan Deviation of C1')
             self.Allanax2.set_ylabel('Allan Deviation')
             self.Allanax2.set_xlabel('\u03C4 (samples)')
             self.Allanax2.set_yscale('log')
             self.Allanax2.set_xscale('log')
+            self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+            self.Allanax2.xaxis.set_major_formatter(ScalarFormatter())
 
             self.Allanax3.set_title('Allan Deviation of C2')
             self.Allanax3.set_ylabel('Allan Deviation')
             self.Allanax3.set_xlabel('\u03C4 (samples)')
             self.Allanax3.set_yscale('log')
             self.Allanax3.set_xscale('log')
+            self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
+            self.Allanax3.xaxis.set_major_formatter(ScalarFormatter())
 
             self.Allanax4.set_title('Allan Deviation of Bridge Voltage')
             self.Allanax4.set_ylabel('Allan Deviation')
@@ -791,6 +790,8 @@ class Ui_mainWindow(object):
             self.Allanax4.set_yscale('log')
             self.Allanax4.set_xscale('log')
             self.Allanax4.legend(['I+', 'I-'])
+            self.Allanax4.xaxis.set_major_locator(MaxNLocator(integer=True))
+            self.Allanax4.xaxis.set_major_formatter(ScalarFormatter())
     
             self.Allanfig.set_tight_layout(True)
             self.AllanCanvas.draw()
@@ -824,6 +825,14 @@ class Ui_mainWindow(object):
         except (AttributeError, KeyError):
             pass
         self.BVDcanvas.draw()
+
+    def clearAllanPlot(self) -> None:
+        self.Allanax1.cla()
+        self.Allanax2.cla()
+        self.Allanax3.cla()
+        self.Allanax4.cla()
+
+        self.AllanCanvas.draw()
 
     def clearPlots(self) -> None:
         self.BVDax1.cla()
