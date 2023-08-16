@@ -1208,6 +1208,7 @@ class Ui_mainWindow(object):
             self.bvd.R1List.pop(curIndex)
             self.bvd.R2List.pop(curIndex)
             self.plotBVD()
+            self.plotAllan()
 
     def restoreDeleted(self, loop=None) -> None:
         if self.deletedCount:
@@ -1223,6 +1224,7 @@ class Ui_mainWindow(object):
             self.deletedR2.pop(-1)
             if loop is None:
                 self.plotBVD()
+                self.plotAllan()
 
     def replotAll(self) -> None:
         looped = False
@@ -1231,6 +1233,7 @@ class Ui_mainWindow(object):
             looped = True
         if looped:
             self.plotBVD()
+            self.plotAllan()
 
 def is_overlapping(overlapping: str) -> bool:
     if overlapping == 'overlapping':

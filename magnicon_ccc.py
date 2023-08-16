@@ -40,11 +40,11 @@ class magnicon_ccc:
     def load_raw(self) -> None:
         if not self.validFile:
             return
-        self.rawData = []
-        self.phase = []
-        self.error = []
         self.comments = ''
-        collectData = False
+        collectData   = False
+        self.rawData  = []
+        self.phase    = []
+        self.error    = []
         with open (self.rawFile, "r") as file:
             for line in file.readlines():
                 if line.startswith('R1 Info'):
@@ -74,7 +74,7 @@ class magnicon_ccc:
                         stopDate = False
                     else:
                         stopDate = True
-                        t1 = [int(line.split('.')[0].lstrip('stop time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
+                        t1       = [int(line.split('.')[0].lstrip('stop time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
                 elif line.startswith('start time'):
                     t2 = [int(line.split('.')[0].lstrip('start time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
                 elif collectData:
@@ -92,22 +92,22 @@ class magnicon_ccc:
 
         # Averages the datetime start and stop and creates a timestamp of the average
         if stopDate:
-            dt1 = datetime(d1[0], d1[1], d1[2], t1[0], t1[1], t1[2])
-            dt2 = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
-            t1_str = f'{t1[0]}:{t1[1]}:{t1[2]}'
-            t1_obj = datetime.strptime(t1_str, '%H:%M:%S')
-            t1_am_pm = t1_obj.strftime('%I:%M:%S %p')
-            t2_str = f'{t2[0]}:{t2[1]}:{t2[2]}'
-            t2_obj = datetime.strptime(t2_str, '%H:%M:%S')
-            t2_am_pm = t2_obj.strftime('%I:%M:%S %p')
-            self.avgDT = (dt1-dt2)/2
-            self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
+            dt1            = datetime(d1[0], d1[1], d1[2], t1[0], t1[1], t1[2])
+            dt2            = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
+            t1_str         = f'{t1[0]}:{t1[1]}:{t1[2]}'
+            t1_obj         = datetime.strptime(t1_str, '%H:%M:%S')
+            t1_am_pm       = t1_obj.strftime('%I:%M:%S %p')
+            t2_str         = f'{t2[0]}:{t2[1]}:{t2[2]}'
+            t2_obj         = datetime.strptime(t2_str, '%H:%M:%S')
+            t2_am_pm       = t2_obj.strftime('%I:%M:%S %p')
+            self.avgDT     = (dt1-dt2)/2
+            self.DT        = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
             self.timeStamp = mktime(self.DT.timetuple())
             self.startDate = f'{d2[1]}/{d2[2]}/{d2[0]} {t2_am_pm}'
-            self.endDate = f'{d1[1]}/{d1[2]}/{d1[0]} {t1_am_pm}'
+            self.endDate   = f'{d1[1]}/{d1[2]}/{d1[0]} {t1_am_pm}'
         # Returns the start datetime if there is no stop date
         else:
-            self.DT = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
+            self.DT        = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
             self.timeStamp = mktime(self.DT.timetuple())
 
         # This does not average
@@ -119,7 +119,7 @@ class magnicon_ccc:
         if not self.validFile:
             return
         with open (self.bvdFile, "r") as file:
-            start = False
+            start    = False
             self.bvd = []
             for line in file.readlines():
                 if line.startswith('com rel. hum'):
@@ -246,17 +246,17 @@ class magnicon_ccc:
 
         # Time calculations
         if self.validFile:
-            self.rampTime = self.rStepTime*self.rStepCount*2/1000000
-            self.fullCyc = self.SHC*self.intTime/self.timeBase * 2
-            self.measCyc = self.numCycStop/2
-            self.delay = (self.ignored/self.SHC)*(self.SHC*self.intTime/self.timeBase - self.rampTime)
-            self.meas = (self.SHC*self.intTime/self.timeBase) - self.rampTime - self.delay
-            self.dt = self.SHC*2/self.fullCyc
-            self.measTime = self.fullCyc*self.measCyc
+            self.rampTime      = self.rStepTime*self.rStepCount*2/1000000
+            self.fullCyc       = self.SHC*self.intTime/self.timeBase*2
+            self.measCyc       = self.numCycStop/2
+            self.delay         = (self.ignored/self.SHC)*(self.SHC*self.intTime/self.timeBase - self.rampTime)
+            self.meas          = (self.SHC*self.intTime/self.timeBase) - self.rampTime - self.delay
+            self.dt            = self.SHC*2/self.fullCyc
+            self.measTime      = self.fullCyc*self.measCyc
             self.measTimeStamp = self.sec2ts(self.measTime)
 
     def sec2ts(self, sec: float) -> str:
-        a = [3600, 60, 60]
+        a  = [3600, 60, 60]
         ts = []
         for i in a:
             cur = floor(sec/i)
