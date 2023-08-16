@@ -50,43 +50,43 @@ class magnicon_ccc:
                 if line.startswith('R1 Info'):
                     self.R1SN = line.split(':')[-1].rstrip(' \n')
                     self.R1SN = self.R1SN.lstrip(' \t')
-                if line.startswith('R2 Info'):
+                elif line.startswith('R2 Info'):
                     self.R2SN = line.split(':')[-1].rstrip(' \n')
                     self.R2SN = self.R2SN.lstrip(' \t')
-                if line.startswith('number of samples per half cycle'):
+                elif line.startswith('number of samples per half cycle'):
                     self.SHC = int(line.split(':')[-1].rstrip(' \n'))
-                if line.startswith('ignored first samples'):
+                elif line.startswith('ignored first samples'):
                     self.ignored = int(line.split(':')[-1].rstrip(' \n'))
                     self.samplesUsed = self.SHC - self.ignored
-                if line.startswith('remarks'):
+                elif line.startswith('remarks'):
                     self.comments = line.split(':')[-1].rstrip(' \n')
                     self.comments = self.comments.lstrip(' \t')
-                if line.startswith('stop date'):
+                elif line.startswith('stop date'):
                     if 'x' in line:
                         stopDate = False
                     else:
                         stopDate = True
                         d1 = [int(line.split('-')[0].lstrip('stop date: \t')), int(line.split('-')[1]), int(line.split('-')[2].rstrip(' \n'))]
-                if line.startswith('start date'):
+                elif line.startswith('start date'):
                     d2 = [int(line.split('-')[0].lstrip('start date: \t')), int(line.split('-')[1]), int(line.split('-')[2].rstrip(' \n'))]
-                if line.startswith('stop time'):
+                elif line.startswith('stop time'):
                     if 'x' in line:
                         stopDate = False
                     else:
                         stopDate = True
                         t1 = [int(line.split('.')[0].lstrip('stop time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
-                if line.startswith('start time'):
+                elif line.startswith('start time'):
                     t2 = [int(line.split('.')[0].lstrip('start time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
-                if collectData:
+                elif collectData:
                     self.rawData.append(float(line.split('\t')[0]))
                     self.phase.append(int(line.split('\t')[1]))
                     self.error.append(int(line.split('\t')[2]))
-                if line.startswith('data(V)'):
+                elif line.startswith('data(V)'):
                     collectData = True
-                if line.startswith('time base (Hz)'):
+                elif line.startswith('time base (Hz)'):
                     self.timeBase = line.split(':')[-1].rstrip(' \n')
                     self.timeBase = int(self.timeBase.lstrip(' \t'))
-                if line.startswith('integration time'):
+                elif line.startswith('integration time'):
                     self.intTime = line.split(':')[-1].rstrip(' \n')
                     self.intTime = int(self.intTime.lstrip(' \t'))
 
@@ -127,26 +127,26 @@ class magnicon_ccc:
                         self.relHum = float(line.split(':')[-1].rstrip(' \n'))
                     except ValueError:
                         self.relHum = 'xx.x'
-                if line.startswith('com temp'):
+                elif line.startswith('com temp'):
                     try:
                         self.comTemp = float(line.split(':')[-1].rstrip(' \n'))
                     except ValueError:
                         self.comTemp = 'xx.xx'
-                if line.startswith('cn temp'):
+                elif line.startswith('cn temp'):
                     try:
                         self.cnTemp = float(line.split(':')[-1].rstrip(' \n'))
                     except ValueError:
                         self.cnTemp = 'xx.xx'
-                if line.startswith('nv temp'):
+                elif line.startswith('nv temp'):
                     try:
                         self.nvTemp = float(line.split(':')[-1].rstrip(' \n'))
                     except ValueError:
                         self.nvTemp = 'xx.xx'
-                if line.startswith('delta N1/NA'):
+                elif line.startswith('delta N1/NA'):
                     self.deltaNApN1 = float(line.split(':')[-1].rstrip(' \n')) * 0.001
-                if line.startswith('delta (I2*R2)'):
+                elif line.startswith('delta (I2*R2)'):
                     self.deltaI2R2 = float(line.split(':')[-1].rstrip(' \n'))
-                if line.startswith('#points'):
+                elif line.startswith('#points'):
                     start = True
                 if start and line.split()[0].isnumeric():
                     self.bvd.append(float(line.split()[1]))
@@ -173,41 +173,41 @@ class magnicon_ccc:
                         self.R1NomVal = 12906.4037296523
                     else:
                         self.R1NomVal = float(line.split('=')[-1].rstrip(' \n'))
-                if line.startswith('r2 '):
+                elif line.startswith('r2 '):
                     if ('12906' in line) or ('12.906' in line):
                         self.R2NomVal = 12906.4037296523
                     else:
                         self.R2NomVal = float(line.split('=')[-1].rstrip(' \n'))
-                if line.startswith('cs_amplitude 3'):
+                elif line.startswith('cs_amplitude 3'):
                     self.I1 = float(line.split('=')[-1].rstrip(' \n'))
-                if line.startswith('cs_amplitude 4'):
+                elif line.startswith('cs_amplitude 4'):
                     self.I2 = float(line.split('=')[-1].rstrip(' \n'))
-                if line.startswith('cs_feedin 3'):
+                elif line.startswith('cs_feedin 3'):
                     I1FeedinIndex = int(line.split('=')[-1].rstrip(' \n'))
                     self.I1Feedin = feedinIndex[I1FeedinIndex - 1]
-                if line.startswith('cs_feedin 4'):
+                elif line.startswith('cs_feedin 4'):
                     I2FeedinIndex = int(line.split('=')[-1].rstrip(' \n'))
                     self.I2Feedin = feedinIndex[I2FeedinIndex - 1]
-                if line.startswith('c1_sum'):
+                elif line.startswith('c1_sum'):
                     self.N1 = int(line.split('=')[-1].rstrip(' \n'))
-                if line.startswith('c2_sum'):
+                elif line.startswith('c2_sum'):
                     self.N2 = int(line.split('=')[-1].rstrip(' \n'))
-                if line.startswith('aux_sum'):
+                elif line.startswith('aux_sum'):
                     self.NA = int(line.split('=')[-1].rstrip(' \n'))
                     if self.NA == 0:
                         self.NA = 1
-                if line.startswith("co_extpower 2"):
+                elif line.startswith("co_extpower 2"):
                     if 'TRUE' in line:
                         self.extpower = 'ON'
                     else:
                         self.extpower = 'OFF'
-                if line.startswith("co_amplitude 2"):
+                elif line.startswith("co_amplitude 2"):
                     self.appVolt = line.split('= ')[-1].rstrip(' \n')
-                if line.startswith('ra_steptime 2'):
+                elif line.startswith('ra_steptime 2'):
                     self.rStepTime = int(line.split('=')[-1].rstrip(' \n'))
-                if line.startswith('ra_stepcount 2'):
+                elif line.startswith('ra_stepcount 2'):
                     self.rStepCount = int(line.split('=')[-1].rstrip(' \n'))
-                if line.startswith('daq_numcycles_stop'):
+                elif line.startswith('daq_numcycles_stop'):
                     self.numCycStop = int(line.split('=')[-1].rstrip(' \n'))
 
     # Calculations using the parsed data
