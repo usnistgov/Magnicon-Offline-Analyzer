@@ -27,12 +27,14 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow) -> None:
         mainWindow.resize(989, 833)
         mainWindow.setWindowIcon(QIcon('analyzer.ico'))
+        self.winSizeH = 961
+        self.winSizeV = 811
 
         self.initializations()
 
         self.centralwidget = QWidget(parent=mainWindow)
         self.tabWidget = QTabWidget(parent=self.centralwidget)
-        self.tabWidget.setGeometry(QRect(0, 0, 961, 791))
+        self.tabWidget.setGeometry(QRect(0, 0, self.winSizeH, self.winSizeV))
         self.SetResTab = QWidget()
         self.tabWidget.addTab(self.SetResTab, "")
 
@@ -389,23 +391,24 @@ class Ui_mainWindow(object):
         self.BVDTab = QWidget()
         self.tabWidget.addTab(self.BVDTab, "")
         self.BVDVerticalLayoutWidget = QWidget(parent=self.BVDTab)
-        self.BVDVerticalLayoutWidget.setGeometry(QRect(0, 0, 951, 681))
+        self.BVDVerticalLayoutWidget.setGeometry(QRect(0, 0, self.winSizeH-10, 691))
         self.BVDVerticalLayout = QVBoxLayout(self.BVDVerticalLayoutWidget)
 
         # self.fig = plt.figure(figsize=(1,1),dpi=100)
         self.BVDfig = plt.figure()
-        self.BVDax1 = self.BVDfig.add_subplot(2,1,1)
-        self.BVDax2 = self.BVDfig.add_subplot(2,2,3)
-        self.BVDax3 = self.BVDfig.add_subplot(2,2,4)
+        self.BVDax1 = self.BVDfig.add_subplot(2, 3, (1, 3))
+        self.BVDax2 = self.BVDfig.add_subplot(2, 3, (4, 5))
+        self.BVDax3 = self.BVDfig.add_subplot(2, 3, 6)
         self.BVDax1.tick_params(which='both', direction='in')
         self.BVDax2.tick_params(which='both', direction='in')
         self.BVDax3.tick_params(which='both', direction='in')
+        self.BVDax3.tick_params(axis='y', labelsize=0)
         self.BVDcanvas = FigureCanvas(self.BVDfig)
         self.BVDVerticalLayout.addWidget(NavigationToolbar(self.BVDcanvas))
         self.BVDVerticalLayout.addWidget(self.BVDcanvas)
 
         gridWidget = QWidget(self.BVDTab)
-        gridWidget.setGeometry(QRect(0, 680, 951, 81))
+        gridWidget.setGeometry(QRect(0, 690, self.winSizeH-10, 81))
         grid = QGridLayout(gridWidget)
         grid.setSpacing(5)
 
@@ -457,7 +460,7 @@ class Ui_mainWindow(object):
         self.AllanTab = QWidget()
         self.tabWidget.addTab(self.AllanTab, "")
         self.AllanVerticalLayoutWidget = QWidget(parent=self.AllanTab)
-        self.AllanVerticalLayoutWidget.setGeometry(QRect(0, 0, 951, 761))
+        self.AllanVerticalLayoutWidget.setGeometry(QRect(0, 0, self.winSizeH-10, 761))
         self.AllanVerticalLayout = QVBoxLayout(self.AllanVerticalLayoutWidget) 
         self.Allanfig = plt.figure()
         self.Allanax1 = self.Allanfig.add_subplot(2,2,1)
@@ -565,7 +568,7 @@ class Ui_mainWindow(object):
 
     def setMisc(self) -> None:
         self.SetResDivider = QFrame(parent=self.SetResTab)
-        self.SetResDivider.setGeometry(QRect(580, -10, 20, 781))
+        self.SetResDivider.setGeometry(QRect(580, -10, 20, self.winSizeV))
         self.SetResDivider.setFrameShape(QFrame.Shape.VLine)
         self.SetResDivider.setFrameShadow(QFrame.Shadow.Sunken)
 
@@ -669,9 +672,9 @@ class Ui_mainWindow(object):
         self.BVDax1.legend(['I+', 'I-'])
         # count = range(len(self.bvd.bvdList))
         if self.RButStatus == 'R1':
-            self.BVDax2.scatter(self.bvdCount, self.bvd.R1List, color='b', zorder=3)
+            self.BVDax2.scatter(self.bvdCount, self.bvd.R1List, color='b', zorder=3, label='Resistance')
         else:
-            self.BVDax2.scatter(self.bvdCount, self.bvd.R2List, color='b', zorder=3)
+            self.BVDax2.scatter(self.bvdCount, self.bvd.R2List, color='b', zorder=3, label='Resistance')
 
         self.BVDax2.set_title('BVD')
         self.BVDax2.set_xlabel('Count')
@@ -687,7 +690,7 @@ class Ui_mainWindow(object):
             # self.BVDtwin2.plot(self.bvdCount, -3*self.bvd.std*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
             self.BVDtwin2.plot(self.bvdCount, 3*std(self.bvd.bvdList)*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
             self.BVDtwin2.plot(self.bvdCount, -3*std(self.bvd.bvdList)*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-            self.BVDtwin2.scatter(self.bvdCount, self.bvd.bvdList, color='r')
+            self.BVDtwin2.scatter(self.bvdCount, self.bvd.bvdList, color='r', label='BVD')
             # self.BVDtwin2.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
             self.BVDtwin2.set_ylim([-3.2*std(self.bvd.bvdList), 3.2*std(self.bvd.bvdList)])
 
@@ -705,6 +708,10 @@ class Ui_mainWindow(object):
         self.BVDax2.grid(axis='x',zorder=0)
         self.BVDtwin2.set_axisbelow(True)
         self.BVDtwin2.grid(zorder=0)
+
+        lines, labels   = self.BVDax2.get_legend_handles_labels()
+        lines2, labels2 = self.BVDtwin2.get_legend_handles_labels()
+        self.BVDax2.legend(lines + lines2, labels + labels2)
 
         # self.BVDfig.tight_layout()
         self.BVDfig.set_tight_layout(True)

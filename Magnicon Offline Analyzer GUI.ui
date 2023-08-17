@@ -20,11 +20,11 @@
       <x>0</x>
       <y>0</y>
       <width>961</width>
-      <height>791</height>
+      <height>811</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="SetResTab">
      <attribute name="title">
@@ -326,7 +326,7 @@
         <x>580</x>
         <y>-10</y>
         <width>20</width>
-        <height>781</height>
+        <height>801</height>
        </rect>
       </property>
       <property name="orientation">
