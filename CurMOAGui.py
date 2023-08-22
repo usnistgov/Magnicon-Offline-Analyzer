@@ -23,18 +23,22 @@ from matplotlib.ticker import MaxNLocator, ScalarFormatter, StrMethodFormatter
 from numpy import sqrt, std, ones
 import mystat
 
+red_style   = "color: white; background-color: red"
+blue_style  = "color: white; background-color: blue"
+green_style = "color: white; background-color: green"
+winSizeH = 961
+winSizeV = 811
+
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow) -> None:
         mainWindow.resize(989, 833)
         mainWindow.setWindowIcon(QIcon('analyzer.ico'))
-        self.winSizeH = 961
-        self.winSizeV = 811
 
         self.initializations()
 
         self.centralwidget = QWidget(parent=mainWindow)
         self.tabWidget = QTabWidget(parent=self.centralwidget)
-        self.tabWidget.setGeometry(QRect(0, 0, self.winSizeH, self.winSizeV))
+        self.tabWidget.setGeometry(QRect(0, 0, winSizeH, winSizeV))
         self.SetResTab = QWidget()
         self.tabWidget.addTab(self.SetResTab, "")
 
@@ -391,7 +395,7 @@ class Ui_mainWindow(object):
         self.BVDTab = QWidget()
         self.tabWidget.addTab(self.BVDTab, "")
         self.BVDVerticalLayoutWidget = QWidget(parent=self.BVDTab)
-        self.BVDVerticalLayoutWidget.setGeometry(QRect(0, 0, self.winSizeH-10, 691))
+        self.BVDVerticalLayoutWidget.setGeometry(QRect(0, 0, winSizeH-10, 691))
         self.BVDVerticalLayout = QVBoxLayout(self.BVDVerticalLayoutWidget)
 
         # self.fig = plt.figure(figsize=(1,1),dpi=100)
@@ -408,7 +412,7 @@ class Ui_mainWindow(object):
         self.BVDVerticalLayout.addWidget(self.BVDcanvas)
 
         gridWidget = QWidget(self.BVDTab)
-        gridWidget.setGeometry(QRect(0, 690, self.winSizeH-10, 81))
+        gridWidget.setGeometry(QRect(0, 690, winSizeH-10, 81))
         grid = QGridLayout(gridWidget)
         grid.setSpacing(5)
 
@@ -460,7 +464,7 @@ class Ui_mainWindow(object):
         self.AllanTab = QWidget()
         self.tabWidget.addTab(self.AllanTab, "")
         self.AllanVerticalLayoutWidget = QWidget(parent=self.AllanTab)
-        self.AllanVerticalLayoutWidget.setGeometry(QRect(0, 0, self.winSizeH-10, 761))
+        self.AllanVerticalLayoutWidget.setGeometry(QRect(0, 0, winSizeH-10, 761))
         self.AllanVerticalLayout = QVBoxLayout(self.AllanVerticalLayoutWidget) 
         self.Allanfig = plt.figure()
         self.Allanax1 = self.Allanfig.add_subplot(2,2,1)
@@ -512,17 +516,17 @@ class Ui_mainWindow(object):
     def setButtons(self) -> None:
         self.StandardRBut = QPushButton(parent=self.SetResTab)
         self.StandardRBut.setGeometry(QRect(460, 530, 71, 24))
-        self.StandardRBut.setStyleSheet("color: white; background-color: red")
+        self.StandardRBut.setStyleSheet(red_style)
         self.StandardRBut.clicked.connect(self.RButClicked)
 
         self.SquidFeedBut = QPushButton(parent=self.SetResTab)
         self.SquidFeedBut.setGeometry(QRect(440, 680, 111, 24))
-        self.SquidFeedBut.setStyleSheet("color: white; background-color: blue")
+        self.SquidFeedBut.setStyleSheet(blue_style)
         self.SquidFeedBut.clicked.connect(self.SquidButClicked)
 
         self.CurrentBut = QPushButton(parent=self.SetResTab)
         self.CurrentBut.setGeometry(QRect(440, 730, 111, 24))
-        self.CurrentBut.setStyleSheet("color: white; background-color: red")
+        self.CurrentBut.setStyleSheet(red_style)
         self.CurrentBut.clicked.connect(self.CurrentButClicked)
 
         self.MDSSButton = QPushButton(parent=self.SetResTab)
@@ -568,7 +572,7 @@ class Ui_mainWindow(object):
 
     def setMisc(self) -> None:
         self.SetResDivider = QFrame(parent=self.SetResTab)
-        self.SetResDivider.setGeometry(QRect(580, -10, 20, self.winSizeV))
+        self.SetResDivider.setGeometry(QRect(580, -10, 20, winSizeV))
         self.SetResDivider.setFrameShape(QFrame.Shape.VLine)
         self.SetResDivider.setFrameShadow(QFrame.Shadow.Sunken)
 
@@ -870,13 +874,13 @@ class Ui_mainWindow(object):
         if self.StandardRBut.pressed and self.RButStatus == 'R1':
             self.RButStatus = 'R2'
             self.StandardRBut.setText('R2')
-            self.StandardRBut.setStyleSheet("color: white; background-color: green")
+            self.StandardRBut.setStyleSheet(green_style)
             if self.validFile:
                 self.stdR(self.RButStatus)
         else:
             self.RButStatus = 'R1'
             self.StandardRBut.setText('R1')
-            self.StandardRBut.setStyleSheet("color: white; background-color: red")
+            self.StandardRBut.setStyleSheet(red_style)
             if self.validFile:
                 self.stdR(self.RButStatus)
 
@@ -884,21 +888,21 @@ class Ui_mainWindow(object):
         if self.SquidFeedBut.pressed and self.SquidFeedStatus == 'NEG':
             self.SquidFeedStatus = 'POS'
             self.SquidFeedBut.setText('Positive')
-            self.SquidFeedBut.setStyleSheet("color: white; background-color: red")
+            self.SquidFeedBut.setStyleSheet(red_style)
         else:
             self.SquidFeedStatus = 'NEG'
             self.SquidFeedBut.setText('Negative')
-            self.SquidFeedBut.setStyleSheet("color: white; background-color: blue")
+            self.SquidFeedBut.setStyleSheet(blue_style)
 
     def CurrentButClicked(self) -> None:
         if self.CurrentBut.pressed and self.CurrentButStatus == 'I1':
             self.CurrentButStatus = 'I2'
             self.CurrentBut.setText('I2')
-            self.CurrentBut.setStyleSheet("color: white; background-color: blue")
+            self.CurrentBut.setStyleSheet(blue_style)
         else:
             self.CurrentButStatus = 'I1'
             self.CurrentBut.setText('I1')
-            self.CurrentBut.setStyleSheet("color: white; background-color: red")
+            self.CurrentBut.setStyleSheet(red_style)
 
     def getData(self) -> None:
         if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.txt')[0][-1].isnumeric():
@@ -958,7 +962,7 @@ class Ui_mainWindow(object):
         self.MeasTimeLineEdit.setText(self.dat.measTimeStamp)
         self.RemTimeLineEdit.setText(self.bvd.remTimeStamp)
 
-        self.MDSSButton.setStyleSheet("color: white; background-color: red")
+        self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setEnabled(True)
 
         self.bvdCount = []
@@ -1167,12 +1171,12 @@ class Ui_mainWindow(object):
     def MDSSClicked(self) -> None:
         if self.saveStatus:
             self.saveStatus = False
-            self.MDSSButton.setStyleSheet("color: white; background-color: red")
+            self.MDSSButton.setStyleSheet(red_style)
             self.MDSSButton.setText('No')
             self.saveButton.setEnabled(False)
         else:
             self.saveStatus = True
-            self.MDSSButton.setStyleSheet("color: white; background-color: green")
+            self.MDSSButton.setStyleSheet(green_style)
             self.MDSSButton.setText('Yes')
             self.saveButton.setEnabled(True)
             self.progressBar.setProperty('value', 0)
@@ -1180,7 +1184,7 @@ class Ui_mainWindow(object):
     def saveMDSS(self) -> None:
         self.progressBar.setProperty('value', 25)
         self.saveStatus = False
-        self.MDSSButton.setStyleSheet("color: white; background-color: red")
+        self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setText('No')
         self.saveButton.setEnabled(False)
         self.dat.comments = self.CommentsTextBrowser.toPlainText()
