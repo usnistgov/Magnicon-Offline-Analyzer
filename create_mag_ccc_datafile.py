@@ -65,7 +65,7 @@ class writeDataFile():
                 f.write(f'|{"{:.4f}".format(bvd_stat_obj.stdC2R2)}')
             f.write(f'|{dat_obj.SHC}')
             f.write(f'|{dat_obj.samplesUsed}')
-            f.write(f'|{"{:.2f}".format(dat_obj.rampTime)}/{"{:.2f}".format(dat_obj.delay)}/{"{:.2f}".format(dat_obj.measTime)}')
+            f.write(f'|{"{:.2f}".format(dat_obj.rampTime)}/{"{:.2f}".format(dat_obj.delay)}/{"{:.2f}".format(dat_obj.meas)}')
             if RStatus == 'R1':
                 f.write(f'|{"{:.4f}".format(bvd_stat_obj.R1PPM)}')
             else:
@@ -85,7 +85,7 @@ class writeDataFile():
                 f.write(f'|{"{:.4f}".format(dat_obj.R1pcr)}')
                 f.write(f'|{"{:.4f}".format(dat_obj.R1alpha)}')
                 f.write(f'|{"{:.4f}".format(dat_obj.R1beta)}')
-            if float(dat_obj.appVolt) >= 0:
+            if float(dat_obj.screenVolt) >= 0:
                 f.write(f'|+{dat_obj.appVolt}')
             else:
                 f.write(f'|-{dat_obj.appVolt}')
@@ -98,7 +98,11 @@ class writeDataFile():
             f.write(f'|{dat_obj.extpower}')
             f.write(f'|{dat_obj.relHum}|{"{:.2f}".format(dat_obj.comTemp)}|{"{:.2f}".format(dat_obj.cnTemp)}|{"{:.2f}".format(dat_obj.nvTemp)}')
             f.write(f'|{system}/{probe}')
-            f.write(f'|51100S|Magnicon CCC Process|StandRes')
+            if RStatus == 'R1':
+                f.write(f'|{dat_obj.R2ID}')
+            else:
+                f.write(f'|{dat_obj.R1ID}')
+            f.write(f'|Magnicon CCC Process|StandRes')
 
 if __name__ == '__main__':
     file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'

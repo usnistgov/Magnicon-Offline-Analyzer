@@ -202,7 +202,7 @@ class magnicon_ccc:
                     else:
                         self.extpower = 'OFF'
                 elif line.startswith("co_amplitude 2"):
-                    self.appVolt = line.split('= ')[-1].rstrip(' \n')
+                    self.screenVolt = line.split('= ')[-1].rstrip(' \n')
                 elif line.startswith('ra_steptime 2'):
                     self.rStepTime = int(line.split('=')[-1].rstrip(' \n'))
                 elif line.startswith('ra_stepcount 2'):
@@ -246,6 +246,7 @@ class magnicon_ccc:
 
         # Time calculations
         if self.validFile:
+            self.appVolt       = self.R1NomVal*self.I1
             self.rampTime      = self.rStepTime*self.rStepCount*2/1000000
             self.fullCyc       = self.SHC*self.intTime/self.timeBase*2
             self.measCyc       = self.numCycStop/2
@@ -254,6 +255,36 @@ class magnicon_ccc:
             self.dt            = self.SHC*2/self.fullCyc
             self.measTime      = self.fullCyc*self.measCyc
             self.measTimeStamp = self.sec2ts(self.measTime)
+
+        serviceID = {
+            0: '51100S',
+            1: '51132C',
+            10: '51133C',
+            100: '51134C',
+            1000: '51135C',
+            10000: '51136C',
+            100000: '51137C',
+            1000000: '51138C',
+            10000000: '51139C',
+            100000000: '51140C',
+            1000000000: '51141C',
+            10000000000: '51142C',
+            100000000000: '51143C',
+            1000000000000: '51145C',
+            10000000000000: '51147C'
+        }
+
+        r1_key = int(self.R1NomVal*10000)
+        r2_key = int(self.R2NomVal*10000)
+
+        if r1_key in serviceID:
+            self.R1ID = serviceID[r1_key]
+        else:
+            self.R1ID = serviceID[0]
+        if r2_key in serviceID:
+            self.R2ID = serviceID[r2_key]
+        else:
+            self.R2ID = serviceID[0]
 
     def sec2ts(self, sec: float) -> str:
         a  = [3600, 60, 60]
@@ -273,4 +304,4 @@ if __name__ == '__main__':
     diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # mc = magnicon_ccc(file2)
     mc = magnicon_ccc(diffFile)
-    print(mc.R1Pred)
+    print(mc.screenVolt)

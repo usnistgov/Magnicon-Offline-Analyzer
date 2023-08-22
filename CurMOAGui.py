@@ -931,12 +931,13 @@ class Ui_mainWindow(object):
         self.Current2LineEdit.setText(str(self.dat.I2))
         self.N2LineEdit.setText(str(self.dat.N2))
         self.NAuxLineEdit.setText(str(self.dat.NA))
-        self.AppVoltLineEdit.setText(str(self.dat.appVolt))
+        self.AppVoltLineEdit.setText(str("{:.6}".format(self.dat.appVolt)))
         self.R2SNLineEdit.setText(self.dat.R2SN)
         self.SHCLineEdit.setText(str(self.dat.SHC))
         self.N1LineEdit.setText(str(self.dat.N1))
         self.CommentsTextBrowser.setText(self.dat.comments)
         self.RelHumLineEdit.setText(str(self.dat.relHum))
+        self.ReadingDelaySpinBox.setValue(10)
 
         self.R1TempLineEdit.setText(str("{:.4f}".format(self.R1Temp)))
         self.R2TempLineEdit.setText(str("{:.4f}".format(self.R2Temp)))
@@ -1036,6 +1037,7 @@ class Ui_mainWindow(object):
         self.NLineEdit.setText("")
         self.MeasTimeLineEdit.setText("")
         self.RemTimeLineEdit.setText("")
+        self.ReadingDelaySpinBox.setValue(0)
 
         self.MDSSButton.setStyleSheet("")
         self.MDSSButton.setText("No")
