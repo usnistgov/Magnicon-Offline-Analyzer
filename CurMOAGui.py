@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 # from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator, ScalarFormatter, StrMethodFormatter
-from numpy import sqrt, std, ones
+from numpy import sqrt, std, mean, ones
 import mystat
 
 red_style   = "color: white; background-color: red"
@@ -79,6 +79,7 @@ class Ui_mainWindow(object):
         self.R2pres     = 101325
         self.R1OilDepth = 203
         self.R2OilDepth = 203
+        self.alpha      = 0.25
 
         self.RButStatus       = 'R1'
         self.SquidFeedStatus  = 'NEG'
@@ -403,10 +404,14 @@ class Ui_mainWindow(object):
         self.BVDax1 = self.BVDfig.add_subplot(2, 3, (1, 3))
         self.BVDax2 = self.BVDfig.add_subplot(2, 3, (4, 5))
         self.BVDax3 = self.BVDfig.add_subplot(2, 3, 6)
+        # self.BVDax1 = self.BVDfig.add_subplot(2, 100, (1, 100))
+        # self.BVDax2 = self.BVDfig.add_subplot(2, 100, (101, 175))
+        # self.BVDax3 = self.BVDfig.add_subplot(2, 100, (176, 200))
+        self.BVDfig.set_tight_layout(True)
+        # self.BVDfig.subplots_adjust(wspace=0, hspace=0)
         self.BVDax1.tick_params(which='both', direction='in')
         self.BVDax2.tick_params(which='both', direction='in')
         self.BVDax3.tick_params(which='both', direction='in')
-        self.BVDax3.tick_params(axis='y', labelsize=0)
         self.BVDcanvas = FigureCanvas(self.BVDfig)
         self.BVDVerticalLayout.addWidget(NavigationToolbar(self.BVDcanvas))
         self.BVDVerticalLayout.addWidget(self.BVDcanvas)
@@ -670,48 +675,53 @@ class Ui_mainWindow(object):
         count = range(len(self.bvd.A))
         self.BVDax1.scatter(count, self.bvd.A, color='r', marker='+', s=75)
         self.BVDax1.scatter(count, self.bvd.B, color='b', marker='x')
-        self.BVDax1.set_title('Bridge Voltage')
         self.BVDax1.set_xlabel('Count')
         self.BVDax1.set_ylabel('Amplitude [V]')
         self.BVDax1.legend(['I+', 'I-'])
-        # count = range(len(self.bvd.bvdList))
+        self.BVDax1.grid(alpha=self.alpha)
         if self.RButStatus == 'R1':
             self.BVDax2.scatter(self.bvdCount, self.bvd.R1List, color='b', zorder=3, label='Resistance')
         else:
             self.BVDax2.scatter(self.bvdCount, self.bvd.R2List, color='b', zorder=3, label='Resistance')
 
-        self.BVDax2.set_title('BVD')
         self.BVDax2.set_xlabel('Count')
         if self.RButStatus == 'R1':
-            self.BVDax2.set_ylabel('R2 [ppm]')
+            self.BVDax2.set_ylabel('R2 [ppm]', color='b')
         else:
-            self.BVDax2.set_ylabel('R1 [ppm]')
+            self.BVDax2.set_ylabel('R1 [ppm]', color='b')
 
         self.BVDtwin2 = self.BVDax2.twinx()
-        self.BVDtwin2.tick_params(direction='in')
+        self.BVDax2.tick_params(axis='y', colors='b')
+        self.BVDtwin2.tick_params(axis='y', direction='in', colors='r')
+        self.BVDtwin2.set_yticklabels([])
         if self.bvd.bvdList:
-            # self.BVDtwin2.plot(self.bvdCount, 3*self.bvd.std*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-            # self.BVDtwin2.plot(self.bvdCount, -3*self.bvd.std*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-            self.BVDtwin2.plot(self.bvdCount, 3*std(self.bvd.bvdList)*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
-            self.BVDtwin2.plot(self.bvdCount, -3*std(self.bvd.bvdList)*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            BVDmean = mean(self.bvd.bvdList)
+            BVDstd  = std(self.bvd.bvdList, ddof=1)
+            upper   =  3*BVDstd + BVDmean
+            lower   = -3*BVDstd + BVDmean
+            self.BVDtwin2.plot(self.bvdCount, upper*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
+            self.BVDtwin2.plot(self.bvdCount, lower*ones(len(self.bvd.bvdList), dtype=int), color='r', linestyle='--')
             self.BVDtwin2.scatter(self.bvdCount, self.bvd.bvdList, color='r', label='BVD')
-            # self.BVDtwin2.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
-            self.BVDtwin2.set_ylim([-3.2*std(self.bvd.bvdList), 3.2*std(self.bvd.bvdList)])
 
             self.BVDax3.hist(self.bvd.bvdList, bins=self.bins, orientation='horizontal', color='r', edgecolor='k')
             self.BVDax3.xaxis.set_major_locator(MaxNLocator(integer=True))
-            # self.BVDax3.set_ylim([-3.2*self.bvd.std, 3.2*self.bvd.std])
-            self.BVDax3.set_ylim([-3.2*std(self.bvd.bvdList), 3.2*std(self.bvd.bvdList)])
-            self.BVDax3.set_title('BVD Histogram')
+            self.BVDax3.set_ylim([self.BVDtwin2.get_ylim()[0], self.BVDtwin2.get_ylim()[1]])
+            self.BVDax3.tick_params(axis='y', colors='r')
+            # self.BVDax3.set_yticklabels([])
+            self.BVDax3.yaxis.tick_right()
+            self.BVDax3.set_ylabel('BVD [V]', color='r')
+            self.BVDax3.yaxis.set_label_position('right')
+            self.BVDax3.grid(axis='y', alpha=self.alpha)
         else:
             self.BVDax2.cla()
             self.BVDax3.cla()
 
-        self.BVDtwin2.set_ylabel('BVD [V]')
+        # self.BVDtwin2.set_ylabel('BVD [V]', color='r')
         self.BVDax2.set_axisbelow(True)
-        self.BVDax2.grid(axis='x',zorder=0)
+        self.BVDax2.grid(axis='x', zorder=0, alpha=self.alpha)
+        self.BVDax2.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.BVDtwin2.set_axisbelow(True)
-        self.BVDtwin2.grid(zorder=0)
+        self.BVDtwin2.grid(zorder=0, alpha=self.alpha)
 
         lines, labels   = self.BVDax2.get_legend_handles_labels()
         lines2, labels2 = self.BVDtwin2.get_legend_handles_labels()
@@ -771,36 +781,36 @@ class Ui_mainWindow(object):
             self.clearAllanPlot()
 
         if self.validFile:
-            self.Allanax1.set_title('Allan Deviation vs. Samples')
-            self.Allanax1.set_ylabel('Allan Deviation')
+            self.Allanax1.set_ylabel('\u03C3(\u03C4), BVD [V]')
             self.Allanax1.set_xlabel('\u03C4 (samples)')
             self.Allanax1.set_yscale('log')
             self.Allanax1.set_xscale('log')
+            self.Allanax1.grid(which='both', alpha=.25)
             self.Allanax1.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax1.xaxis.set_major_formatter(ScalarFormatter())
 
-            self.Allanax2.set_title('Allan Deviation of C1')
-            self.Allanax2.set_ylabel('Allan Deviation')
+            self.Allanax2.set_ylabel('\u03C3(\u03C4), C1 [V]')
             self.Allanax2.set_xlabel('\u03C4 (samples)')
             self.Allanax2.set_yscale('log')
             self.Allanax2.set_xscale('log')
+            self.Allanax2.grid(which='both', alpha=self.alpha)
             self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax2.xaxis.set_major_formatter(ScalarFormatter())
 
-            self.Allanax3.set_title('Allan Deviation of C2')
-            self.Allanax3.set_ylabel('Allan Deviation')
+            self.Allanax3.set_ylabel('\u03C3(\u03C4), C2 [V]')
             self.Allanax3.set_xlabel('\u03C4 (samples)')
             self.Allanax3.set_yscale('log')
             self.Allanax3.set_xscale('log')
+            self.Allanax3.grid(which='both', alpha=self.alpha)
             self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax3.xaxis.set_major_formatter(ScalarFormatter())
 
-            self.Allanax4.set_title('Allan Deviation of Bridge Voltage')
-            self.Allanax4.set_ylabel('Allan Deviation')
+            self.Allanax4.set_ylabel('\u03C3(\u03C4), BV [V]')
             self.Allanax4.set_xlabel('\u03C4 (samples)')
             self.Allanax4.set_yscale('log')
             self.Allanax4.set_xscale('log')
             self.Allanax4.legend(['I+', 'I-'])
+            self.Allanax4.grid(which='both', alpha=self.alpha)
             self.Allanax4.xaxis.set_major_locator(MaxNLocator(integer=True))
             self.Allanax4.xaxis.set_major_formatter(ScalarFormatter())
     
@@ -818,10 +828,12 @@ class Ui_mainWindow(object):
         self.SpecAx.set_title('Power Spectrum')
         self.SpecAx.set_ylabel('Magnitude')
         self.SpecAx.set_xlabel('Frequency (Hz)')
+        self.SpecAx.grid(alpha=self.alpha)
 
         self.PowerSpecAx.set_title('Power Spectrum from FFT')
         self.PowerSpecAx.set_ylabel('Magnitude')
         self.PowerSpecAx.set_xlabel('Frequency (Hz)')
+        self.PowerSpecAx.grid(alpha=self.alpha)
         
         self.SpecAx.plot(freq_bvd, mypsa_bvd)
         
@@ -920,6 +932,11 @@ class Ui_mainWindow(object):
             self.setInvalidData()
             
     def setValidData(self) -> None:
+        if self.plottedBVD or self.plottedAllan or self.plottedSpec:
+            self.plottedBVD   = False
+            self.plottedAllan = False
+            self.plottedSpec  = False
+            self.clearPlots()
         self.VMeanLineEdit.setText(str("{:.6e}".format(self.dat.bvdMean)))
         self.VMeanChkLineEdit.setText(str("{:.6e}".format(self.bvd.mean)))
         self.Current1LineEdit.setText(str(self.dat.I1))
@@ -981,8 +998,6 @@ class Ui_mainWindow(object):
 
         self.plotAllan()
         self.plotSpec()
-        self.plottedAllan = True
-        self.plottedSpec  = True
 
     def setInvalidData(self) -> None:
         self.validFile = False
