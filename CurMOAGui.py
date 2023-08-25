@@ -68,10 +68,10 @@ class Ui_mainWindow(object):
     def initializations(self) -> None:
         self.txtFilePath  = ''
         self.validFile    = False
+        self.data         = False
         self.plottedBVD   = False
         self.plottedAllan = False
         self.plottedSpec  = False
-        self.data         = False
 
         self.R1Temp     = 25.0000
         self.R2Temp     = 25.0000
@@ -80,6 +80,10 @@ class Ui_mainWindow(object):
         self.R1OilDepth = 203
         self.R2OilDepth = 203
         self.alpha      = 0.25
+        self.R1OilPres  = 0.8465*9.81*self.R1OilDepth
+        self.R2OilPres  = 0.8465*9.81*self.R2OilDepth
+        self.R1TotPres  = self.R1pres + self.R1OilPres
+        self.R2TotPres  = self.R2pres + self.R2OilPres
 
         self.RButStatus       = 'R1'
         self.SquidFeedStatus  = 'NEG'
@@ -711,7 +715,6 @@ class Ui_mainWindow(object):
             self.BVDax3.yaxis.tick_right()
             self.BVDax3.set_ylabel('BVD [V]', color='r')
             self.BVDax3.yaxis.set_label_position('right')
-            self.BVDax3.grid(axis='y', alpha=self.alpha)
         else:
             self.BVDax2.cla()
             self.BVDax3.cla()
@@ -918,18 +921,18 @@ class Ui_mainWindow(object):
 
     def getData(self) -> None:
         if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.txt')[0][-1].isnumeric():
-            self.data = False
             self.validFile = True
             if '/' in self.txtFilePath:
                 self.txtFile = self.txtFilePath.split('/')[-1]
             else:
                 self.txtFile = self.txtFilePath.split('\\')[-1]
             self.dat = magnicon_ccc(self.txtFilePath)
-            self.bvd = bvd_stat(self.txtFilePath, self.R1Temp, self.R2Temp, self.R1pres, self.R2pres)
+            self.bvd = bvd_stat(self.txtFilePath, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
             self.setValidData()
-            self.data = True 
+            self.data = True
         else:
             self.setInvalidData()
+            self.data = False
             
     def setValidData(self) -> None:
         if self.plottedBVD or self.plottedAllan or self.plottedSpec:
@@ -1117,10 +1120,12 @@ class Ui_mainWindow(object):
     def R1PresChanged(self) -> None:
         try:
             try:
-                self.R1pres = int(self.R1PresLineEdit.text())
+                self.R1pres    = int(self.R1PresLineEdit.text())
+                self.R1TotPres = self.R1pres + self.R1OilPres
                 self.getData()
             except ValueError:
-                self.R1pres = float(self.R1PresLineEdit.text())
+                self.R1pres    = float(self.R1PresLineEdit.text())
+                self.R1TotPres = self.R1pres + self.R1OilPres
                 self.getData()
         except ValueError:
             self.R1PresLineEdit.setText(str(self.R1pres))
@@ -1128,10 +1133,12 @@ class Ui_mainWindow(object):
     def R2PresChanged(self) -> None:
         try:
             try:
-                self.R2pres = int(self.R2PresLineEdit.text())
+                self.R2pres    = int(self.R2PresLineEdit.text())
+                self.R2TotPres = self.R2pres + self.R2OilPres
                 self.getData()
             except ValueError:
-                self.R2pres = float(self.R2PresLineEdit.text())
+                self.R2pres    = float(self.R2PresLineEdit.text())
+                self.R2TotPres = self.R2pres + self.R2OilPres
                 self.getData()
         except ValueError:
             self.R2PresLineEdit.setText(str(self.R2pres))
@@ -1140,11 +1147,13 @@ class Ui_mainWindow(object):
         self.R1OilDepth = self.R1OilDepthSpinBox.value()
         if self.R1PresLineEdit.text():
             self.updateOilDepth('R1')
+            self.getData()
 
     def oilDepth2Changed(self) -> None:
         self.R2OilDepth = self.R2OilDepthSpinBox.value()
         if self.R2PresLineEdit.text():
             self.updateOilDepth('R2')
+            self.getData()
 
     def updateOilDepth(self, R: str) -> None:
         if R == 'R1' or R == 'both':
