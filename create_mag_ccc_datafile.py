@@ -86,9 +86,9 @@ class writeDataFile():
                 f.write(f'|{"{:.4f}".format(dat_obj.R1alpha)}')
                 f.write(f'|{"{:.4f}".format(dat_obj.R1beta)}')
             if float(dat_obj.screenVolt) >= 0:
-                f.write(f'|+{dat_obj.appVolt}')
+                f.write(f'|+{dat_obj.screenVolt}')
             else:
-                f.write(f'|-{dat_obj.appVolt}')
+                f.write(f'|-{dat_obj.screenVolt}')
             f.write(f'|{"{:.6E}".format(bvd_stat_obj.mean).replace("E-0", "E-")}')
             f.write(f'|{I} Feedback({polarity})')
             if I == 'I1':

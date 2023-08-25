@@ -1,0 +1,49 @@
+start date: 	2023-08-08
+start time: 	16.15.34
+stop date: 	2023-08-08
+stop time: 	16.36.42
+com rel. humid (%):	33.6
+com temp (°C):	29.21
+cn temp (°C):	31.22
+nv temp (°C):	35.41
+bvd averages: 	     20
+remarks: 	CCC probe connected to GaAs probe, GaAs 8 V+=Red, V-=Wht, I+=Wht, I-=Blk, B = 11.56 T (84.4 A), Psample = 3.0e-3 mbar
+R1 Info: 	NIST-QHRGaAs13k-8
+R2 Info: 	1216
+data filepath: 	M:\MagniconData\CCCViewerData\cccviewer_measure\2023-08-08_CCC\230808_005_1615.txt
+config filepath: 	M:\MagniconData\CCCViewerData\cccviewer_measure\2023-08-08_CCC\230808_005_1615_cccdrive.cfg
+time base (Hz): 	60
+integration time (time base multiples):	60
+number of samples per half cycle: 	30
+ignored first samples: 	14
+ignored last samples: 	0
+amplifier gain: 	1000000
+delta N1/NA (mTurns): 	21.308611613
+delta (I2*R2) (V): 	1.000030519
+N1 (Turns):	2065
+N2 (Turns):	16
+NA (Turns):	1
+R1 (Ohm): 	12906.404000
+R2 (Ohm): 	100.000000
+
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)
+1	+5.887125E-09	+5.887125E-09	+Inf0
+2	+3.558375E-09	+4.722750E-09	+1.164375E-09
+3	+1.245263E-08	+7.299375E-09	+2.662878E-09
+4	-2.370750E-09	+4.881844E-09	+3.064297E-09
+5	+9.373500E-09	+5.780175E-09	+2.537903E-09
+6	+2.700000E-11	+4.821313E-09	+2.283283E-09
+7	+1.388587E-08	+6.116250E-09	+2.323942E-09
+8	+1.296862E-08	+6.972797E-09	+2.187282E-09
+9	+3.467625E-09	+6.583333E-09	+1.967925E-09
+10	-1.796287E-08	+4.128713E-09	+3.020488E-09
+11	+1.138988E-08	+4.788818E-09	+2.810747E-09
+12	+7.888500E-09	+5.047125E-09	+2.578818E-09
+13	-4.920000E-09	+4.280423E-09	+2.492992E-09
+14	+8.962125E-09	+4.614830E-09	+2.332162E-09
+15	+3.786000E-09	+4.559575E-09	+2.171828E-09
+16	+1.681275E-08	+5.325398E-09	+2.171110E-09
+17	-7.774875E-09	+4.554794E-09	+2.180136E-09
+18	+8.437125E-09	+4.770479E-09	+2.066737E-09
+19	+5.450250E-09	+4.806257E-09	+1.955265E-09
+20	-1.614413E-08	+3.758737E-09	+2.130270E-09

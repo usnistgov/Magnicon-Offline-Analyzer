@@ -304,4 +304,4 @@ if __name__ == '__main__':
     diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
     # mc = magnicon_ccc(file2)
     mc = magnicon_ccc(diffFile)
-    print(mc.screenVolt)
+    print(mc.I1Feedin, mc.I2Feedin)

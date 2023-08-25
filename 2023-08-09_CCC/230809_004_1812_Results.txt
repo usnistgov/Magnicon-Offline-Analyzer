@@ -1,0 +1,82 @@
+start date: 	2023-08-09							
+start time: 	18.12.01							
+stop date: 	2023-08-09							
+stop time: 	18.33.10							
+com rel. humid (%):	33.5							
+com temp (°C):	28.96							
+cn temp (°C):	31.06							
+nv temp (°C):	35.19							
+bvd averages: 	     20							
+remarks: 	CCC probe connected to GaAs probe, GaAs 8 V+=Yel, V-=Wht, I+=Wht, I-=Blk, B = 11.56 T (84.4 A), Psample = 3.0e-3 mbar, using 4G power supply							
+R1 Info: 	NIST-QHRGaAs13k-8(1.290640373E+4)( 0.0000)							
+R2 Info: 	1215(1.000000000E+2)( 0.0000)							
+data filepath: 	M:\MagniconData\CCCViewerData\cccviewer_measure\2023-08-09_CCC\230809_004_1812.txt							
+config filepath: 	M:\MagniconData\CCCViewerData\cccviewer_measure\2023-08-09_CCC\230809_004_1812_cccdrive.cfg							
+setup_file_path	M:\MagniconData\SQUIDViewerData\Magnicon1\Magicon CCC Probe CPS 2017-02.stp							
+time base (Hz): 	60							
+integration time (time base multiples):	60							
+number of samples per half cycle: 	30							
+ignored first samples: 	14							
+ignored last samples: 	0							
+amplifier gain: 	1000000							
+delta N1/NA (mTurns): 	24.451922160							
+delta (I2*R2) (V): 	1.000030519							
+N1 (Turns):	2065							
+N2 (Turns):	16							
+NA (Turns):	1							
+R1 (Ohm): 	12906.404000							
+R2 (Ohm): 	100.000000							
+								
+N1:	2065							
+N2:	16							
+
+								
+Mode:	AMP							
+Rf Amp::	1.65 kOhm							
+Amp Gain:	NEG							
+Rf FLL:	9.10 kOhm							
+SQUID Gain:	PLUS							
+I1 Range:	300uA							
+I1 Amplitude:	38.746300E-6							
+feedin Polarity:	NEG							
+I1 SQUID feedIn (ON/OFF):	OFF							
+I1 SQUID feedin:	-37.0dB							
+I2 Range:	20mA							
+I2 Amplitude:	5.000153E-3							
+I2 SQUID feedIn (ON/OFF):	ON							
+I2 SQUID feedin:	-47.0dB							
+Screen (+):	ON							
+Screen (-):	OFF							
+Screen Amplitude:	500.044371E-3							
+External Power:	ON							
+
+								
+Results								
+Standard Pressure Correction:	(100385.524)							
+Res(ppm)	stdd(ppm)	stddrtN-1(ppm)	resistance(ohm)					
+0.0679	0.0113	0.0025	1.000000070E+2					
+
+								
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)	R(ppm)	RMean(ohm)	RMean(ppm)	stdd(ppm)	stddrtN-1(ppm)
+
+								
+1	6.048000E-9	6.048000E-9	NaN	6.370785E-2	1.000000064E+2	6.370785E-2	NaN	NaN
+2	3.243375E-9	4.645688E-9	1.402312E-9	6.651239E-2	1.000000065E+2	6.511012E-2	1.983109E-3	1.402270E-3
+3	4.440750E-9	4.577375E-9	8.125023E-10	6.531505E-2	1.000000066E+2	6.517843E-2	1.407252E-3	8.124775E-4
+4	-1.578225E-8	-5.125312E-10	5.122229E-9	8.553744E-2	1.000000071E+2	7.026818E-2	1.024415E-2	5.122073E-3
+5	6.222375E-9	8.344500E-10	4.190071E-9	6.353348E-2	1.000000069E+2	6.892124E-2	9.368998E-3	4.189943E-3
+6	7.860000E-9	2.005375E-9	3.616010E-9	6.189591E-2	1.000000068E+2	6.775035E-2	8.857110E-3	3.615900E-3
+7	-1.174125E-9	1.551161E-9	3.089656E-9	7.092976E-2	1.000000069E+2	6.820455E-2	8.174212E-3	3.089562E-3
+8	-6.928125E-9	4.912500E-10	2.878001E-9	7.668358E-2	1.000000070E+2	6.926443E-2	8.139969E-3	2.877914E-3
+9	-2.032950E-8	-1.822167E-9	3.434260E-9	9.008455E-2	1.000000072E+2	7.157778E-2	1.030247E-2	3.434156E-3
+10	1.383938E-8	-2.560120E-10	3.447921E-9	5.591671E-2	1.000000070E+2	7.001167E-2	1.090295E-2	3.447816E-3
+11	4.917000E-9	2.142618E-10	3.154018E-9	6.483882E-2	1.000000070E+2	6.954141E-2	1.046038E-2	3.153922E-3
+12	-7.587375E-9	-4.358746E-10	2.951701E-9	7.734281E-2	1.000000071E+2	7.019153E-2	1.022468E-2	2.951611E-3
+13	2.412488E-8	1.453414E-9	3.307803E-9	4.563152E-2	1.000000069E+2	6.830230E-2	1.192609E-2	3.307702E-3
+14	2.265637E-8	2.967911E-9	3.416457E-9	4.709999E-2	1.000000067E+2	6.678785E-2	1.278282E-2	3.416353E-3
+15	2.853375E-9	2.960275E-9	3.180558E-9	6.690238E-2	1.000000067E+2	6.679548E-2	1.231787E-2	3.180461E-3
+16	-3.473250E-9	2.558180E-9	3.002188E-9	7.322881E-2	1.000000068E+2	6.719757E-2	1.200839E-2	3.002097E-3
+17	-1.139888E-8	1.737176E-9	2.937144E-9	8.115420E-2	1.000000068E+2	6.801854E-2	1.210978E-2	2.937054E-3
+18	-2.377875E-9	1.508562E-9	2.778586E-9	7.213347E-2	1.000000069E+2	6.824715E-2	1.178818E-2	2.778502E-3
+19	5.861250E-10	1.460013E-9	2.628728E-9	6.916956E-2	1.000000069E+2	6.829570E-2	1.145801E-2	2.628648E-3
+20	1.024500E-8	1.899262E-9	2.532218E-9	5.951098E-2	1.000000068E+2	6.785646E-2	1.132408E-2	2.532141E-3
