@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import sys, os
 from numpy import std, floor
 
-bp = os.getcwd()
 # if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
 #     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
 #     from ResDataBase import ResData
@@ -18,7 +17,19 @@ bp = os.getcwd()
 
 # Put ResDataBase.py in branch to use on non-NIST computers
 from ResDataBase import ResData
-
+# base directory of the project
+if getattr(sys, 'frozen', False):
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+    base_dir = sys._MEIPASS
+    # base_dir = os.path.dirname(sys.executable)
+    running_mode = 'Frozen/executable'
+else:
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        running_mode = "Non-interactive (e.g. 'python Magnicon-Offline-Analyzer.py')"
+    except NameError:
+        base_dir = os.getcwd()
+        running_mode = 'Interactive'
 # Class for parsing CCC files
 class magnicon_ccc:
     def __init__(self, text: str) -> None:
@@ -212,11 +223,10 @@ class magnicon_ccc:
 
     # Calculations using the parsed data
     def calculations(self) -> None:
-        # try:
-        #     R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
-        # except FileNotFoundError:
-        #     R = ResData(ResDataDir)
-        R = ResData(bp)
+        try:
+            R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
+        except FileNotFoundError:
+            R = ResData(base_dir)
 
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:
@@ -298,10 +308,11 @@ class magnicon_ccc:
 
 # For testing
 if __name__ == '__main__':
-    file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
-    file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
-    file3 = bp + r'\2016-02-18_CCC\160218_001_0935.txt'
-    diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
-    # mc = magnicon_ccc(file2)
-    mc = magnicon_ccc(diffFile)
-    print(mc.I1Feedin, mc.I2Feedin)
+    print("I am main")
+    # file1 = base_dir + r'\2016-02-18_CCC\160218_016_1548.txt'
+    # file2 = base_dir + r'\2023-06-01_CCC\230601_001_1134.txt'
+    # file3 = base_dir + r'\2016-02-18_CCC\160218_001_0935.txt'
+    # diffFile = base_dir + r'/2023-05-31_CCC/230531_008_2200.txt'
+    # # mc = magnicon_ccc(file2)
+    # mc = magnicon_ccc(diffFile)
+    # print(mc.I1Feedin, mc.I2Feedin)

@@ -105,11 +105,12 @@ class writeDataFile():
             f.write(f'|Magnicon CCC Process|StandRes')
 
 if __name__ == '__main__':
-    file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
-    file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
-    file3 = bp + r'\2016-02-18_CCC\160218_001_0935.txt'
-    file4 = bp + r'\2023-05-31_CCC\230531_008_2200.txt'
-    dat_obj = magnicon_ccc(file4)
-    bvd_stat_obj = bvd_stat(file4, 25, 25, 101325, 101325)
-    writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_stat_obj, RStatus='R2', R2Temp=25.0002, 
-                  R1Temp=-271.5500, R1Pres=101473.813, R2Pres=101473.813, I='I2', polarity='NEG', system='CCC2014-01', probe='Magnicon1')
+    print("I am main")
+    # file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
+    # file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
+    # file3 = bp + r'\2016-02-18_CCC\160218_001_0935.txt'
+    # file4 = bp + r'\2023-05-31_CCC\230531_008_2200.txt'
+    # dat_obj = magnicon_ccc(file4)
+    # bvd_stat_obj = bvd_stat(file4, 25, 25, 101325, 101325)
+    # writeDataFile(text='230531_008_2200.txt', dat_obj=dat_obj, bvd_stat_obj=bvd_stat_obj, RStatus='R2', R2Temp=25.0002, 
+    #               R1Temp=-271.5500, R1Pres=101473.813, R2Pres=101473.813, I='I2', polarity='NEG', system='CCC2014-01', probe='Magnicon1')

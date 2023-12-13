@@ -175,13 +175,14 @@ class bvd_stat:
         self.remTimeStamp = mag.sec2ts(self.remTime)
         
 if __name__ == '__main__':
-    file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
-    file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
-    file3 = bp + r'\2016-02-18_CCC\160218_001_0935.txt'
-    diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
-    file4 = r'2023-08-14_CCC\230814_001_1407.txt'
-    # test = bvd_stat(file2, 25, 25, 101325, 101325)
-    # test = bvd_stat(file2, 25, 25, 103008, 103008)
-    test = bvd_stat(file4, T1=25, T2=25, P1=103010.745495, P2=103010.745495)
-    # test = bvd_stat(file4, T1=25, T2=25, P1=101325, P2=101325)
-    print(test.C1R1, test.C1R2)
+    print ("I am main")
+    # file1 = bp + r'\2016-02-18_CCC\160218_016_1548.txt'
+    # file2 = bp + r'\2023-06-01_CCC\230601_001_1134.txt'
+    # file3 = bp + r'\2016-02-18_CCC\160218_001_0935.txt'
+    # diffFile = bp + r'/2023-05-31_CCC/230531_008_2200.txt'
+    # file4 = r'2023-08-14_CCC\230814_001_1407.txt'
+    # # test = bvd_stat(file2, 25, 25, 101325, 101325)
+    # # test = bvd_stat(file2, 25, 25, 103008, 103008)
+    # test = bvd_stat(file4, T1=25, T2=25, P1=103010.745495, P2=103010.745495)
+    # # test = bvd_stat(file4, T1=25, T2=25, P1=101325, P2=101325)
+    # print(test.C1R1, test.C1R2)
