@@ -5,7 +5,7 @@ from pytz import utc
 class ResData():
     def __init__(self, bp):
         self.datFile = f'{bp}\ResDataBase.dat'
-        
+
         # Empty arrays to store data from ResDataBase.dat
         self.ResDict = {}
         # Open .dat file for reading and close it when done
@@ -51,7 +51,7 @@ class ResData():
             return (self.ResDict[mySN]['Drift']*((myTimeStamp - self.ResDict[mySN]['CorrCalDate'])/(365.25*24*60*60)) + self.ResDict[mySN]['CalVal'])
         # Return None if the input SN is not found within the database
         return None
-            
+
     # Returns the predicted resistor value from the input SN and Unix timestamp
     def predictedValueUnix(self, mySN: str, myUnixTime: float) -> float:
         # Return the predicted value if input SN is found within the database
@@ -59,8 +59,8 @@ class ResData():
             return (self.ResDict[mySN]['Drift']*((myUnixTime - self.ResDict[mySN]['CorrCalDate'])/(365.25*24*60*60)) + self.ResDict[mySN]['CalVal'])
         # Return None if the input SN is not found within the database
         return None
-    
-    
+
+
 # Main
 if __name__ == '__main__':
-    pass
+    print ("I am main")
