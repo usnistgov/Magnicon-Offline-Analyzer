@@ -180,13 +180,21 @@ class magnicon_ccc:
         with open (self.cfgFile, "r") as file:
             for line in file.readlines():
                 if line.startswith('r1 '):
-                    if ('12906' in line) or ('12.906' in line):
-                        self.R1NomVal = 12906.4037296523
+                    if ('12906.4' in line) or ('12.9064' in line):
+                        self.R1NomVal = 25812.8074593045/2.0
+                    elif ('25812.8' in line) or ('25.8128' in line):
+                        self.R1NomVal = 25812.8074593045
+                    elif ('8604.2' in line) or ('8.6042' in line):
+                        self.R1NomVal = 25812.8074593045/3.0
                     else:
                         self.R1NomVal = float(line.split('=')[-1].rstrip(' \n'))
                 elif line.startswith('r2 '):
-                    if ('12906' in line) or ('12.906' in line):
-                        self.R2NomVal = 12906.4037296523
+                    if ('12906.4' in line) or ('12.9064' in line):
+                        self.R2NomVal = 25812.8074593045/2.0
+                    elif ('25812.8' in line) or ('25.8128' in line):
+                        self.R2NomVal = 25812.8074593045
+                    elif ('8604.2' in line) or ('8.6042' in line):
+                        self.R2NomVal = 25812.8074593045/3.0
                     else:
                         self.R2NomVal = float(line.split('=')[-1].rstrip(' \n'))
                 elif line.startswith('cs_amplitude 3'):
@@ -230,6 +238,7 @@ class magnicon_ccc:
 
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:
+            self.R1NomVal  = R.ResDict[self.R1SN]['NomVal']
             self.R1alpha   = R.ResDict[self.R1SN]['Alpha']
             self.R1beta    = R.ResDict[self.R1SN]['Beta']
             self.R1stdTemp = R.ResDict[self.R1SN]['StdTemp']
@@ -242,6 +251,7 @@ class magnicon_ccc:
             self.R1pcr     = 0
             self.R1Pred    = 0
         if self.R2SN in R.ResDict:
+            self.R2NomVal  = R.ResDict[self.R2SN]['NomVal']
             self.R2alpha   = R.ResDict[self.R2SN]['Alpha']
             self.R2beta    = R.ResDict[self.R2SN]['Beta']
             self.R2stdTemp = R.ResDict[self.R2SN]['StdTemp']
@@ -268,33 +278,35 @@ class magnicon_ccc:
 
         serviceID = {
             0: '51100S',
-            1: '51132C',
-            10: '51133C',
-            100: '51134C',
-            1000: '51135C',
-            10000: '51136C',
-            100000: '51137C',
-            1000000: '51138C',
-            10000000: '51139C',
-            100000000: '51140C',
-            1000000000: '51141C',
-            10000000000: '51142C',
-            100000000000: '51143C',
-            1000000000000: '51145C',
-            10000000000000: '51147C'
+            # 1: '51132C',
+            # 10: '51133C',
+            # 100: '51134C',
+            # 1000: '51135C',
+            # 10000: '51136C',
+            # 100000: '51137C',
+            # 1000000: '51138C',
+            # 10000000: '51139C',
+            # 100000000: '51140C',
+            # 1000000000: '51141C',
+            # 10000000000: '51142C',
+            # 100000000000: '51143C',
+            # 1000000000000: '51145C',
+            # 10000000000000: '51147C'
         }
 
-        r1_key = int(self.R1NomVal*10000)
-        r2_key = int(self.R2NomVal*10000)
+        # r1_key = int(self.R1NomVal*10000)
+        # r2_key = int(self.R2NomVal*10000)
 
-        if r1_key in serviceID:
-            self.R1ID = serviceID[r1_key]
-        else:
-            self.R1ID = serviceID[0]
-        if r2_key in serviceID:
-            self.R2ID = serviceID[r2_key]
-        else:
-            self.R2ID = serviceID[0]
+        # if r1_key in serviceID:
+        #     self.R1ID = serviceID[r1_key]
+        # else:
+        #     self.R1ID = serviceID[0]
+        # if r2_key in serviceID:
+        #     self.R2ID = serviceID[r2_key]
+        # else:
+        #     self.R2ID = serviceID[0]
+        self.R1ID = serviceID[0]
+        self.R2ID = serviceID[0]
 
     def sec2ts(self, sec: float) -> str:
         a  = [3600, 60, 60]
