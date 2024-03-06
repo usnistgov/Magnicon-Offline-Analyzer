@@ -25,7 +25,7 @@ from create_mag_ccc_datafile import writeDataFile
 import mystat
 
 # python globals
-__version__ = '1.0' # Program version string
+__version__ = '1.1' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -207,8 +207,8 @@ class Ui_mainWindow(object):
         self.R2Temp     = 25.0000
         self.R1pres     = 101325
         self.R2pres     = 101325
-        self.R1OilDepth = 203
-        self.R2OilDepth = 203
+        self.R1OilDepth = 0
+        self.R2OilDepth = 0
         self.alpha      = 0.5
         self.R1OilPres  = 0.8465*9.81*self.R1OilDepth
         self.R2OilPres  = 0.8465*9.81*self.R2OilDepth
@@ -217,7 +217,7 @@ class Ui_mainWindow(object):
 
         self.RButStatus       = 'R1'
         self.SquidFeedStatus  = 'NEG'
-        self.CurrentButStatus = 'I1'
+        self.CurrentButStatus = 'I2'
         self.saveStatus       = False
 
         self.bvdCount     = []
@@ -860,7 +860,7 @@ class Ui_mainWindow(object):
         self.SquidFeedBut.clicked.connect(self.SquidButClicked)
         self.CurrentBut = QPushButton(parent=self.SetResTab)
         self.CurrentBut.setGeometry(QRect(self.col3x, self.coly*12, self.lbl_width, int(self.lbl_height*1.2)))
-        self.CurrentBut.setStyleSheet(red_style)
+        self.CurrentBut.setStyleSheet(blue_style)
         self.CurrentBut.clicked.connect(self.CurrentButClicked)
         self.StandardRBut = QPushButton(parent=self.centralwidget)
         self.StandardRBut.setGeometry(QRect(self.col7x, self.coly, self.lbl_width - 10, int(self.lbl_height*1.2)))
@@ -935,8 +935,8 @@ class Ui_mainWindow(object):
         self.MeasTimeLabel.setText(_translate("mainWindow", "Measurement Time"))
         self.RemTimeLabel.setText(_translate("mainWindow", "Remaining Time"))
         self.ReadingDelayLabel.setText(_translate("mainWindow", "Reading Delay [s]"))
-        self.SquidFeedLabel.setText(_translate("mainWindow", "Squid Feed In"))
-        self.StandardRBut.setText(_translate("mainWindow", "R1"))
+        self.SquidFeedLabel.setText(_translate("mainWindow", "SQUID Feedin Polarity"))
+        self.StandardRBut.setText(_translate("mainWindow", self.RButStatus))
         self.R1TotalPresLabel.setText(_translate("mainWindow", "R1 Total Pres. [Pa]"))
         self.VMeanLabel.setText(_translate("mainWindow", "Mean [V]"))
         self.RMeanChkPPMLabel.setText(_translate("mainWindow", f"R Mean Chk [{chr(956)}{chr(937)}/{chr(937)}]"))
@@ -982,8 +982,8 @@ class Ui_mainWindow(object):
         self.R2PresLabel.setText(_translate("mainWindow", "R2 Pressure [Pa]"))
         self.R2OilDepthLabel.setText(_translate("mainWindow", "R2 Oil Depth [mm]"))
         self.ProbeLabel.setText(_translate("mainWindow", "Probe"))
-        self.CurrentButLabel.setText(_translate("mainWindow", "  Current"))
-        self.CurrentBut.setText(_translate("mainWindow", "I1"))
+        self.CurrentButLabel.setText(_translate("mainWindow", "SQUID Feedin Arm"))
+        self.CurrentBut.setText(_translate("mainWindow", self.CurrentButStatus))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.BVDTab), _translate("mainWindow", "BVD"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.AllanTab), _translate("mainWindow", "Allan Dev."))
@@ -1250,7 +1250,7 @@ class Ui_mainWindow(object):
         getData_start = perf_counter()
         if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.txt')[0][-1].isnumeric():
             self.validFile = True
-            self.txtFile = self.txtFilePath.split('\\')[-1]
+            self.txtFile = self.txtFilePath.split('/')[-1]
             self.dat = magnicon_ccc(self.txtFilePath)
             self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
             getFile_end = perf_counter() - getData_start
@@ -1374,7 +1374,7 @@ class Ui_mainWindow(object):
 
             if self.bvdList:
                 self.N         = len(self.bvdList)
-                self.mean      = mean(self.bvdList)
+                self.bvd_mean   = mean(self.bvdList)
                 self.std       = std(self.bvdList, ddof=1)
                 self.stdMean   = self.std/sqrt(len(self.bvdList))
 
@@ -1384,7 +1384,7 @@ class Ui_mainWindow(object):
                 self.bvd_std_chk = std(mag.bvd, ddof=1)
                 self.bvd_stdmean_chk = self.bvd_std_chk/sqrt(len(self.bvdList_chk))
             if mag.N2 != 0 and mag.N1 != 0 and mag.deltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
-                self.ratioMean = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.mean/mag.deltaI2R2) # calculated from raw bridge voltages
+                self.ratioMean = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvd_mean/mag.deltaI2R2) # calculated from raw bridge voltages
                 self.ratioMeanChk   = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvd_mean_chk/mag.deltaI2R2) # calculated from bvd file
                 self.R1MeanChk = (self.R1/self.ratioMeanChk - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr
                 self.R2MeanChk = (self.R2*self.ratioMeanChk - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr
@@ -1418,7 +1418,7 @@ class Ui_mainWindow(object):
         None
         """
         print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
-        self.VMeanLineEdit.setText(str("{:.6e}".format(self.mean)))
+        self.VMeanLineEdit.setText(str("{:.6e}".format(self.bvd_mean)))
         self.VMeanChkLineEdit.setText(str("{:.6e}".format(self.bvd_mean_chk)))
         self.Current1LineEdit.setText(str(self.dat.I1))
         self.FullCycLineEdit.setText(str(self.dat.fullCyc))
@@ -1699,20 +1699,28 @@ class Ui_mainWindow(object):
 
     def saveMDSS(self) -> None:
         print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        self.mdssdir = "C:" + os.sep + "Users" + os.sep + os.getlogin() + os.sep + "Desktop" + os.sep + r"Transfer Files"
+        if not os.path.isdir(self.mdssdir):
+            os.mkdir(self.mdssdir)
         self.progressBar.setProperty('value', 25)
         self.saveStatus = False
         self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setText('No')
         self.saveButton.setEnabled(False)
         self.dat.comments = self.CommentsTextBrowser.toPlainText()
-        self.createDataFile()
-        self.progressBar.setProperty('value', 100)
+        writeDataFile(savepath=self.mdssdir, text=self.txtFile, dat_obj=self.dat, \
+                      bvd_stat_obj=self.bvd_stat_obj, RStatus=self.RButStatus, \
+                      R1Temp=self.R1Temp, R2Temp=self.R2Temp, R1Pres=self.R1TotPres, \
+                      R2Pres=self.R2TotPres, I=self.CurrentButStatus, \
+                      polarity=self.SquidFeedStatus, system=self.MagElecComboBox.currentText(), \
+                      probe=self.ProbeComboBox.currentText(), meanR1=self.meanR1, meanR2=self.meanR2, \
+                      stdR1ppm=self.stdR1ppm, stdR2ppm=self.stdR2ppm, R1MeanChkOhm=self.R1MeanChkOhm, \
+                      R2MeanChkOhm=self.R2MeanChkOhm, C1R1=self.C1R1, C2R1=self.C2R1, \
+                      stdC1R1=self.stdC1R1, stdC2R1=self.stdC2R1, C1R2=self.C1R2, \
+                      C2R2=self.C2R2, stdC1R2=self.stdC1R2, stdC2R2=self.stdC2R2,\
+                      R1PPM=self.R1PPM, R2PPM=self.R2PPM, bvd_mean=self.bvd_mean, N=self.N)
 
-    def createDataFile(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
-        writeDataFile(text=self.txtFile, dat_obj=self.dat, bvd_stat_obj=self.bvd_stat_obj, RStatus=self.RButStatus, R1Temp=self.R1Temp,
-                      R2Temp=self.R2Temp, R1Pres=self.R1TotPres, R2Pres=self.R2TotPres, I=self.CurrentButStatus, polarity=self.SquidFeedStatus,
-                      system=self.MagElecComboBox.currentText(), probe=self.ProbeComboBox.currentText())
+        self.progressBar.setProperty('value', 100)
 
     def cleanUp(self) -> None:
         print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
