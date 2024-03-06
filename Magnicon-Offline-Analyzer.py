@@ -1718,7 +1718,9 @@ class Ui_mainWindow(object):
                       R2MeanChkOhm=self.R2MeanChkOhm, C1R1=self.C1R1, C2R1=self.C2R1, \
                       stdC1R1=self.stdC1R1, stdC2R1=self.stdC2R1, C1R2=self.C1R2, \
                       C2R2=self.C2R2, stdC1R2=self.stdC1R2, stdC2R2=self.stdC2R2,\
-                      R1PPM=self.R1PPM, R2PPM=self.R2PPM, bvd_mean=self.bvd_mean, N=self.N)
+                      R1PPM=self.R1PPM, R2PPM=self.R2PPM, bvd_mean=self.bvd_mean, \
+                      N=self.N, samplesUsed=int(self.SampUsedLineEdit.text()), \
+                      meas=float(self.MeasLineEdit.text()), delay=float(self.DelayLineEdit.text()))
 
         self.progressBar.setProperty('value', 100)
 

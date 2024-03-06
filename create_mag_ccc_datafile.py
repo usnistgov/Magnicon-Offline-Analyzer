@@ -6,11 +6,12 @@ import os
 class writeDataFile():
     def __init__(self, savepath: str, text: str, dat_obj: magnicon_ccc, bvd_stat_obj: bvd_stat, \
                  RStatus: str, R1Temp: float, R2Temp: float, R1Pres: float, \
-                 R2Pres:float, I: str, polarity: str, system: str, probe: str, meanR1: float, meanR2: float, \
-                 stdR1ppm: float, stdR2ppm: float, R1MeanChkOhm: float, R2MeanChkOhm: float, \
-                 C1R1: float, C2R1: float, stdC1R1: float, stdC2R1: float, \
-                 C1R2: float, C2R2: float, stdC1R2: float, stdC2R2: float, \
-                 R1PPM: float, R2PPM: float, bvd_mean: float, N: int) -> None:
+                 R2Pres:float, I: str, polarity: str, system: str, probe: str, \
+                 meanR1: float, meanR2: float, stdR1ppm: float, stdR2ppm: float, \
+                 R1MeanChkOhm: float, R2MeanChkOhm: float, C1R1: float, C2R1: float, \
+                 stdC1R1: float, stdC2R1: float, C1R2: float, C2R2: float, \
+                 stdC1R2: float, stdC2R2: float, R1PPM: float, R2PPM: float, \
+                 bvd_mean: float, N: int, samplesUsed: int, meas: float, delay: float) -> None:
         # Creates the MDSS file name according to the input .txt file's name
         self.savepath = savepath
         dataFileName = (text.split('/')[-1]).replace('.txt', "")
@@ -66,8 +67,8 @@ class writeDataFile():
                 f.write(f'|{"{:.4f}".format(stdC1R2)}')
                 f.write(f'|{"{:.4f}".format(stdC2R2)}')
             f.write(f'|{dat_obj.SHC}')
-            f.write(f'|{dat_obj.samplesUsed}')
-            f.write(f'|{"{:.2f}".format(dat_obj.rampTime)}/{"{:.2f}".format(dat_obj.delay)}/{"{:.2f}".format(dat_obj.meas)}')
+            f.write(f'|{samplesUsed}')
+            f.write(f'|{"{:.2f}".format(dat_obj.rampTime)}/{"{:.2f}".format(delay)}/{"{:.2f}".format(meas)}')
             if RStatus == 'R1':
                 f.write(f'|{"{:.4f}".format(R1PPM)}')
             else:
