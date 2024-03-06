@@ -60,7 +60,5 @@ class ResData():
         # Return None if the input SN is not found within the database
         return None
 
-
-# Main
 if __name__ == '__main__':
     print ("I am main")
