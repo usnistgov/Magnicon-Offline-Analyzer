@@ -120,11 +120,8 @@ class magnicon_ccc:
         else:
             self.DT        = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
             self.timeStamp = mktime(self.DT.timetuple())
-
         # This does not average
         # self.timeStamp = mktime(datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]).timetuple())
-                    
-
     # Parses the bvd.txt file
     def load_bvd(self) -> None:
         if not self.validFile:
@@ -175,7 +172,7 @@ class magnicon_ccc:
     def load_cfg(self) -> None:
         if not self.validFile:
             return
-        feedinIndex = [-97, -94.5, -92.0, -89.5, -87.0, -84.5, -82.0, -79.5, -77.0, -74.5, -72.0, -69.5, -67.0, -64.5, -62.0, 
+        feedinIndex = [-97, -94.5, -92.0, -89.5, -87.0, -84.5, -82.0, -79.5, -77.0, -74.5, -72.0, -69.5, -67.0, -64.5, -62.0,
                        -59.5, -57.0, -54.5, -52.0, -49.5, -47.0, -44.5, -42.0, -39.5, -37.0, -34.5, -32.0, -29.5, -27.0]
         with open (self.cfgFile, "r") as file:
             for line in file.readlines():
@@ -270,12 +267,12 @@ class magnicon_ccc:
             self.rampTime      = self.rStepTime*self.rStepCount*2/1000000
             self.fullCyc       = self.SHC*self.intTime/self.timeBase*2
             self.measCyc       = self.numCycStop/2
-            self.delay         = (self.ignored/self.SHC)*(self.SHC*self.intTime/self.timeBase - self.rampTime)
+            self.delay         = ((self.SHC - self.samplesUsed)/self.SHC)*(self.SHC*self.intTime/self.timeBase - self.rampTime)
             self.meas          = (self.SHC*self.intTime/self.timeBase) - self.rampTime - self.delay
             self.dt            = self.SHC*2/self.fullCyc
             self.measTime      = self.fullCyc*self.measCyc
             self.measTimeStamp = self.sec2ts(self.measTime)
-
+            print(self.delay, self.meas)
         serviceID = {
             0: '51100S',
             # 1: '51132C',
@@ -316,7 +313,6 @@ class magnicon_ccc:
             ts.append(cur)
             sec = sec - i*cur
         return f'{"{:02d}".format(int(ts[0]))}:{"{:02d}".format(int(ts[1]))}:{"{:02d}".format(int(ts[2]))}'
-
 
 # For testing
 if __name__ == '__main__':
