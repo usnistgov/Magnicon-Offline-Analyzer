@@ -4,7 +4,8 @@ import inspect
 
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QRect, QMetaObject, QCoreApplication
-from PyQt6.QtGui import QIcon, QAction, QPixmap
+from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainterPath, QPainter,\
+                        QKeySequence
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
                              QLabel, QPushButton, QComboBox, QTextBrowser, QTabWidget, \
                              QSpacerItem, QGridLayout, QLineEdit, QFrame, QSizePolicy, \
@@ -17,6 +18,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.ticker import MaxNLocator, ScalarFormatter
 import matplotlib.style as mplstyle
 from numpy import sqrt, std, mean, ones, linspace, array, nan
+from scipy import signal
 
 # custom imports
 from bvd_stats import bvd_stat
@@ -25,7 +27,7 @@ from create_mag_ccc_datafile import writeDataFile
 import mystat
 
 # python globals
-__version__ = '1.1' # Program version string
+__version__ = '1.3' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -84,7 +86,7 @@ class aboutWindow(QWidget):
         """QWidget class for showing the About window to display general program
            information
         """
-        print('Class: aboutWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: aboutWindow, In function: ' + inspect.stack()[0][3])
         super().__init__()
         self.setWindowTitle("About")
         self.setFixedSize(300, 200)
@@ -100,9 +102,8 @@ class aboutWindow(QWidget):
         self.setLayout(layout)
 
 class Ui_mainWindow(object):
-
     def setupUi(self, mainWindow) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         global winSizeH, winSizeV
         mainWindow.setFixedSize(winSizeH, winSizeV)
         mainWindow.setWindowIcon(QIcon(base_dir + r'\icons\analyzer.ico'))
@@ -112,7 +113,20 @@ class Ui_mainWindow(object):
         self.tabWidget = QTabWidget(parent=self.centralwidget)
         self.tabWidget.setGeometry(QRect(0, 0, winSizeH - 125, winSizeV))
         self.SetResTab = QWidget()
+        self.SetResTab.paintEvent = lambda event: self._paintPath(event)
         self.tabWidget.addTab(self.SetResTab, "")
+        # drawing pens
+        self.red_pen = QtGui.QPen()
+        self.red_pen.setWidth(4)
+        self.red_pen.setColor(QtGui.QColor('red'))
+
+        self.black_pen = QtGui.QPen()
+        self.black_pen.setWidth(4)
+        self.black_pen.setColor(QtGui.QColor('black'))
+
+        self.green_pen = QtGui.QPen()
+        self.green_pen.setWidth(4)
+        self.green_pen.setColor(QtGui.QColor('green'))
 
         self.setLabels()
         self.setLineEdits()
@@ -124,17 +138,19 @@ class Ui_mainWindow(object):
         self.AllanTabSetUp()
         self.SpecTabSetUp()
 
-        # self.tabWidget.currentChanged.connect(self.tabIndexChanged)
         # options and actions for the top window menu
         self.file_action = QAction("&Open...")
         self.file_action.setStatusTip("Open data file")
-        self.file_action.setShortcut("Ctrl + O")
         self.file_action.triggered.connect(self.folderClicked)
+        # self.file_action.setCheckable(True)
+        self.file_action.setShortcut(QKeySequence("Ctrl+o"))
+        self.file_action.setShortcutVisibleInContextMenu(True)
 
         self.close_action = QAction("&Quit")
         self.close_action.setStatusTip("Quit this program")
-        self.close_action.setShortcut("Ctrl + Q")
         self.close_action.triggered.connect(self.quit)
+        # self.close_action.setCheckable(True)
+        self.close_action.setShortcut(QKeySequence("Ctrl+q"))
 
         self.about_action = QAction("&About")
         self.about_action.setStatusTip("Program information & license")
@@ -151,8 +167,9 @@ class Ui_mainWindow(object):
         if os.path.exists(r"\\elwood.nist.gov\68internal\Calibrations\MDSS Data\resist"):
             self.dialog.setDirectory(r"\\elwood.nist.gov\68internal\Calibrations\MDSS Data\resist\MagniconData\CCCViewerData")
         else:
-            self.diaglog.setDirectory(r"C:")
-        # self.dialog.setFileMode(QFileDialog.AnyFile)
+            self.dialog.setDirectory(r"C:")
+        self.dialog.setNameFilters(["Text files (*_bvd.txt)"])
+        self.dialog.selectNameFilter("Text files (*_bvd.txt)")
 
         self.statusbar = QStatusBar(parent=mainWindow)
         mainWindow.setStatusBar(self.statusbar)
@@ -160,20 +177,63 @@ class Ui_mainWindow(object):
         self.retranslateUi(mainWindow)
         self.tabWidget.setCurrentIndex(0)
         QMetaObject.connectSlotsByName(mainWindow)
-
+        # self.drawTimingDiagram()
         if getattr(sys, 'frozen', False):
             pyi_splash.close()
 
+    def drawTimingDiagram(self,):
+        self.path = QPainterPath()
+        self.shift_col4x = self.col4x - 5
+        self.path.moveTo(self.shift_col4x, 400)
+        self.path.lineTo(self.shift_col4x + 50, 350)
+        self.path.lineTo(self.shift_col4x + 350, 350)
+
+    def _paintPath(self, event):
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        ramp_max = 100 # 100 pixels  corresponds to 10s of ramp time which is max
+        y_start = 400
+        y_end = 350
+        painter = QPainter(self.SetResTab)
+        # painter.begin(self.SetResTab)
+        painter.setPen(self.black_pen)
+        scale_factor = 1.0
+        painter.scale(scale_factor, scale_factor)
+        if self.SampUsedLineEdit.text() != '':
+            self.path = QPainterPath()
+            self.shift_col4x = self.col4x - 5
+            self.path.clear()
+            self.path.moveTo(self.shift_col4x, y_start)
+            rx = int(int(self.dat.rampTime)*ramp_max/10) # calculate rx based on ramp time
+            self.path.lineTo(self.shift_col4x + rx, y_end)
+            if rx != 0:
+                slope = int((y_start - y_end)/rx)
+            else:
+                slope = 1
+            self.path.lineTo(self.shift_col4x + rx + y_end, y_end)
+            painter.drawPath(self.path)
+            for ct, i in enumerate(linspace(self.shift_col4x, self.shift_col4x + y_end, num=int(self.dat.SHC))):
+                painter.setPen(self.red_pen)
+                if i < self.shift_col4x + rx:
+                    painter.drawPoint(int(i), y_start - slope*int(i))
+                else:
+                    painter.drawPoint(int(i), 350)
+                # draw green line for samples used
+                if ct >= (int(self.dat.SHC) -  int(self.SampUsedLineEdit.text())):
+                    painter.setPen(self.green_pen)
+                    painter.drawLine(int(i), 355, int(i), 400)
+        painter.end()
+
     def _create_menubar(self, ) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.file_menu = self.menubar.addMenu("&File")
         self.file_menu.addAction(self.file_action)
         self.file_menu.addAction(self.close_action)
+        # self.file_menu.setShortcutEnabled(True)
         self.help_menu = self.menubar.addMenu("&Help")
         self.help_menu.addAction(self.about_action)
 
     def _about(self,) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.about_window = aboutWindow()
         self.about_window.show()
 
@@ -195,7 +255,7 @@ class Ui_mainWindow(object):
         app.quit()
 
     def initializations(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.txtFilePath  = ''
         self.validFile    = False
         self.data         = False
@@ -242,7 +302,7 @@ class Ui_mainWindow(object):
 
     # Set up for the labels
     def setLabels(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         # col0
         self.R1SNLabel = QLabel(parent=self.SetResTab)
         self.R1SNLabel.setGeometry(QRect(self.col0x, 30, self.lbl_width, self.lbl_height))
@@ -303,12 +363,12 @@ class Ui_mainWindow(object):
         self.R2OilPresLabel = QLabel(parent=self.SetResTab)
         self.R2OilPresLabel.setGeometry(QRect(self.col2x, 450, self.lbl_width, self.lbl_height))
         # col3
-        self.ReadingDelayLabel = QLabel(parent=self.SetResTab)
-        self.ReadingDelayLabel.setGeometry(QRect(self.col3x, 30, self.lbl_width, self.lbl_height))
+        self.kLabel = QLabel(parent=self.SetResTab)
+        self.kLabel.setGeometry(QRect(self.col3x, 30, self.lbl_width, self.lbl_height))
         self.MeasTimeLabel = QLabel(parent=self.SetResTab)
         self.MeasTimeLabel.setGeometry(QRect(self.col3x, 90, self.lbl_width, self.lbl_height))
-        self.RemTimeLabel = QLabel(parent=self.SetResTab)
-        self.RemTimeLabel.setGeometry(QRect(self.col3x, 150, self.lbl_width, self.lbl_height))
+        self.lbl_deltaI2R2 = QLabel(parent=self.SetResTab)
+        self.lbl_deltaI2R2.setGeometry(QRect(self.col3x, 150, self.lbl_width, self.lbl_height))
         self.R1TotalPresLabel = QLabel(parent=self.SetResTab)
         self.R1TotalPresLabel.setGeometry(QRect(self.col3x, 210, self.lbl_width, self.lbl_height))
         self.R2TotalPresLabel = QLabel(parent=self.SetResTab)
@@ -377,21 +437,27 @@ class Ui_mainWindow(object):
         self.ResultsLabel = QLabel(parent=self.SetResTab)
         self.ResultsLabel.setGeometry(QRect(650, 10, self.lbl_width, self.lbl_height))
         self.ResultsLabel.setStyleSheet(
-                """QLabel {color: blue; font-weight: bold }""")
+                """QLabel {color: blue; font-weight: bold; font-size: 14pt }""")
         self.SettingsLabel = QLabel(parent=self.SetResTab)
         self.SettingsLabel.setGeometry(QRect(220, 10, self.lbl_width, self.lbl_height))
         self.SettingsLabel.setStyleSheet(
-                """QLabel {color: red; font-weight: bold }""")
-
+                """QLabel {color: red; font-weight: bold; font-size: 14pt }""")
+        self.lbl_ccceq = QLabel(parent=self.SetResTab)
+        self.lbl_ccceq.setGeometry(QRect(640, 440, self.lbl_width+25, self.lbl_height))
+        self.lbl_ccceq.setStyleSheet(
+                """QLabel {color: green; font-weight: bold; font-size: 14pt }""")
         self.LogoLabel = QLabel(parent=self.SetResTab)
         self.LogoPixmap = QPixmap(base_dir + r'\icons\nist_logo.png')
         self.LogoLabel.setPixmap(self.LogoPixmap)
         self.LogoLabel.setGeometry(QRect(550, 700, 300, 76))
-        # self.LogoLabel.resize(self.LogoPixmap.width(),
-        #                 self.LogoPixmap.height())
+
+        self.lbl_equation = QLabel(parent=self.SetResTab)
+        self.pixmap_equation = QPixmap(base_dir + r'\icons\ccc_equation.png')
+        self.lbl_equation.setPixmap(self.pixmap_equation)
+        self.lbl_equation.setGeometry(QRect(550, 475, 314, 222))
 
     def setLineEdits(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         # col0
         self.R1SNLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1SNLineEdit.setGeometry(QRect(self.col0x, self.coly, self.lbl_width, self.lbl_height))
@@ -507,26 +573,33 @@ class Ui_mainWindow(object):
         self.R2OilPresLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         # col3
+        self.kLineEdit = QLineEdit(parent=self.SetResTab)
+        self.kLineEdit.setGeometry(QRect(self.col3x, self.coly, self.lbl_width, self.lbl_height))
+        self.kLineEdit.setReadOnly(True)
+        self.kLineEdit.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         self.MeasTimeLineEdit = QLineEdit(parent=self.SetResTab)
         self.MeasTimeLineEdit.setGeometry(QRect(self.col3x, self.coly*2, self.lbl_width, self.lbl_height))
         self.MeasTimeLineEdit.setReadOnly(True)
         self.MeasTimeLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
-        self.RemTimeLineEdit = QLineEdit(parent=self.SetResTab)
-        self.RemTimeLineEdit.setGeometry(QRect(self.col3x, self.coly*3, self.lbl_width, self.lbl_height))
-        self.RemTimeLineEdit.setReadOnly(True)
-        self.RemTimeLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_deltaI2R2 = QLineEdit(parent=self.SetResTab)
+        self.le_deltaI2R2.setGeometry(QRect(self.col3x, self.coly*3, self.lbl_width, self.lbl_height))
+        self.le_deltaI2R2.setStyleSheet(
+                """QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
+        self.le_deltaI2R2.returnPressed.connect(self.changedDeltaI2R2)
         self.R1TotalPresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1TotalPresLineEdit.setGeometry(QRect(self.col3x, self.coly*4, self.lbl_width, self.lbl_height))
         self.R1TotalPresLineEdit.setReadOnly(True)
         self.R1TotalPresLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+
         self.R2TotalPresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2TotalPresLineEdit.setGeometry(QRect(self.col3x, self.coly*5, self.lbl_width, self.lbl_height))
         self.R2TotalPresLineEdit.setReadOnly(True)
         self.R2TotalPresLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+
         self.R1TempLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1TempLineEdit.setGeometry(QRect(self.col3x, self.coly*6, self.lbl_width, self.lbl_height))
         self.R1TempLineEdit.returnPressed.connect(self.temp1Changed)
@@ -650,7 +723,7 @@ class Ui_mainWindow(object):
         self.SampUsedLineEdit.returnPressed.connect(self.changedSamplesUsed)
 
     def BVDTabSetUp(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         global winSizeH
         self.BVDTab = QWidget()
         self.tabWidget.addTab(self.BVDTab, "")
@@ -737,14 +810,13 @@ class Ui_mainWindow(object):
         grid.addWidget(KurtosisLabel, 3, 7)
         grid.addWidget(self.KurtosisEdit, 4, 7)
 
-
     def AllanTabSetUp(self) -> None:
         """Set up the tab widget for showing allan deviation plots
         Returns
         -------
         None.
         """
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.AllanTab = QWidget()
         self.tabWidget.addTab(self.AllanTab, "")
         self.AllanVerticalLayoutWidget = QWidget(parent=self.AllanTab)
@@ -762,7 +834,7 @@ class Ui_mainWindow(object):
         self.Allanax4.tick_params(axis='both', which='both', direction='in')
 
         self.Allanax1.set_ylabel('\u03C3(\u03C4), BVD [V]')
-        self.Allanax1.set_xlabel('\u03C4 (samples)')
+        self.Allanax1.set_xlabel('\u03C4 (s)')
         self.Allanax1.set_yscale('log')
         self.Allanax1.set_xscale('log')
         self.Allanax1.grid(which='both', alpha=self.alpha)
@@ -770,7 +842,7 @@ class Ui_mainWindow(object):
         self.Allanax1.xaxis.set_major_formatter(ScalarFormatter())
 
         self.Allanax2.set_ylabel('\u03C3(\u03C4), C1 [V]')
-        self.Allanax2.set_xlabel('\u03C4 (samples)')
+        self.Allanax2.set_xlabel('\u03C4 (s)')
         self.Allanax2.set_yscale('log')
         self.Allanax2.set_xscale('log')
         self.Allanax2.grid(which='both', alpha=self.alpha)
@@ -778,7 +850,7 @@ class Ui_mainWindow(object):
         self.Allanax2.xaxis.set_major_formatter(ScalarFormatter())
 
         self.Allanax3.set_ylabel('\u03C3(\u03C4), C2 [V]')
-        self.Allanax3.set_xlabel('\u03C4 (samples)')
+        self.Allanax3.set_xlabel('\u03C4 (s)')
         self.Allanax3.set_yscale('log')
         self.Allanax3.set_xscale('log')
         self.Allanax3.grid(which='both', alpha=self.alpha)
@@ -786,7 +858,7 @@ class Ui_mainWindow(object):
         self.Allanax3.xaxis.set_major_formatter(ScalarFormatter())
 
         self.Allanax4.set_ylabel('\u03C3(\u03C4), BV [V]')
-        self.Allanax4.set_xlabel('\u03C4 (samples)')
+        self.Allanax4.set_xlabel('\u03C4 (s)')
         self.Allanax4.set_yscale('log')
         self.Allanax4.set_xscale('log')
         self.Allanax4.grid(which='both', alpha=self.alpha)
@@ -822,7 +894,7 @@ class Ui_mainWindow(object):
         self.AllanVerticalLayout.addLayout(self.AllanHorizontalLayout)
 
     def SpecTabSetUp(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         global winSizeH
         self.SpecTab = QWidget()
         self.tabWidget.addTab(self.SpecTab, "")
@@ -832,24 +904,29 @@ class Ui_mainWindow(object):
 
         self.Specfig = plt.figure()
         self.SpecAx = self.Specfig.add_subplot(2,1,1)
-        self.SpecAx.tick_params(direction='in')
-        self.SpecAx.set_title('Power Spectrum')
-        self.SpecAx.set_ylabel('Magnitude')
-        self.SpecAx.set_xlabel('Frequency (Hz)')
+        self.SpecAx.tick_params(axis='both', which='both', direction='in')
+        self.SpecAx.set_ylabel('PSD of BVD [$V^2$/' + 'Hz' + ']')
+        self.SpecAx.set_xlabel('Frequency [Hz]')
         self.SpecAx.grid(alpha=self.alpha)
+        self.SpecAx.set_yscale('log')
+        self.SpecAx.set_xscale('log')
 
-        self.PowerSpecAx = self.Specfig.add_subplot(2,1,2)
-        self.PowerSpecAx.tick_params(direction='in')
-        self.PowerSpecAx.set_title('Power Spectrum from FFT')
-        self.PowerSpecAx.set_ylabel('Magnitude')
-        self.PowerSpecAx.set_xlabel('Frequency (Hz)')
-        self.PowerSpecAx.grid(alpha=self.alpha)
+        self.specAB = self.Specfig.add_subplot(2,1,2)
+        self.specAB.tick_params(axis='both', which='both', direction='in')
+        self.specAB.set_ylabel('PSD of BV [$V^2$/' + 'Hz' + ']')
+        self.specAB.set_xlabel('Frequency (Hz)')
+        self.specAB.grid(alpha=self.alpha)
+        self.specAB.set_yscale('log')
+        self.specAB.set_xscale('log')        
+        self.Specfig.set_tight_layout(True)
+
         self.SpecCanvas = FigureCanvas(self.Specfig)
         self.SpecVerticalLayout.addWidget(NavigationToolbar(self.SpecCanvas))
         self.SpecVerticalLayout.addWidget(self.SpecCanvas)
+        
 
     def setButtons(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.folderToolButton = QToolButton(parent=self.SetResTab)
         self.folderToolButton.setGeometry(QRect(self.col3x, self.coly*10, 40, self.lbl_height))
         self.folderToolButton.setIcon(QIcon(base_dir + r'\icons\folder.ico'))
@@ -878,7 +955,7 @@ class Ui_mainWindow(object):
         self.saveButton.clicked.connect(self.saveMDSS)
 
     def setSpinBoxes(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.R1OilDepthSpinBox = QSpinBox(parent=self.SetResTab)
         self.R1OilDepthSpinBox.setGeometry(QRect(self.col1x, self.coly*7, self.lbl_width, self.lbl_height))
         self.R1OilDepthSpinBox.setMaximum(1000)
@@ -887,11 +964,9 @@ class Ui_mainWindow(object):
         self.R2OilDepthSpinBox.setGeometry(QRect(self.col1x, self.coly*8, self.lbl_width, self.lbl_height))
         self.R2OilDepthSpinBox.setMaximum(1000)
         self.R2OilDepthSpinBox.valueChanged.connect(self.oilDepth2Changed)
-        self.ReadingDelaySpinBox = QSpinBox(parent=self.SetResTab)
-        self.ReadingDelaySpinBox.setGeometry(QRect(self.col3x, self.coly, self.lbl_width, self.lbl_height))
 
     def setComboBoxes(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.MagElecComboBox = QComboBox(parent=self.SetResTab)
         self.MagElecComboBox.setGeometry(QRect(self.col0x, self.coly*11, self.lbl_width, self.lbl_height))
         self.MagElecComboBox.setEditable(False)
@@ -905,7 +980,7 @@ class Ui_mainWindow(object):
         self.ProbeComboBox.addItem('NIST1')
 
     def setMisc(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.SetResDivider = QFrame(parent=self.SetResTab)
         self.SetResDivider.setGeometry(QRect(self.col3x + self.lbl_width + 10, -10, 20, winSizeV))
         self.SetResDivider.setFrameShape(QFrame.Shape.VLine)
@@ -920,36 +995,36 @@ class Ui_mainWindow(object):
         self.progressBar.setProperty("value", 0)
 
     def retranslateUi(self, mainWindow) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         _translate = QCoreApplication.translate
         mainWindow.setWindowTitle(_translate("mainWindow", "Magnicon Offline Analyzer " + str(__version__) ))
-        self.R1OilDepthLabel.setText(_translate("mainWindow", "R1 Oil Depth [mm]"))
+        self.R1OilDepthLabel.setText(_translate("mainWindow", "R<sub>1</sub> Oil Depth [mm]"))
         self.RelHumLabel.setText(_translate("mainWindow", "Rel. Humidity [%]"))
-        self.R2TempLabel.setText(_translate("mainWindow", f'R2 Temperature [{chr(176)}C]'))
-        self.R1PresLabel.setText(_translate("mainWindow", "R1 Pressure [Pa]"))
+        self.R2TempLabel.setText(_translate("mainWindow", f'R<sub>2</sub> Temperature [{chr(176)}C]'))
+        self.R1PresLabel.setText(_translate("mainWindow", "R<sub>1</sub> Pressure [Pa]"))
         self.MagElecLabel.setText(_translate("mainWindow", "Magnicon Electronics"))
-        self.R1OilPresLabel.setText(_translate("mainWindow", "R1 Oil Pressure [Pa]"))
-        self.R2OilPresLabel.setText(_translate("mainWindow", "R2 Oil Pressure [Pa]"))
-        self.R1TempLabel.setText(_translate("mainWindow", f'R1 Temperature [{chr(176)}C]'))
+        self.R1OilPresLabel.setText(_translate("mainWindow", "R<sub>1</sub> Oil Pressure [Pa]"))
+        self.R2OilPresLabel.setText(_translate("mainWindow", "R<sub>2</sub> Oil Pressure [Pa]"))
+        self.R1TempLabel.setText(_translate("mainWindow", f'R<sub>1</sub> Temperature [{chr(176)}C]'))
         self.StandardRLabel.setText(_translate("mainWindow", "Standard R"))
         self.MeasTimeLabel.setText(_translate("mainWindow", "Measurement Time"))
-        self.RemTimeLabel.setText(_translate("mainWindow", "Remaining Time"))
-        self.ReadingDelayLabel.setText(_translate("mainWindow", "Reading Delay [s]"))
+        self.lbl_deltaI2R2.setText(_translate("mainWindow", f"{chr(916)}(I<sub>2</sub>R<sub>2</sub>) [V]"))
+        self.kLabel.setText(_translate("mainWindow", "k [mTurns]"))
         self.SquidFeedLabel.setText(_translate("mainWindow", "SQUID Feedin Polarity"))
         self.StandardRBut.setText(_translate("mainWindow", self.RButStatus))
-        self.R1TotalPresLabel.setText(_translate("mainWindow", "R1 Total Pres. [Pa]"))
+        self.R1TotalPresLabel.setText(_translate("mainWindow", "R<sub>1</sub> Total Pres. [Pa]"))
         self.VMeanLabel.setText(_translate("mainWindow", "Mean [V]"))
         self.RMeanChkPPMLabel.setText(_translate("mainWindow", f"R Mean Chk [{chr(956)}{chr(937)}/{chr(937)}]"))
-        self.C2Label.setText(_translate("mainWindow", f"C2 [{chr(956)}{chr(937)}/{chr(937)}]"))
+        self.C2Label.setText(_translate("mainWindow", f"C<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.StdDevMeanLabel.setText(_translate("mainWindow", "Std. Mean"))
         self.R1STPLabel.setText(_translate("mainWindow", f"R1STPPred [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.R2STPLabel.setText(_translate("mainWindow", f"R2STPPred [{chr(956)}{chr(937)}/{chr(937)}]"))
-        self.C1Label.setText(_translate("mainWindow", f"C1 [{chr(956)}{chr(937)}/{chr(937)}]"))
-        self.StdDevC2Label.setText(_translate("mainWindow", f"Std Dev C2 [{chr(956)}{chr(937)}/{chr(937)}]"))
-        self.StdDevC1Label.setText(_translate("mainWindow", f"Std Dev C1 [{chr(956)}{chr(937)}/{chr(937)}]"))
+        self.C1Label.setText(_translate("mainWindow", f"C<sub>1</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
+        self.StdDevC2Label.setText(_translate("mainWindow", f"Std Dev C<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
+        self.StdDevC1Label.setText(_translate("mainWindow", f"Std Dev C<sub>1</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.RatioMeanLabel.setText(_translate("mainWindow", "Ratio Mean"))
         self.ppmMeanLabel.setText(_translate("mainWindow", f"Mean [{chr(956)}{chr(937)}/{chr(937)}]"))
-        self.C1C2Label.setText(_translate("mainWindow", f"C1-C2 [{chr(956)}{chr(937)}/{chr(937)}]"))
+        self.C1C2Label.setText(_translate("mainWindow", f"C<sub>1</sub>-C<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.StdDevMeanPPMLabel.setText(_translate("mainWindow", f"Std. Mean [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.StdDevLabel.setText(_translate("mainWindow", "Std. Dev."))
         self.StdDevPPMLabel.setText(_translate("mainWindow", f"Std. Dev. [{chr(956)}{chr(937)}/{chr(937)}]"))
@@ -957,30 +1032,31 @@ class Ui_mainWindow(object):
         self.StdDevChkPPMLabel.setText(_translate("mainWindow", f"Std. Dev. Chk [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.NAuxLabel.setText(_translate("mainWindow", "NAux [Turns]"))
         self.SHCLabel.setText(_translate("mainWindow", "Sample Half Cycle"))
-        self.N2Label.setText(_translate("mainWindow", "N2 [Turns]"))
-        self.R2ValueLabel.setText(_translate("mainWindow", f"R2 Value [{chr(937)}]"))
-        self.N1Label.setText(_translate("mainWindow", "N1 [Turns]"))
-        self.Current1Label.setText(_translate("mainWindow", "I1 [A]"))
+        self.N2Label.setText(_translate("mainWindow", "N<sub>2</sub> [Turns]"))
+        self.R2ValueLabel.setText(_translate("mainWindow", f"R<sub>2</sub> Value [{chr(937)}]"))
+        self.N1Label.setText(_translate("mainWindow", "N<sub>1</sub> [Turns]"))
+        self.Current1Label.setText(_translate("mainWindow", "I<sub>1</sub> [A]"))
         self.FullCycLabel.setText(_translate("mainWindow", "Full Cycle [s]"))
-        self.Current2Label.setText(_translate("mainWindow", "I2 [A]"))
+        self.Current2Label.setText(_translate("mainWindow", "I<sub>2</sub> [A]"))
         self.MeasCycLabel.setText(_translate("mainWindow", "Meas. Cycles"))
-        self.R1SNLabel.setText(_translate("mainWindow", "R1 Serial Number"))
-        self.R2SNLabel.setText(_translate("mainWindow", "R2 Serial Number"))
+        self.R1SNLabel.setText(_translate("mainWindow", "R<sub>1</sub> Serial Number"))
+        self.R2SNLabel.setText(_translate("mainWindow", "R<sub>2</sub> Serial Number"))
         self.RampLabel.setText(_translate("mainWindow", "Ramp [s]"))
-        self.R1PPMLabel.setText(_translate("mainWindow", f'R1 [{chr(956)}{chr(937)}/{chr(937)}]'))
-        self.R2PPMLabel.setText(_translate("mainWindow", f'R2 [{chr(956)}{chr(937)}/{chr(937)}]'))
-        self.R1ValueLabel.setText(_translate("mainWindow", f"R1 Value [{chr(937)}]"))
+        self.R1PPMLabel.setText(_translate("mainWindow", f'R<sub>1</sub> [{chr(956)}{chr(937)}/{chr(937)}]'))
+        self.R2PPMLabel.setText(_translate("mainWindow", f'R<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]'))
+        self.R1ValueLabel.setText(_translate("mainWindow", f"R<sub>1</sub> Value [{chr(937)}]"))
         self.AppVoltLabel.setText(_translate("mainWindow", "Applied Voltage"))
         self.MeasLabel.setText(_translate("mainWindow", "Meas [s]"))
         self.DelayLabel.setText(_translate("mainWindow", "Delay [s]"))
         self.SampUsedLabel.setText(_translate("mainWindow", "Samples Used"))
         self.ResultsLabel.setText(_translate("mainWindow", "RESULTS"))
+        self.lbl_ccceq.setText(_translate("mainWindow", "CCC EQUATION"))
         self.SquidFeedBut.setText(_translate("mainWindow", "Negative"))
         self.SettingsLabel.setText(_translate("mainWindow", "SETTINGS"))
         self.CommentsLabel.setText(_translate("mainWindow", "Comments"))
-        self.R2TotalPresLabel.setText(_translate("mainWindow", "R2 Total Pres. [Pa]"))
-        self.R2PresLabel.setText(_translate("mainWindow", "R2 Pressure [Pa]"))
-        self.R2OilDepthLabel.setText(_translate("mainWindow", "R2 Oil Depth [mm]"))
+        self.R2TotalPresLabel.setText(_translate("mainWindow", "R<sub>2</sub> Total Pres. [Pa]"))
+        self.R2PresLabel.setText(_translate("mainWindow", "R<sub>2</sub> Pressure [Pa]"))
+        self.R2OilDepthLabel.setText(_translate("mainWindow", "R<sub>2</sub> Oil Depth [mm]"))
         self.ProbeLabel.setText(_translate("mainWindow", "Probe"))
         self.CurrentButLabel.setText(_translate("mainWindow", "SQUID Feedin Arm"))
         self.CurrentBut.setText(_translate("mainWindow", self.CurrentButStatus))
@@ -998,7 +1074,7 @@ class Ui_mainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
 
     def plotBVD(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.bvd_stat_obj is not None:
             count = linspace(0, len(self.A)-1, num=len(self.A))
             if self.bvdList:
@@ -1063,6 +1139,15 @@ class Ui_mainWindow(object):
                 self.KurtosisEdit.setText(str("{:.3f}".format(mystat.kurtosis(self.bvdList))))
                 self.plottedBVD = True
 
+    def changedDeltaI2R2(self, ):
+        if float(self.le_deltaI2R2.text()) != 0.0:
+            self.cleanUp()
+            self.changedDeltaI2R2Ct = 1
+            self.getBVD()
+            self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
+            self.setValidData()
+            self.plotBVD()
+
     def changedSamplesUsed(self, ):
         if int(self.SampUsedLineEdit.text()) != 0 and int(self.SampUsedLineEdit.text()) <= int(self.dat.SHC) and int(self.SampUsedLineEdit.text())%2 == 0:
             self.cleanUp()
@@ -1074,14 +1159,14 @@ class Ui_mainWindow(object):
             self.plotStatMeasures()
 
     def is_overlapping(self, overlapping: str) -> bool:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if overlapping == 'overlapping':
             return True
         else:
             return False
 
     def powers_of_2(self, n: int) -> list:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         x   = 1
         arr = []
         while(x < n):
@@ -1090,7 +1175,7 @@ class Ui_mainWindow(object):
         return arr
 
     def plotAllan(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.bvdList:
             if self.AllanTypeComboBox.currentText() == '2^n':
                 tau_list = self.powers_of_2(int(len(self.bvdList)//2))
@@ -1106,18 +1191,32 @@ class Ui_mainWindow(object):
             C2_tau, C2_adev, C2_aerr = mystat.adev(array(self.V2), self.overlapping, tau_list_C2)
             bva_tau, bva_adev, bva_aerr = mystat.adev(array(self.A), self.overlapping, tau_list_bva)
             bvb_tau, bvb_adev, bvb_aerr = mystat.adev(array(self.B), self.overlapping, tau_list_bvb)
+            rttau = []
+            bvd_tau_time = []
+            bva_tau_time = []
+            
+            for i in bvd_tau:
+                bvd_tau_time.append(i*self.dat.fullCyc)
+                rttau.append(sqrt(self.h0)*sqrt(1/(2*i*self.dat.fullCyc)))
+            
+            for i in bva_tau:
+                bva_tau_time.append(i*self.dat.dt)
+            # print(rttau, bvd_tau)
+                
             if self.plottedAllan:
-                self.Allanax1_ref[0].set_data(array(bvd_tau), array(bvd_adev))
-                self.Allanax2_ref[0].set_data(array(C1_tau), array(C1_adev))
-                self.Allanax3_ref[0].set_data(array(C2_tau), array(C2_adev))
-                self.Allanax41_ref[0].set_data(array(bva_tau), array(bva_adev))
-                self.Allanax42_ref[0].set_data(array(bvb_tau), array(bvb_adev))
+                self.Allanax1_ref[0].set_data(array(bvd_tau_time), array(bvd_adev))
+                self.Allanax11_ref[0].set_data(array(bvd_tau_time), array(rttau))
+                self.Allanax2_ref[0].set_data(array(bvd_tau_time), array(C1_adev))
+                self.Allanax3_ref[0].set_data(array(bvd_tau_time), array(C2_adev))
+                self.Allanax41_ref[0].set_data(array(bva_tau_time), array(bva_adev))
+                self.Allanax42_ref[0].set_data(array(bva_tau_time), array(bvb_adev))
             else:
-                self.Allanax1_ref = self.Allanax1.plot(bvd_tau, bvd_adev, 'ko-', lw=1.5, ms=4) # ADev for BVD
-                self.Allanax2_ref = self.Allanax2.plot(C1_tau, C1_adev, 'bo-', lw=1.5, ms=4) # ADev for C1
-                self.Allanax3_ref = self.Allanax3.plot(C2_tau, C2_adev, 'bo-', lw=1.5, ms=4) # ADev for C2
-                self.Allanax41_ref = self.Allanax4.plot(bva_tau, bva_adev, 'ro-', lw=1.5, ms=4) # ADev for bv a
-                self.Allanax42_ref = self.Allanax4.plot(bvb_tau, bvb_adev, 'bo-', lw=1.5, ms=4) # ADev for bv b
+                self.Allanax1_ref = self.Allanax1.plot(bvd_tau_time, bvd_adev, 'ko-', lw=1.25, ms=4, alpha = self.alpha) # ADev for BVD
+                self.Allanax11_ref = self.Allanax1.plot(bvd_tau_time,  rttau, 'gray', lw = 2, alpha=self.alpha-0.1)
+                self.Allanax2_ref = self.Allanax2.plot(bvd_tau_time, C1_adev, 'bo-', lw=1.25, ms=4, alpha = self.alpha) # ADev for C1
+                self.Allanax3_ref = self.Allanax3.plot(bvd_tau_time, C2_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha) # ADev for C2
+                self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha) # ADev for bv a
+                self.Allanax42_ref = self.Allanax4.plot(bva_tau_time, bvb_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha) # ADev for bv b
                 self.plottedAllan = True
         self.Allanax1.relim()
         self.Allanax1.autoscale(tight=None, axis='both', enable=True)
@@ -1134,27 +1233,57 @@ class Ui_mainWindow(object):
         self.Allanfig.set_tight_layout(True)
         self.AllanCanvas.draw()
 
-
     def plotSpec(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
-        samp_freq = 1/(self.dat.meas)
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        samp_freq = 1./(self.dat.fullCyc)
+        # sig_freq = 1./(self.dat.fullCyc)
+        print("Meas: ", self.dat.meas)
+        print("BVD Sampling frequency: ", samp_freq)
+        print("Measurement time: ", self.dat.measTime)
+        print("BV Sampling frequency: ", self.dat.dt)
         # Create the window function
-        mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvdList)*float(samp_freq)))
-        freq_bvd, mypsa_bvd = mystat.calc_fft(1./(float(samp_freq)), array(self.bvdList), array(mywindow_mystat))
+        freq_bvd, mypsd_bvd = signal.welch(array(self.bvdList), fs=samp_freq, window='hann', \
+                                         nperseg=len(self.bvdList), scaling='density', \
+                                         axis=-1, average='mean', return_onesided=True)
+        freqA, mypsdA = signal.welch(array(self.A), fs=self.dat.dt, window='hann', \
+                                         nperseg=len(self.A),  scaling='density', \
+                                         axis=-1, average='mean', return_onesided=True)
+        freqB, mypsdB = signal.welch(array(self.B), fs=self.dat.dt, window='hann', \
+                                         nperseg=len(self.B),  scaling='density', \
+                                         axis=-1, average='mean', return_onesided=True)
+        self.h0 = mean(mypsd_bvd[1:])
+        print("Noise power BVD: ", mean(mypsd_bvd[1:]))
+        print("Noise power BVA: ", mean(mypsdA[1:]))
+        print("Noise power BVB: ", mean(mypsdB[1:]))
+
+        # Ali's custom PSD calculation...[works but slower than scipy welch]
+        # mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvdList)*float(samp_freq)))
+        # freq_bvd, mypsa_bvd = mystat.calc_fft(1./(float(samp_freq)), array(self.bvdList), array(mywindow_mystat))
+        
         if self.plottedSpec:
-            self.SpecAx_ref[0].set_data(array(freq_bvd), array(mypsa_bvd))
+            self.SpecAx_ref[0].set_data(array(freq_bvd), array(mypsd_bvd))
+            self.SpecAx_ref1[0].set_data(array(freq_bvd), mean(mypsd_bvd[1:])*ones(len(freq_bvd)))
+            self.specA_ref[0].set_data(array(freqA), array(mypsdA))
+            self.specB_ref[0].set_data(array(freqB), array(mypsdB))
         else:
-            self.SpecAx_ref = self.SpecAx.plot(freq_bvd, mypsa_bvd, 'ko-', lw=1.5, ms=4)
+            self.SpecAx_ref = self.SpecAx.plot(freq_bvd, mypsd_bvd, 'ko-', lw=1.25, ms=2, alpha=self.alpha)
+            self.SpecAx_ref1 = self.SpecAx.plot(freq_bvd, mean(mypsd_bvd[1:])*ones(len(freq_bvd)), 'gray', lw=2, alpha=self.alpha-0.1)
+            self.specA_ref = self.specAB.plot(freqA, mypsdA, 'ro-', lw=1.25, ms=2, alpha=self.alpha)
+            self.specB_ref = self.specAB.plot(freqB, mypsdB, 'bo-', lw=1.25, ms=2, alpha=self.alpha)
             self.plottedSpec = True
         self.SpecAx.relim()
         self.SpecAx.autoscale(tight=None, axis='both', enable=True)
         self.SpecAx.autoscale_view(tight=None, scalex=True, scaley=True)
         self.Specfig.set_tight_layout(True)
+        self.specAB.relim()
+        self.specAB.autoscale(tight=None, axis='both', enable=True)
+        self.specAB.autoscale_view(tight=None, scalex=True, scaley=True)
+        self.Specfig.set_tight_layout(True)
         self.SpecCanvas.draw()
 
 
     def clearBVDPlot(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.plottedBVD:
             try:
                 self.BVDax1_ref[0].set_data([], [])
@@ -1167,11 +1296,11 @@ class Ui_mainWindow(object):
                 for container in self.BVDax3.containers:
                     container.remove()
             except Exception as e:
-                print(str(e))
+                print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
                 pass
 
     def clearAllanPlot(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.plottedAllan:
             try:
                  self.Allanax1_ref[0].set_data([], [])
@@ -1180,26 +1309,26 @@ class Ui_mainWindow(object):
                  self.Allanax41_ref[0].set_data([], [])
                  self.Allanax42_ref[0].set_data([], [])
             except Exception as e:
-                 print(str(e))
+                 print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
                  pass
 
     def clearSpecPlot(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.plottedSpec:
             try:
                 self.SpecAx_ref[0].set_data([], [])
             except Exception as e:
-                print(str(e))
+                print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
                 pass
 
     def clearPlots(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.clearBVDPlot()
         self.clearAllanPlot()
         self.clearSpecPlot()
 
     def RButClicked(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.StandardRBut.pressed and self.RButStatus == 'R1':
             self.RButStatus = 'R2'
             self.StandardRBut.setText('R2')
@@ -1215,7 +1344,7 @@ class Ui_mainWindow(object):
         self.plotBVD()
 
     def SquidButClicked(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.SquidFeedBut.pressed and self.SquidFeedStatus == 'NEG':
             self.SquidFeedStatus = 'POS'
             self.SquidFeedBut.setText('Positive')
@@ -1226,7 +1355,7 @@ class Ui_mainWindow(object):
             self.SquidFeedBut.setStyleSheet(blue_style)
 
     def CurrentButClicked(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.CurrentBut.pressed and self.CurrentButStatus == 'I1':
             self.CurrentButStatus = 'I2'
             self.CurrentBut.setText('I2')
@@ -1246,9 +1375,9 @@ class Ui_mainWindow(object):
             4. Sets the results in the GUI
             5. Plots the results in the GUI
         """
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         getData_start = perf_counter()
-        if self.txtFilePath.endswith('.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('.txt')[0][-1].isnumeric():
+        if self.txtFilePath.endswith('_bvd.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('_bvd.txt')[0][-1].isnumeric():
             self.validFile = True
             self.txtFile = self.txtFilePath.split('/')[-1]
             self.dat = magnicon_ccc(self.txtFilePath)
@@ -1261,10 +1390,10 @@ class Ui_mainWindow(object):
             print("Time taken to get BVD: " +  str(getBVD_end))
             self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
             getResults_end = perf_counter() - getData_start
-            print("Time taken to get Results: " + str(getResults_end))
+            # print("Time taken to get Results: " + str(getResults_end))
             self.setValidData()
             getValidData_end = perf_counter() - getData_start
-            print("Time taken to set data in GUI: ", str(getValidData_end))
+            # print("Time taken to set data in GUI: ", str(getValidData_end))
             self.data = True
             self.plotBVD()
             self.plotStatMeasures()
@@ -1277,8 +1406,9 @@ class Ui_mainWindow(object):
         print("Time taken to get and analyze data: " +  str(getData_end))
 
     def plotStatMeasures(self,) -> None:
-        self.plotAdev()
         self.plotSpec()
+        self.plotAdev()
+        
 
     def plotAdev(self,) -> None:
         self.overlapping = self.is_overlapping(self.OverlappingComboBox.currentText())
@@ -1292,7 +1422,7 @@ class Ui_mainWindow(object):
         None.
 
         """
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.validFile is True:
             self.bvd_stat_obj = bvd_stat(self.txtFilePath, int(self.SampUsedLineEdit.text()))
             self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB = self.bvd_stat_obj.send_bvd_stats()
@@ -1321,15 +1451,18 @@ class Ui_mainWindow(object):
             self.C1R2List = []
             self.C2R1List = []
             self.C2R2List = []
-
+            if self.changedDeltaI2R2Ct != 0:
+                myDeltaI2R2 = float(self.le_deltaI2R2.text())
+            else:
+                myDeltaI2R2 = float(mag.deltaI2R2)
             for i, V1 in enumerate(self.V1):
                 # This calculation is done using the bridge voltages i.e the raw text file
-                if mag.N2 != 0 and mag.N1 != 0 and mag.deltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
-                    ratioMeanList.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvdList[i]/mag.deltaI2R2))
+                if mag.N2 != 0 and mag.N1 != 0 and myDeltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
+                    ratioMeanList.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvdList[i]/myDeltaI2R2))
                     self.R1List.append((self.R1/ratioMeanList[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
                     self.R2List.append((self.R2*ratioMeanList[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
-                    ratioMeanC1.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V1[i]/mag.deltaI2R2))
-                    ratioMeanC2.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V2[i]/mag.deltaI2R2))
+                    ratioMeanC1.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V1[i]/myDeltaI2R2))
+                    ratioMeanC2.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V2[i]/myDeltaI2R2))
                     self.C1R1List.append((self.R1/ratioMeanC1[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
                     self.C1R2List.append((self.R2*ratioMeanC1[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
                     self.C2R1List.append((self.R1/ratioMeanC2[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
@@ -1383,9 +1516,9 @@ class Ui_mainWindow(object):
                 self.bvd_mean_chk = mean(self.bvdList_chk)
                 self.bvd_std_chk = std(mag.bvd, ddof=1)
                 self.bvd_stdmean_chk = self.bvd_std_chk/sqrt(len(self.bvdList_chk))
-            if mag.N2 != 0 and mag.N1 != 0 and mag.deltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
-                self.ratioMean = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvd_mean/mag.deltaI2R2) # calculated from raw bridge voltages
-                self.ratioMeanChk   = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvd_mean_chk/mag.deltaI2R2) # calculated from bvd file
+            if mag.N2 != 0 and mag.N1 != 0 and myDeltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
+                self.ratioMean = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvd_mean/myDeltaI2R2) # calculated from raw bridge voltages
+                self.ratioMeanChk   = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvd_mean_chk/myDeltaI2R2) # calculated from bvd file
                 self.R1MeanChk = (self.R1/self.ratioMeanChk - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr
                 self.R2MeanChk = (self.R2*self.ratioMeanChk - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr
 
@@ -1403,9 +1536,8 @@ class Ui_mainWindow(object):
                 self.R2CorVal = nan
                 self.R1MeanChkOhm = nan
                 self.R2MeanChkOhm = nan
-
-            self.remTime      = mag.measTime - (self.N*mag.fullCyc)
-            self.remTimeStamp = mag.sec2ts(self.remTime)
+            # self.remTime      = mag.measTime - (self.N*mag.fullCyc)
+            # self.remTimeStamp = mag.sec2ts(self.remTime)
         else:
             self.setInvalidData()
             self.data = False
@@ -1417,7 +1549,7 @@ class Ui_mainWindow(object):
         -------
         None
         """
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.VMeanLineEdit.setText(str("{:.6e}".format(self.bvd_mean)))
         self.VMeanChkLineEdit.setText(str("{:.6e}".format(self.bvd_mean_chk)))
         self.Current1LineEdit.setText(str(self.dat.I1))
@@ -1425,34 +1557,39 @@ class Ui_mainWindow(object):
         if self.SampUsedCt != 0:
             delay = ((self.dat.SHC - int(self.SampUsedLineEdit.text()))/self.dat.SHC)*(self.dat.SHC*self.dat.intTime/self.dat.timeBase - self.dat.rampTime)
             meas = (self.dat.SHC*self.dat.intTime/self.dat.timeBase) - self.dat.rampTime - delay
-            self.DelayLineEdit.setText(str("{:2.4f}".format(delay)))
-            self.MeasLineEdit.setText(str("{:2.4f}".format(meas)))
-            pass
+            self.DelayLineEdit.setText(str("{:2.2f}".format(delay)))
+            self.MeasLineEdit.setText(str("{:2.2f}".format(meas)))
         else:
             self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
-            self.DelayLineEdit.setText(str("{:2.4f}".format(self.dat.delay)))
-            self.MeasLineEdit.setText(str("{:2.4f}".format(self.dat.meas)))
+            self.DelayLineEdit.setText(str("{:2.2f}".format(self.dat.delay)))
+            self.MeasLineEdit.setText(str("{:2.2f}".format(self.dat.meas)))
+        if self.changedDeltaI2R2Ct == 0:
+            self.le_deltaI2R2.setText(str(self.dat.deltaI2R2))
         self.R1SNLineEdit.setText(self.dat.R1SN)
         self.Current2LineEdit.setText(str(self.dat.I2))
         self.N2LineEdit.setText(str(self.dat.N2))
         self.NAuxLineEdit.setText(str(self.dat.NA))
-        self.AppVoltLineEdit.setText(str("{:.6}".format(self.dat.appVolt)))
+        self.AppVoltLineEdit.setText(str("{:.9}".format(self.dat.appVolt)))
         self.R2SNLineEdit.setText(self.dat.R2SN)
         self.SHCLineEdit.setText(str(self.dat.SHC))
         self.N1LineEdit.setText(str(self.dat.N1))
         self.CommentsTextBrowser.setText(self.dat.comments)
         self.RelHumLineEdit.setText(str(self.dat.relHum))
-        self.ReadingDelaySpinBox.setValue(10)
-        self.R1TempLineEdit.setText(str("{:.4f}".format(self.R1Temp)))
-        self.R2TempLineEdit.setText(str("{:.4f}".format(self.R2Temp)))
+        self.kLineEdit.setText(str("{:2.9f}".format(self.k)))
+        self.R1TempLineEdit.setText(str("{:.5f}".format(self.R1Temp)))
+        self.R2TempLineEdit.setText(str("{:.5f}".format(self.R2Temp)))
         self.R1PresLineEdit.setText(str(self.R1pres))
         self.R2PresLineEdit.setText(str(self.R2pres))
+        self.R1OilPresLineEdit.setText(str(self.R1OilPres))
+        self.R2OilPresLineEdit.setText(str(self.R2OilPres))
+        self.R1TotalPresLineEdit.setText(str("{:.2f}".format(self.R1TotPres)))
+        self.R2TotalPresLineEdit.setText(str("{:.2f}".format(self.R2TotPres)))
         # self.updateOilDepth('both')
         self.R1STPLineEdit.setText(str("{:2.7f}".format(self.R1PPM)))
         self.R2STPLineEdit.setText(str("{:2.7f}".format(self.R2PPM)))
         self.RampLineEdit.setText(str(self.dat.rampTime))
         self.MeasCycLineEdit.setText(str(int(self.dat.measCyc)))
-        self.RatioMeanLineEdit.setText(str("{:.10f}".format(self.ratioMean)))
+        self.RatioMeanLineEdit.setText(str("{:.12f}".format(self.ratioMean)))
         self.StdDevLineEdit.setText(str("{:.6e}".format(self.std)))
         self.StdDevChkLineEdit.setText(str("{:.6e}".format(self.bvd_std_chk)))
         self.StdDevMeanLineEdit.setText(str("{:.6e}".format(self.stdMean)))
@@ -1460,10 +1597,10 @@ class Ui_mainWindow(object):
         self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdppm*10**6)))
         self.NLineEdit.setText(str(self.N))
         self.MeasTimeLineEdit.setText(self.dat.measTimeStamp)
-        self.RemTimeLineEdit.setText(self.remTimeStamp)
         self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setEnabled(True)
         self.plotCountCombo.clear()
+        self.SetResTab.update()
 
         for i in range(len(self.bvdList)):
             self.plotCountCombo.addItem(f'Count {i}')
@@ -1475,7 +1612,7 @@ class Ui_mainWindow(object):
         self.stdR(self.RButStatus)
 
     def setInvalidData(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.validFile = False
         self.VMeanLineEdit.setText("")
         self.VMeanChkLineEdit.setText("")
@@ -1527,15 +1664,13 @@ class Ui_mainWindow(object):
         self.C1C2LineEdit.setText("")
         self.NLineEdit.setText("")
         self.MeasTimeLineEdit.setText("")
-        self.RemTimeLineEdit.setText("")
-        self.ReadingDelaySpinBox.setValue(0)
-
+        self.le_deltaI2R2.setText("")
+        self.kLineEdit.setText("")
         self.MDSSButton.setStyleSheet("")
         self.MDSSButton.setText("No")
         self.MDSSButton.setEnabled(False)
         self.saveButton.setEnabled(False)
         self.saveStatus = False
-
         self.SkewnessEdit.setText("")
         self.KurtosisEdit.setText("")
 
@@ -1560,7 +1695,7 @@ class Ui_mainWindow(object):
         None
             DESCRIPTION.
         """
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if R == 'R1':
             self.R1ValueLineEdit.setText(str("{:5.10f}".format(self.R1)))
             self.R2ValueLineEdit.setText(str("{:5.10f}".format(self.dat.R2NomVal)))
@@ -1597,36 +1732,48 @@ class Ui_mainWindow(object):
                 self.R2PPMLineEdit.setText(str(0))
 
     def R1PresChanged(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         try:
             self.R1pres    = float(self.R1PresLineEdit.text())
             self.R1TotPres = self.R1pres + self.R1OilPres
+            self.R1TotalPresLineEdit.setText(str("{:.4f}".format(self.R1TotPres)))
             if self.bvd_stat_obj is not None:
+                self.cleanUp()
+                self.getBVD()
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
-        except ValueError:
-            self.R1PresLineEdit.setText(str(self.R1pres))
+                self.setValidData()
+                self.plotBVD()
+        except Exception as e:
+            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
+            self.R1PresLineEdit.setText(str("{:.4f}".format(self.R1Totpres)))
             pass
 
     def R2PresChanged(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         try:
             self.R2pres    = float(self.R2PresLineEdit.text())
             self.R2TotPres = self.R2pres + self.R2OilPres
+            self.R2TotalPresLineEdit.setText(str("{:.4f}".format(self.R2TotPres)))
             if self.bvd_stat_obj is not None:
+                self.cleanUp()
+                self.getBVD()
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
-        except ValueError:
-            self.R2PresLineEdit.setText(str(self.R2pres))
+                self.setValidData()
+                self.plotBVD()
+        except Exception as e:
+            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
+            self.R2PresLineEdit.setText(str("{:.4f}".format(self.R2Totpres)))
             pass
 
     def oilDepth1Changed(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.R1OilDepth = self.R1OilDepthSpinBox.value()
         self.updateOilDepth('R1')
         if self.bvd_stat_obj is not None:
             self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
 
     def oilDepth2Changed(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.R2OilDepth = self.R2OilDepthSpinBox.value()
         self.updateOilDepth('R2')
         if self.bvd_stat_obj is not None:
@@ -1635,14 +1782,13 @@ class Ui_mainWindow(object):
     def updateOilDepth(self, R: str) -> None:
         global g
         global c
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if R == 'R1' or R == 'both':
             self.R1OilPres = c*g*self.R1OilDepth
             self.R1OilPresLineEdit.setText(str("{:.4f}".format(self.R1OilPres)))
             self.R1TotPres = self.R1pres + self.R1OilPres
             self.R1TotalPresLineEdit.setText(str("{:.4f}".format(self.R1TotPres)))
             self.R1OilDepthSpinBox.setValue(self.R1OilDepth)
-
         if R == 'R2' or R == 'both':
             self.R2OilPres = c*g*self.R2OilDepth
             self.R2OilPresLineEdit.setText(str("{:.4f}".format(self.R2OilPres)))
@@ -1651,27 +1797,37 @@ class Ui_mainWindow(object):
             self.R2OilDepthSpinBox.setValue(self.R2OilDepth)
 
     def temp1Changed(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         try:
             self.R1Temp = float(self.R1TempLineEdit.text())
             if self.bvd_stat_obj is not None:
+                self.cleanUp()
+                self.getBVD()
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
-        except ValueError:
+                self.setValidData()
+                self.plotBVD()
+        except Exception as e:
+            print(str(e))
             self.R1TempLineEdit.setText(str("{:.4f}".format(self.R1Temp)))
             pass
 
     def temp2Changed(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         try:
             self.R2Temp = float(self.R2TempLineEdit.text())
             if self.bvd_stat_obj is not None:
+                self.cleanUp()
+                self.getBVD()
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
-        except ValueError:
+                self.setValidData()
+                self.plotBVD()
+        except Exception as e:
+            print(str(e))
             self.R2TempLineEdit.setText(str("{:.4f}".format(self.R2Temp)))
             pass
 
     def folderClicked(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.dialog.exec():
             self.txtFilePath = self.dialog.selectedFiles()[0]
             print('Loading datafile: ', self.txtFilePath)
@@ -1679,12 +1835,12 @@ class Ui_mainWindow(object):
         self.getData()
 
     def folderEdited(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.txtFilePath = self.txtFileLineEdit.text()
         self.getData()
 
     def MDSSClicked(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.saveStatus:
             self.saveStatus = False
             self.MDSSButton.setStyleSheet(red_style)
@@ -1698,7 +1854,7 @@ class Ui_mainWindow(object):
             self.progressBar.setProperty('value', 0)
 
     def saveMDSS(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.mdssdir = "C:" + os.sep + "Users" + os.sep + os.getlogin() + os.sep + "Desktop" + os.sep + r"Transfer Files"
         if not os.path.isdir(self.mdssdir):
             os.mkdir(self.mdssdir)
@@ -1725,7 +1881,7 @@ class Ui_mainWindow(object):
         self.progressBar.setProperty('value', 100)
 
     def cleanUp(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.deletedV1      = []
         self.deletedV2      = []
         self.deletedCount   = []
@@ -1736,9 +1892,10 @@ class Ui_mainWindow(object):
         self.deletedR1      = []
         self.deletedR2      = []
         self.SampUsedCt     = 0
+        self.changedDeltaI2R2Ct = 0
 
     def deleteBut(self) -> None:
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.plottedBVD and self.plotCountCombo.count():
 
             curIndex = self.plotCountCombo.currentIndex()
@@ -1758,7 +1915,6 @@ class Ui_mainWindow(object):
             self.bvdCount.pop(curIndex)
             self.R1List.pop(curIndex)
             self.R2List.pop(curIndex)
-
             self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
             self.setValidData()
             self.plotBVD()
@@ -1774,7 +1930,7 @@ class Ui_mainWindow(object):
         -------
         None
         """
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.deletedCount != []:
             self.plotCountCombo.insertItem(self.deletedIndex[-1], f'Count {self.deletedCount[-1]}')
             self.V1.insert(self.deletedIndex[-1], self.deletedV1[-1])
@@ -1801,7 +1957,7 @@ class Ui_mainWindow(object):
         -------
         None
         """
-        print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.cleanUp()
         self.getBVD()
         self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
@@ -1810,7 +1966,7 @@ class Ui_mainWindow(object):
         self.plotStatMeasures()
 
 if __name__ == "__main__":
-    print('In function: ' + inspect.stack()[0][3])
+    # print('In function: ' + inspect.stack()[0][3])
     app = QApplication(sys.argv)
     mainWindow = QMainWindow()
     ui = Ui_mainWindow()

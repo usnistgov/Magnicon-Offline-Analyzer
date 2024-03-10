@@ -34,12 +34,13 @@ else:
 class magnicon_ccc:
     def __init__(self, text: str) -> None:
         # Reads in file and checks that it is a .txt file
-        if '.txt' in text:
+        if '_bvd.txt' in text:
             # If the file is a .txt file, it will parse it along with the bvd and cfg files after it
             self.validFile = True
-            self.rawFile = text
-            self.bvdFile = text.rstrip('.txt') + '_bvd.txt'
-            self.cfgFile = text.rstrip('.txt') + '_cccdrive.cfg'
+            self.rawFile = text.rstrip('_bvd.txt') + '.txt'
+            self.bvdFile = text
+            self.cfgFile = text.rstrip('_bvd.txt') + '_cccdrive.cfg'
+            # print (self.rawFile, self.bvdFile, self.cfgFile)
             self.load_raw()
             self.load_bvd()
             self.load_cfg()
@@ -263,16 +264,17 @@ class magnicon_ccc:
 
         # Time calculations
         if self.validFile:
-            self.appVolt       = self.R1NomVal*self.I1
+            # self.appVolt       = self.R1NomVal*self.I1
+            self.appVolt       = self.deltaI2R2/2.0
             self.rampTime      = self.rStepTime*self.rStepCount*2/1000000
             self.fullCyc       = self.SHC*self.intTime/self.timeBase*2
-            self.measCyc       = self.numCycStop/2
+            self.measCyc       = self.numCycStop/2.0
             self.delay         = ((self.SHC - self.samplesUsed)/self.SHC)*(self.SHC*self.intTime/self.timeBase - self.rampTime)
             self.meas          = (self.SHC*self.intTime/self.timeBase) - self.rampTime - self.delay
             self.dt            = self.SHC*2/self.fullCyc
             self.measTime      = self.fullCyc*self.measCyc
             self.measTimeStamp = self.sec2ts(self.measTime)
-            print(self.delay, self.meas)
+            # print(self.delay, self.meas, self.dt, self.measTime)
         serviceID = {
             0: '51100S',
             # 1: '51132C',
