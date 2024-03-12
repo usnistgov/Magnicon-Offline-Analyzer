@@ -3,18 +3,6 @@ from datetime import datetime, timedelta
 import sys, os
 from numpy import std, floor
 
-# if os.path.exists(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase'):
-#     sys.path.append(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\Ali\py\ResDatabase')
-#     from ResDataBase import ResData
-# else:
-#     os.chdir('..')
-#     os.chdir('ResDatabase')
-#     ResDataDir = os.getcwd()
-#     os.chdir('..')
-#     os.chdir('Magnicon-Offline-Analyzer')
-#     sys.path.append(ResDataDir)
-#     from ResDataBase import ResData
-
 # Put ResDataBase.py in branch to use on non-NIST computers
 from ResDataBase import ResData
 # base directory of the project

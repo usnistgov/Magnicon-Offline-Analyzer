@@ -5,7 +5,7 @@ import inspect
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QRect, QMetaObject, QCoreApplication
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainterPath, QPainter,\
-                        QKeySequence
+                        QKeySequence, QDoubleValidator, QIntValidator
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
                              QLabel, QPushButton, QComboBox, QTextBrowser, QTabWidget, \
                              QSpacerItem, QGridLayout, QLineEdit, QFrame, QSizePolicy, \
@@ -19,6 +19,7 @@ from matplotlib.ticker import MaxNLocator, ScalarFormatter
 import matplotlib.style as mplstyle
 from numpy import sqrt, std, mean, ones, linspace, array, nan
 from scipy import signal
+import allantools
 
 # custom imports
 from bvd_stats import bvd_stat
@@ -27,12 +28,12 @@ from create_mag_ccc_datafile import writeDataFile
 import mystat
 
 # python globals
-__version__ = '1.3' # Program version string
+__version__ = '1.4' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
 winSizeH    = 1000
-winSizeV    = 840
+winSizeV    = 835
 c           = 0.8465 # specific gravity of oil used
 g           = 9.81 # local acceleration due to gravity
 
@@ -52,7 +53,7 @@ params = {
            'axes.spines.right': True,
            'grid.color': 'gray',
            'grid.linestyle': '-',
-           'grid.alpha': 0.6,
+           'grid.alpha': 0.2,
            'grid.linewidth': 0.8,
            'axes.formatter.use_mathtext' : True,
            # 'text.latex.preamble': [r'\usepackage{siunitx}']
@@ -128,6 +129,7 @@ class Ui_mainWindow(object):
         self.green_pen.setWidth(4)
         self.green_pen.setColor(QtGui.QColor('green'))
 
+        # initialize QWidgets
         self.setLabels()
         self.setLineEdits()
         self.setSpinBoxes()
@@ -173,6 +175,7 @@ class Ui_mainWindow(object):
 
         self.statusbar = QStatusBar(parent=mainWindow)
         mainWindow.setStatusBar(self.statusbar)
+        self.statusbar.showMessage("Ready", 2000)
 
         self.retranslateUi(mainWindow)
         self.tabWidget.setCurrentIndex(0)
@@ -257,14 +260,17 @@ class Ui_mainWindow(object):
     def initializations(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.txtFilePath  = ''
+        # flags
         self.validFile    = False
-        self.data         = False
         self.plottedBVD   = False
         self.plottedAllan = False
         self.plottedSpec  = False
+        self.changedDeltaI2R2Ct = 0
+        self.changedR1STPBool = False
+        self.changedR2STPBool = False
 
-        self.R1Temp     = 25.0000
-        self.R2Temp     = 25.0000
+        self.R1Temp     = 23
+        self.R2Temp     = 23
         self.R1pres     = 101325
         self.R2pres     = 101325
         self.R1OilDepth = 0
@@ -407,9 +413,9 @@ class Ui_mainWindow(object):
         self.StdDevC2Label.setGeometry(QRect(self.col5x, 270, self.lbl_width, self.lbl_height))
         # col6
         self.R1STPLabel = QLabel(parent=self.SetResTab)
-        self.R1STPLabel.setGeometry(QRect(self.col6x, 90, self.lbl_width, self.lbl_height))
+        self.R1STPLabel.setGeometry(QRect(self.col6x, 30, self.lbl_width, self.lbl_height))
         self.R2STPLabel = QLabel(parent=self.SetResTab)
-        self.R2STPLabel.setGeometry(QRect(self.col6x, 30, self.lbl_width, self.lbl_height))
+        self.R2STPLabel.setGeometry(QRect(self.col6x, 90, self.lbl_width, self.lbl_height))
         self.NLabel = QLabel(parent=self.SetResTab)
         self.NLabel.setGeometry(QRect(self.col6x, 150, self.lbl_width, self.lbl_height))
         self.StdDevPPMLabel = QLabel(parent=self.SetResTab)
@@ -433,7 +439,6 @@ class Ui_mainWindow(object):
         self.RatioMeanLabel.setGeometry(QRect(self.col7x, 510, self.lbl_width, self.lbl_height))
         self.SampUsedLabel = QLabel(parent=self.centralwidget)
         self.SampUsedLabel.setGeometry(QRect(self.col7x, 570, self.lbl_width, self.lbl_height))
-
         self.ResultsLabel = QLabel(parent=self.SetResTab)
         self.ResultsLabel.setGeometry(QRect(650, 10, self.lbl_width, self.lbl_height))
         self.ResultsLabel.setStyleSheet(
@@ -593,13 +598,11 @@ class Ui_mainWindow(object):
         self.R1TotalPresLineEdit.setReadOnly(True)
         self.R1TotalPresLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
-
         self.R2TotalPresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2TotalPresLineEdit.setGeometry(QRect(self.col3x, self.coly*5, self.lbl_width, self.lbl_height))
         self.R2TotalPresLineEdit.setReadOnly(True)
         self.R2TotalPresLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
-
         self.R1TempLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1TempLineEdit.setGeometry(QRect(self.col3x, self.coly*6, self.lbl_width, self.lbl_height))
         self.R1TempLineEdit.returnPressed.connect(self.temp1Changed)
@@ -668,14 +671,18 @@ class Ui_mainWindow(object):
         # col6
         self.R1STPLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1STPLineEdit.setGeometry(QRect(self.col6x, self.coly, self.lbl_width - 5, self.lbl_height))
-        self.R1STPLineEdit.setReadOnly(True)
+        self.R1STPLineEdit.setReadOnly(False)
+        self.R1STPLineEdit.setValidator(QDoubleValidator())
+        self.R1STPLineEdit.returnPressed.connect(self.changedR1STPPred)
         self.R1STPLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+                """QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
         self.R2STPLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2STPLineEdit.setGeometry(QRect(self.col6x, self.coly*2, self.lbl_width - 5, self.lbl_height))
-        self.R2STPLineEdit.setReadOnly(True)
+        self.R2STPLineEdit.setReadOnly(False)
+        self.R2STPLineEdit.setValidator(QDoubleValidator())
+        self.R2STPLineEdit.returnPressed.connect(self.changedR2STPPred)
         self.R2STPLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+                """QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
         self.NLineEdit = QLineEdit(parent=self.SetResTab)
         self.NLineEdit.setGeometry(QRect(self.col6x, self.coly*3, self.lbl_width- 5, self.lbl_height))
         self.NLineEdit.setReadOnly(True)
@@ -739,13 +746,13 @@ class Ui_mainWindow(object):
         self.BVDax1.tick_params(which='both', direction='in')
         self.BVDax1.set_xlabel('Count')
         self.BVDax1.set_ylabel('Bridge Voltages [V]')
-        self.BVDax1.grid(alpha=self.alpha)
+        self.BVDax1.grid(axis='both')
 
         self.BVDax2.tick_params(which='both', direction='in')
         self.BVDax2.set_xlabel('Count')
         self.BVDax2.tick_params(axis='y', colors='b')
         self.BVDax2.set_axisbelow(True)
-        self.BVDax2.grid(axis='x', zorder=0, alpha=self.alpha)
+        self.BVDax2.grid(axis='x', zorder=0)
         self.BVDax2.xaxis.set_major_locator(MaxNLocator(integer=True))
         box = self.BVDax2.get_position()
         self.BVDax2.set_position([box.x0, box.y0 + box.height * 0.1,
@@ -754,7 +761,7 @@ class Ui_mainWindow(object):
         self.BVDtwin2.tick_params(axis='y', direction='in', colors='r')
         self.BVDtwin2.set_yticklabels([])
         self.BVDtwin2.set_axisbelow(True)
-        self.BVDtwin2.grid(zorder=0, alpha=self.alpha)
+        self.BVDtwin2.grid(zorder=0)
 
         self.BVDax3.tick_params(which='both', direction='in')
         self.BVDax3.tick_params(axis='y', colors='r')
@@ -837,7 +844,7 @@ class Ui_mainWindow(object):
         self.Allanax1.set_xlabel('\u03C4 (s)')
         self.Allanax1.set_yscale('log')
         self.Allanax1.set_xscale('log')
-        self.Allanax1.grid(which='both', alpha=self.alpha)
+        self.Allanax1.grid(which='both')
         # self.Allanax1.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.Allanax1.xaxis.set_major_formatter(ScalarFormatter())
 
@@ -845,7 +852,7 @@ class Ui_mainWindow(object):
         self.Allanax2.set_xlabel('\u03C4 (s)')
         self.Allanax2.set_yscale('log')
         self.Allanax2.set_xscale('log')
-        self.Allanax2.grid(which='both', alpha=self.alpha)
+        self.Allanax2.grid(which='both')
         # self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.Allanax2.xaxis.set_major_formatter(ScalarFormatter())
 
@@ -853,7 +860,7 @@ class Ui_mainWindow(object):
         self.Allanax3.set_xlabel('\u03C4 (s)')
         self.Allanax3.set_yscale('log')
         self.Allanax3.set_xscale('log')
-        self.Allanax3.grid(which='both', alpha=self.alpha)
+        self.Allanax3.grid(which='both')
         # self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.Allanax3.xaxis.set_major_formatter(ScalarFormatter())
 
@@ -861,7 +868,7 @@ class Ui_mainWindow(object):
         self.Allanax4.set_xlabel('\u03C4 (s)')
         self.Allanax4.set_yscale('log')
         self.Allanax4.set_xscale('log')
-        self.Allanax4.grid(which='both', alpha=self.alpha)
+        self.Allanax4.grid(which='both')
         # self.Allanax4.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.Allanax4.xaxis.set_major_formatter(ScalarFormatter())
 
@@ -907,23 +914,22 @@ class Ui_mainWindow(object):
         self.SpecAx.tick_params(axis='both', which='both', direction='in')
         self.SpecAx.set_ylabel('PSD of BVD [$V^2$/' + 'Hz' + ']')
         self.SpecAx.set_xlabel('Frequency [Hz]')
-        self.SpecAx.grid(alpha=self.alpha)
+        self.SpecAx.grid(which='both')
         self.SpecAx.set_yscale('log')
         self.SpecAx.set_xscale('log')
 
         self.specAB = self.Specfig.add_subplot(2,1,2)
         self.specAB.tick_params(axis='both', which='both', direction='in')
         self.specAB.set_ylabel('PSD of BV [$V^2$/' + 'Hz' + ']')
-        self.specAB.set_xlabel('Frequency (Hz)')
-        self.specAB.grid(alpha=self.alpha)
+        self.specAB.set_xlabel('Frequency [Hz]')
+        self.specAB.grid(which='both')
         self.specAB.set_yscale('log')
-        self.specAB.set_xscale('log')        
+        self.specAB.set_xscale('log')
         self.Specfig.set_tight_layout(True)
 
         self.SpecCanvas = FigureCanvas(self.Specfig)
         self.SpecVerticalLayout.addWidget(NavigationToolbar(self.SpecCanvas))
         self.SpecVerticalLayout.addWidget(self.SpecCanvas)
-        
 
     def setButtons(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
@@ -1138,6 +1144,21 @@ class Ui_mainWindow(object):
                 self.SkewnessEdit.setText(str("{:.3f}".format(mystat.skewness(self.bvdList))))
                 self.KurtosisEdit.setText(str("{:.3f}".format(mystat.kurtosis(self.bvdList))))
                 self.plottedBVD = True
+                
+    def changedR1STPPred(self,):
+        self.changedR1STPBool = True
+        self.R1STP = float(self.R1STPLineEdit.text())
+        self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
+        self.setValidData()
+        self.plotBVD()
+
+    def changedR2STPPred(self,):
+        self.changedR2STPBool = True
+        self.R2STP = float(self.R2STPLineEdit.text())
+        self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
+        self.setValidData()
+        self.plotBVD()
+        return
 
     def changedDeltaI2R2(self, ):
         if float(self.le_deltaI2R2.text()) != 0.0:
@@ -1179,30 +1200,48 @@ class Ui_mainWindow(object):
         if self.bvdList:
             if self.AllanTypeComboBox.currentText() == '2^n':
                 tau_list = self.powers_of_2(int(len(self.bvdList)//2))
+                mytaus = 'octave'
             elif self.AllanTypeComboBox.currentText() == 'all':
                 tau_list = list(map(int, linspace(1, len(self.bvdList)//2, len(self.bvdList)//2)))
+                mytaus = 'all'
             # tau list is same for all...
             tau_list_C1 = tau_list
             tau_list_C2 = tau_list
             tau_list_bva = tau_list
             tau_list_bvb = tau_list
-            bvd_tau, bvd_adev, bvd_aerr = mystat.adev(array(self.bvdList), self.overlapping, tau_list)
-            C1_tau, C1_adev, C1_aerr = mystat.adev(array(self.V1), self.overlapping, tau_list_C1)
-            C2_tau, C2_adev, C2_aerr = mystat.adev(array(self.V2), self.overlapping, tau_list_C2)
-            bva_tau, bva_adev, bva_aerr = mystat.adev(array(self.A), self.overlapping, tau_list_bva)
-            bvb_tau, bvb_adev, bvb_aerr = mystat.adev(array(self.B), self.overlapping, tau_list_bvb)
+            # bvd_tau, bvd_adev_ali, bvd_aerr = mystat.adev(array(self.bvdList), self.overlapping, tau_list)
+            # C1_tau, C1_adev, C1_aerr = mystat.adev(array(self.V1), self.overlapping, tau_list_C1)
+            # C2_tau, C2_adev, C2_aerr = mystat.adev(array(self.V2), self.overlapping, tau_list_C2)
+            # bva_tau, bva_adev, bva_aerr = mystat.adev(array(self.A), self.overlapping, tau_list_bva)
+            # bvb_tau, bvb_adev, bvb_aerr = mystat.adev(array(self.B), self.overlapping, tau_list_bvb)
+            # using allantools because it is faster than O(n^2)
+            if self.overlapping:
+                (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.oadev(array(self.bvdList), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.oadev(array(self.V1), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.oadev(array(self.V2), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.oadev(array(self.A), rate=1/self.dat.dt, data_type="freq", taus=mytaus)
+                (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.oadev(array(self.B), rate=1/self.dat.dt, data_type="freq", taus=mytaus)
+            else:
+                (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.adev(array(self.bvdList), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)  # Compute the overlapping ADEV
+                (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.adev(array(self.V1), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.adev(array(self.V2), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.adev(array(self.A), rate=1/self.dat.dt, data_type="freq", taus=mytaus)
+                (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.adev(array(self.B), rate=1/self.dat.dt, data_type="freq", taus=mytaus)
+
             rttau = []
-            bvd_tau_time = []
-            bva_tau_time = []
-            
-            for i in bvd_tau:
-                bvd_tau_time.append(i*self.dat.fullCyc)
-                rttau.append(sqrt(self.h0)*sqrt(1/(2*i*self.dat.fullCyc)))
-            
-            for i in bva_tau:
-                bva_tau_time.append(i*self.dat.dt)
+            # bvd_tau_time = []
+            # for i in bvd_tau:
+            #     bvd_tau_time_ali.append(i*self.dat.fullCyc)
+            #     rttau.append(sqrt(self.h0)*sqrt(1/(2*i*self.dat.fullCyc)))
+
+            # for i in bva_tau:
+            #     bva_tau_time.append(i*self.dat.dt)
             # print(rttau, bvd_tau)
-                
+
+            for i in bvd_tau_time:
+                rttau.append(sqrt(self.h0)*sqrt(1/(2*i)))
+            # print(rttau[0])
+
             if self.plottedAllan:
                 self.Allanax1_ref[0].set_data(array(bvd_tau_time), array(bvd_adev))
                 self.Allanax11_ref[0].set_data(array(bvd_tau_time), array(rttau))
@@ -1212,12 +1251,13 @@ class Ui_mainWindow(object):
                 self.Allanax42_ref[0].set_data(array(bva_tau_time), array(bvb_adev))
             else:
                 self.Allanax1_ref = self.Allanax1.plot(bvd_tau_time, bvd_adev, 'ko-', lw=1.25, ms=4, alpha = self.alpha) # ADev for BVD
-                self.Allanax11_ref = self.Allanax1.plot(bvd_tau_time,  rttau, 'gray', lw = 2, alpha=self.alpha-0.1)
+                self.Allanax11_ref = self.Allanax1.plot(bvd_tau_time,  rttau, 'r', lw = 2, alpha=self.alpha-0.1)
                 self.Allanax2_ref = self.Allanax2.plot(bvd_tau_time, C1_adev, 'bo-', lw=1.25, ms=4, alpha = self.alpha) # ADev for C1
                 self.Allanax3_ref = self.Allanax3.plot(bvd_tau_time, C2_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha) # ADev for C2
                 self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha) # ADev for bv a
                 self.Allanax42_ref = self.Allanax4.plot(bva_tau_time, bvb_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha) # ADev for bv b
                 self.plottedAllan = True
+
         self.Allanax1.relim()
         self.Allanax1.autoscale(tight=None, axis='both', enable=True)
         self.Allanax1.autoscale_view(tight=None, scalex=True, scaley=True)
@@ -1237,7 +1277,6 @@ class Ui_mainWindow(object):
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         samp_freq = 1./(self.dat.fullCyc)
         # sig_freq = 1./(self.dat.fullCyc)
-        print("Meas: ", self.dat.meas)
         print("BVD Sampling frequency: ", samp_freq)
         print("Measurement time: ", self.dat.measTime)
         print("BV Sampling frequency: ", self.dat.dt)
@@ -1259,7 +1298,7 @@ class Ui_mainWindow(object):
         # Ali's custom PSD calculation...[works but slower than scipy welch]
         # mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvdList)*float(samp_freq)))
         # freq_bvd, mypsa_bvd = mystat.calc_fft(1./(float(samp_freq)), array(self.bvdList), array(mywindow_mystat))
-        
+
         if self.plottedSpec:
             self.SpecAx_ref[0].set_data(array(freq_bvd), array(mypsd_bvd))
             self.SpecAx_ref1[0].set_data(array(freq_bvd), mean(mypsd_bvd[1:])*ones(len(freq_bvd)))
@@ -1267,7 +1306,7 @@ class Ui_mainWindow(object):
             self.specB_ref[0].set_data(array(freqB), array(mypsdB))
         else:
             self.SpecAx_ref = self.SpecAx.plot(freq_bvd, mypsd_bvd, 'ko-', lw=1.25, ms=2, alpha=self.alpha)
-            self.SpecAx_ref1 = self.SpecAx.plot(freq_bvd, mean(mypsd_bvd[1:])*ones(len(freq_bvd)), 'gray', lw=2, alpha=self.alpha-0.1)
+            self.SpecAx_ref1 = self.SpecAx.plot(freq_bvd, mean(mypsd_bvd[1:])*ones(len(freq_bvd)), 'r', lw=2, alpha=self.alpha-0.1)
             self.specA_ref = self.specAB.plot(freqA, mypsdA, 'ro-', lw=1.25, ms=2, alpha=self.alpha)
             self.specB_ref = self.specAB.plot(freqB, mypsdB, 'bo-', lw=1.25, ms=2, alpha=self.alpha)
             self.plottedSpec = True
@@ -1280,7 +1319,6 @@ class Ui_mainWindow(object):
         self.specAB.autoscale_view(tight=None, scalex=True, scaley=True)
         self.Specfig.set_tight_layout(True)
         self.SpecCanvas.draw()
-
 
     def clearBVDPlot(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
@@ -1381,6 +1419,8 @@ class Ui_mainWindow(object):
             self.validFile = True
             self.txtFile = self.txtFilePath.split('/')[-1]
             self.dat = magnicon_ccc(self.txtFilePath)
+            self.R1Temp = self.dat.R1stdTemp
+            self.R2Temp = self.dat.R2stdTemp
             self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
             getFile_end = perf_counter() - getData_start
             print("Time taken to read files: " +  str(getFile_end))
@@ -1389,26 +1429,24 @@ class Ui_mainWindow(object):
             getBVD_end = perf_counter() - getData_start
             print("Time taken to get BVD: " +  str(getBVD_end))
             self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
-            getResults_end = perf_counter() - getData_start
+            # getResults_end = perf_counter() - getData_start
             # print("Time taken to get Results: " + str(getResults_end))
             self.setValidData()
-            getValidData_end = perf_counter() - getData_start
+            # getValidData_end = perf_counter() - getData_start
             # print("Time taken to set data in GUI: ", str(getValidData_end))
-            self.data = True
             self.plotBVD()
             self.plotStatMeasures()
             getPlot_end = perf_counter() - getData_start
             print("Time taken to plot all data in GUI: ", str(getPlot_end))
         else:
             self.setInvalidData()
-            self.data = False
         getData_end = perf_counter() - getData_start
+        self.statusbar.showMessage('Time taken to process and display data ' + str("{:2.2f}".format(getData_end)) + ' s', 5000)
         print("Time taken to get and analyze data: " +  str(getData_end))
 
     def plotStatMeasures(self,) -> None:
         self.plotSpec()
         self.plotAdev()
-        
 
     def plotAdev(self,) -> None:
         self.overlapping = self.is_overlapping(self.OverlappingComboBox.currentText())
@@ -1420,7 +1458,6 @@ class Ui_mainWindow(object):
         Returns
         -------
         None.
-
         """
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.validFile is True:
@@ -1435,10 +1472,23 @@ class Ui_mainWindow(object):
     def results(self, mag, T1: float, T2: float, P1: float, P2: float) -> None:
         if self.validFile is True:
             self.k     = mag.deltaNApN1/mag.NA
+            # correction factor for R1 and R2 due to temperature and pressure
             R1corr     = (mag.R1alpha*(T1-mag.R1stdTemp) + mag.R1beta*(T1-mag.R1stdTemp)**2) + (mag.R1pcr*(P1-101325))/1000
             R2corr     = (mag.R2alpha*(T2-mag.R2stdTemp) + mag.R2beta*(T2-mag.R2stdTemp)**2) + (mag.R2pcr*(P2-101325))/1000
-            self.R1PPM = R1corr + mag.R1Pred
-            self.R2PPM = R2corr + mag.R2Pred
+            
+            self.R2STPPred = mag.R2Pred
+            if not self.changedR1STPBool:
+                self.R1PPM = R1corr + mag.R1Pred
+                self.R1STPPred = mag.R1Pred
+            else:
+                self.R1PPM = R1corr + float(self.R1STP)
+                self.R1STPPred = float(self.R1STP)
+            if not self.changedR2STPBool:
+                self.R2PPM = R2corr + mag.R2Pred
+                self.R2STPPred = mag.R2Pred
+            else:
+                self.R2PPM = R2corr + float(self.R2STP)
+                self.R2STPPred = float(self.R2STP)
             self.R1    = (self.R1PPM/1000000 + 1) * mag.R1NomVal
             self.R2    = (self.R2PPM/1000000 + 1) * mag.R2NomVal
             # print (self.R1, self.R2)
@@ -1522,8 +1572,8 @@ class Ui_mainWindow(object):
                 self.R1MeanChk = (self.R1/self.ratioMeanChk - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr
                 self.R2MeanChk = (self.R2*self.ratioMeanChk - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr
 
-                self.R1CorVal = ((mag.R1Pred/1000000 + 1) * mag.R1NomVal)
-                self.R2CorVal = ((mag.R2Pred/1000000 + 1) * mag.R2NomVal)
+                self.R1CorVal = ((self.R1STPPred/1000000 + 1) * mag.R1NomVal)
+                self.R2CorVal = ((self.R2STPPred/1000000 + 1) * mag.R2NomVal)
 
                 self.R1MeanChkOhm = (self.meanR2/1000000 + 1) * mag.R1NomVal
                 self.R2MeanChkOhm = (self.meanR1/1000000 + 1) * mag.R2NomVal
@@ -1540,7 +1590,6 @@ class Ui_mainWindow(object):
             # self.remTimeStamp = mag.sec2ts(self.remTime)
         else:
             self.setInvalidData()
-            self.data = False
 
     def setValidData(self) -> None:
         """Sets the texts in all GUI line edits and spin boxes
@@ -1576,6 +1625,10 @@ class Ui_mainWindow(object):
         self.CommentsTextBrowser.setText(self.dat.comments)
         self.RelHumLineEdit.setText(str(self.dat.relHum))
         self.kLineEdit.setText(str("{:2.9f}".format(self.k)))
+        if self.k == 0:
+            self.kLineEdit.setStyleSheet("color: red")
+        else:
+            self.kLineEdit.setStyleSheet("color: black")
         self.R1TempLineEdit.setText(str("{:.5f}".format(self.R1Temp)))
         self.R2TempLineEdit.setText(str("{:.5f}".format(self.R2Temp)))
         self.R1PresLineEdit.setText(str(self.R1pres))
@@ -1585,8 +1638,8 @@ class Ui_mainWindow(object):
         self.R1TotalPresLineEdit.setText(str("{:.2f}".format(self.R1TotPres)))
         self.R2TotalPresLineEdit.setText(str("{:.2f}".format(self.R2TotPres)))
         # self.updateOilDepth('both')
-        self.R1STPLineEdit.setText(str("{:2.7f}".format(self.R1PPM)))
-        self.R2STPLineEdit.setText(str("{:2.7f}".format(self.R2PPM)))
+        self.R1STPLineEdit.setText(str("{:2.7f}".format(self.R1STPPred)))
+        self.R2STPLineEdit.setText(str("{:2.7f}".format(self.R2STPPred)))
         self.RampLineEdit.setText(str(self.dat.rampTime))
         self.MeasCycLineEdit.setText(str(int(self.dat.measCyc)))
         self.RatioMeanLineEdit.setText(str("{:.12f}".format(self.ratioMean)))
@@ -1680,7 +1733,6 @@ class Ui_mainWindow(object):
         self.bvdCount     = []
         self.deletedR1    = []
         self.deletedR2    = []
-
         self.plotCountCombo.clear()
 
     def stdR(self, R: str) -> None:
@@ -1807,7 +1859,7 @@ class Ui_mainWindow(object):
                 self.setValidData()
                 self.plotBVD()
         except Exception as e:
-            print(str(e))
+            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
             self.R1TempLineEdit.setText(str("{:.4f}".format(self.R1Temp)))
             pass
 
@@ -1822,7 +1874,7 @@ class Ui_mainWindow(object):
                 self.setValidData()
                 self.plotBVD()
         except Exception as e:
-            print(str(e))
+            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
             self.R2TempLineEdit.setText(str("{:.4f}".format(self.R2Temp)))
             pass
 
@@ -1887,17 +1939,20 @@ class Ui_mainWindow(object):
         self.deletedCount   = []
         self.deletedBVD     = []
         self.deletedBVDChk  = []
+
         self.bvdList        = []
         self.bvdCount       = []
         self.deletedR1      = []
         self.deletedR2      = []
+
         self.SampUsedCt     = 0
         self.changedDeltaI2R2Ct = 0
+        self.changedR1STPBool = False
+        self.changedR2STPBool = False
 
     def deleteBut(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.plottedBVD and self.plotCountCombo.count():
-
             curIndex = self.plotCountCombo.currentIndex()
             self.deletedIndex.append(curIndex)
             self.deletedCount.append(int(self.plotCountCombo.currentText().replace('Count ', '')))
