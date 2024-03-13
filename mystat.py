@@ -93,7 +93,7 @@ def frequency2phase(freqdata, rate=None):
     Returns
     -------
     phasedata: np.array
-        Time integral of fractional frequency data, i.e. phase (time) data
+        Time integral of fractional frequency data, i.e. phase data
         in units of seconds.
         For phase in units of radians, see phase2radians()
     """

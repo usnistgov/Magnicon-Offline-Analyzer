@@ -1196,8 +1196,8 @@ class Ui_mainWindow(object):
                 else:
                     # plot the individual bridge voltages
                     self.BVDax1_ref = self.BVDax1.errorbar(count, self.A, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label='I+')
-                    self.BVDax12_ref = self.BVDax1.plot(count, self.B, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label='I-')
-                    self.BVDax1.legend(loc='upper right', frameon=True, shadow=True, ncols=2, columnspacing=0)
+                    self.BVDax12_ref = self.BVDax1.errorbar(count, self.B, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label='I-')
+                    self.BVDax1.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', frameon=True, shadow=True, ncols=2, columnspacing=0)
 
                     if self.RButStatus == 'R1':
                         self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R1List, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
@@ -1351,7 +1351,7 @@ class Ui_mainWindow(object):
                 self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha) # ADev for bv a
                 self.Allanax42_ref = self.Allanax4.plot(bva_tau_time, bvb_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha) # ADev for bv b
                 self.plottedAllan = True
-
+        self.Allanax1.legend(loc='upper right', frameon=True, shadow=True, ncols=1, columnspacing=0)
         self.Allanax1.relim()
         self.Allanax1.autoscale(tight=None, axis='both', enable=True)
         self.Allanax1.autoscale_view(tight=None, scalex=True, scaley=True)
@@ -1427,6 +1427,7 @@ class Ui_mainWindow(object):
             # print(acf_bvd[0:]+ pci_bvd[0:])
             # self.autoCorr_ref1 = self.autoCorr.fill_between(lag_bvd[0:], acf_bvd[0:]+pci_bvd[0:], acf_bvd[0:]-nci_bvd[0:], lw=2, facecolor='red')
             self.plottedSpec = True
+        self.SpecAx.legend(loc='upper right', frameon=True, shadow=True, ncols=1, columnspacing=0)
         self.SpecAx.relim()
         self.SpecAx.autoscale(tight=None, axis='both', enable=True)
         self.SpecAx.autoscale_view(tight=None, scalex=True, scaley=True)
