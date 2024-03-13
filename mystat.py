@@ -279,6 +279,51 @@ def lagged(data, lag):
     lag = int(lag)
     return array(data[lag:]), array(data[0:(len(data)-lag)])
 
+def noise1D(data):
+    """
+    POWER LAW NOISE IDENTIFICATION USING THE LAG 1
+    AUTOCORRELATION
+    W.J. Riley and C.A. Greenhall
+    """
+    done = False
+    d = 0
+    p = 0
+    dmin = 0
+    dmax=3
+    noise_type = ''
+   
+    while not done:
+        r = []
+        dmean = mean(data, dtype=float64)
+        cov  = (std(data, ddof=1))**2
+        cov = cov*(len(data) - 1)
+        for i, j in zip(data[0:], data[1:]):
+            num = ((i-dmean)*(j-dmean))
+            r.append(num)
+        r1 = sum(r)/cov
+        delta = r1/(1+r1)
+        if d > dmin and (delta<0.25 or d>=dmax):
+            p = int(-2*(delta + d))
+            done=True
+        else:
+            new_data = []
+            for i, j in zip(data[0:], data[1:]):
+                new_data.append(j-i)
+            data = new_data
+            d = d+1
+    if p == -2:
+        noise_type = 'Random Walk FM'
+    elif p == -1:
+        noise_type = 'Flicker FM'
+    elif p == 0:
+        noise_type = 'White FM'
+    elif p == 1:
+        noise_type = 'Flicker PM'
+    elif p == 2:
+        noise_type = 'White PM'
+        
+    return (p, noise_type)
+
 def autoCorrelation(data):
     """
     lag, acf, pci, nci, cutoff_lag = autoCorrelation(data)
@@ -304,7 +349,7 @@ def autoCorrelation(data):
     cov  = (std(data, ddof=1))**2
     cov = cov*(len(data) - 1)
     # Useful estimates of p(i) can only made if  i<=n/4
-    num_lag = len(data)//4
+    num_lag = int(len(data)/4)
     for i in map(int, linspace(0, num_lag-1, num_lag)):
         xlag, x = lagged(data, i)
         xlag_arr.append(xlag)
@@ -330,7 +375,11 @@ def autoCorrelation(data):
     for i, j, k in zip(lag[1:], acf[1:], pci[1:]):
         if j > k or j < -k:
             cutoff_lag_0 = i
-    cutoff_lag = min(cutoff_lag_0, int(num_lag))
+    # print(cutoff_lag_0, num_lag)
+    if cutoff_lag_0 > num_lag:
+        cutoff_lag = num_lag
+    else:
+        cutoff_lag = cutoff_lag_0
     return array(lag), array(acf), array(pci), array([-nci for nci in pci]), cutoff_lag
 
 def autocorrVariance(data, acf, cutoff):

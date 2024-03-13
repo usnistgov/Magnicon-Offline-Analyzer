@@ -779,16 +779,16 @@ class Ui_mainWindow(object):
         grid = QGridLayout(gridWidget)
         grid.setSpacing(5)
         self.deletePlotBut = QPushButton()
-        self.deletePlotBut.setFixedHeight(self.lbl_height)
+        # self.deletePlotBut.setFixedHeight(self.lbl_height)
         self.deletePlotBut.setText('Delete')
         self.deletePlotBut.pressed.connect(self.deleteBut)
         self.plotCountCombo = QComboBox()
         self.RestoreBut = QPushButton()
-        self.RestoreBut.setFixedHeight(self.lbl_height)
+        # self.RestoreBut.setFixedHeight(self.lbl_height)
         self.RestoreBut.setText('Restore Last')
         self.RestoreBut.pressed.connect(self.restoreDeleted)
         self.RePlotBut = QPushButton()
-        self.RePlotBut.setFixedHeight(self.lbl_height)
+        # self.RePlotBut.setFixedHeight(self.lbl_height)
         self.RePlotBut.setText('Replot All')
         self.RePlotBut.pressed.connect(self.replotAll)
 
@@ -796,8 +796,12 @@ class Ui_mainWindow(object):
         KurtosisLabel = QLabel('Kurtosis', parent=gridWidget)
         self.SkewnessEdit = QLineEdit(gridWidget)
         self.SkewnessEdit.setReadOnly(True)
+        self.SkewnessEdit.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
         self.KurtosisEdit = QLineEdit(gridWidget)
         self.KurtosisEdit.setReadOnly(True)
+        self.KurtosisEdit.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
         self.LogoLabelBVD = QLabel(parent=gridWidget)
         self.LogoLabelBVD.setPixmap(self.LogoPixmap)
         self.LogoLabelBVD.setGeometry(QRect(550, 700, 300, 76))
@@ -806,11 +810,11 @@ class Ui_mainWindow(object):
         grid.addWidget(self.deletePlotBut, 1, 1, 2, 1)
         grid.addWidget(self.plotCountCombo, 3, 1, 2, 1)
         grid.addItem(Spacer1, 1, 2)
-        grid.addItem(Spacer1, 2, 2)
+        grid.addItem(Spacer1, 3, 2)
         grid.addWidget(self.RestoreBut, 1, 3, 2, 1)
         grid.addWidget(self.RePlotBut, 3, 3, 2, 1)
         grid.addItem(Spacer2, 1, 4)
-        grid.addItem(Spacer2, 2, 4)
+        grid.addItem(Spacer2, 3, 4)
         grid.addWidget(self.LogoLabelBVD, 2, 5, 3, 2)
         grid.addWidget(SkewnessLabel, 1, 7)
         grid.addWidget(self.SkewnessEdit, 2, 7)
@@ -906,11 +910,11 @@ class Ui_mainWindow(object):
         self.SpecTab = QWidget()
         self.tabWidget.addTab(self.SpecTab, "")
         self.SpecVerticalLayoutWidget = QWidget(parent=self.SpecTab)
-        self.SpecVerticalLayoutWidget.setGeometry(QRect(0, 0, winSizeH - 125, 761))
+        self.SpecVerticalLayoutWidget.setGeometry(QRect(0, 0, winSizeH - 125, 675))
         self.SpecVerticalLayout = QVBoxLayout(self.SpecVerticalLayoutWidget)
 
         self.Specfig = plt.figure()
-        self.SpecAx = self.Specfig.add_subplot(2,1,1)
+        self.SpecAx = self.Specfig.add_subplot(2,2,1)
         self.SpecAx.tick_params(axis='both', which='both', direction='in')
         self.SpecAx.set_ylabel('PSD of BVD [$V^2$/' + 'Hz' + ']')
         self.SpecAx.set_xlabel('Frequency [Hz]')
@@ -918,18 +922,106 @@ class Ui_mainWindow(object):
         self.SpecAx.set_yscale('log')
         self.SpecAx.set_xscale('log')
 
-        self.specAB = self.Specfig.add_subplot(2,1,2)
+        self.specAB = self.Specfig.add_subplot(2,2,2)
         self.specAB.tick_params(axis='both', which='both', direction='in')
         self.specAB.set_ylabel('PSD of BV [$V^2$/' + 'Hz' + ']')
         self.specAB.set_xlabel('Frequency [Hz]')
         self.specAB.grid(which='both')
         self.specAB.set_yscale('log')
         self.specAB.set_xscale('log')
+        
+        self.acf_bvd = self.Specfig.add_subplot(2,2,3)
+        self.acf_bvd.tick_params(axis='both', which='both', direction='in')
+        self.acf_bvd.set_ylabel('ACF of BVD')
+        self.acf_bvd.set_xlabel('lag')
+        self.acf_bvd.grid(which='both')
+        
+        self.acf_bv = self.Specfig.add_subplot(2,2,4)
+        self.acf_bv.tick_params(axis='both', which='both', direction='in')
+        self.acf_bv.set_ylabel('ACF of BV')
+        self.acf_bv.set_xlabel('lag')
+        self.acf_bv.grid(which='both')
+        
         self.Specfig.set_tight_layout(True)
-
         self.SpecCanvas = FigureCanvas(self.Specfig)
+        
         self.SpecVerticalLayout.addWidget(NavigationToolbar(self.SpecCanvas))
         self.SpecVerticalLayout.addWidget(self.SpecCanvas)
+        
+        gridWidget = QWidget(self.SpecTab)
+        gridWidget.setGeometry(QRect(0, 675, winSizeH-125, 90))
+        QRect()
+        grid = QGridLayout(gridWidget)
+        grid.setSpacing(5)
+
+        lbl_lag_bvd = QLabel('Lag of BVD', parent=gridWidget)
+        self.le_lag_bvd = QLineEdit(gridWidget)
+        self.le_lag_bvd.setReadOnly(True)
+        self.le_lag_bvd.setFixedWidth(100)
+        self.le_lag_bvd.setFixedHeight(18)
+        self.le_lag_bvd.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+
+        lbl_alpha_bvd = QLabel('Alpha [BVD]', parent=gridWidget)
+        self.le_alpha_bvd= QLineEdit(gridWidget)
+        self.le_alpha_bvd.setReadOnly(True)
+        self.le_alpha_bvd.setFixedWidth(130)
+        self.le_alpha_bvd.setFixedHeight(18)
+        self.le_alpha_bvd.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+
+        lbl_lag_bva = QLabel('Lag of A', parent=gridWidget)
+        self.le_lag_bva = QLineEdit(gridWidget)
+        self.le_lag_bva.setReadOnly(True)
+        self.le_lag_bva.setFixedWidth(100)
+        self.le_lag_bva.setFixedHeight(18)
+        self.le_lag_bva.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+
+        lbl_alpha_bva = QLabel('Alpha [A]', parent=gridWidget)
+        self.le_alpha_bva= QLineEdit(gridWidget)
+        self.le_alpha_bva.setReadOnly(True)
+        self.le_alpha_bva.setFixedWidth(130)
+        self.le_alpha_bva.setFixedHeight(18)
+        self.le_alpha_bva.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+
+        lbl_lag_bvb = QLabel('Lag of B', parent=gridWidget)
+        self.le_lag_bvb = QLineEdit(gridWidget)
+        self.le_lag_bvb.setReadOnly(True)
+        self.le_lag_bvb.setFixedWidth(100)
+        self.le_lag_bvb.setFixedHeight(18)
+        self.le_lag_bvb.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+
+        lbl_alpha_bvb = QLabel('Alpha [B]', parent=gridWidget)
+        self.le_alpha_bvb= QLineEdit(gridWidget)
+        self.le_alpha_bvb.setReadOnly(True)
+        self.le_alpha_bvb.setFixedWidth(130)
+        self.le_alpha_bvb.setFixedHeight(18)
+        self.le_alpha_bvb.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        # Spacer1 = QSpacerItem(20, 1, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        # Spacer2 = QSpacerItem(600, 1, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        grid.addWidget(lbl_lag_bvd, 1, 1, 1, 1)
+        grid.addWidget(self.le_lag_bvd, 3, 1, 1, 1)
+        
+        grid.addWidget(lbl_lag_bva, 1, 2, 1, 1)
+        grid.addWidget(self.le_lag_bva, 3, 2, 1, 1)
+        
+        grid.addWidget(lbl_lag_bvb, 1, 3, 1, 1)
+        grid.addWidget(self.le_lag_bvb, 3, 3, 1, 1)
+        
+        grid.addWidget (lbl_alpha_bvd, 5, 1, 1, 1)
+        grid.addWidget(self.le_alpha_bvd, 7, 1, 1, 1)
+
+        grid.addWidget (lbl_alpha_bva, 5, 2, 1, 1)
+        grid.addWidget(self.le_alpha_bva, 7, 2, 1, 1)
+        
+        grid.addWidget (lbl_alpha_bvb, 5, 3, 1, 1)
+        grid.addWidget(self.le_alpha_bvb, 7, 3, 1, 1)
+        
+        
 
     def setButtons(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
@@ -1137,7 +1229,9 @@ class Ui_mainWindow(object):
                 self.BVDtwin2.autoscale(tight=None, axis='both', enable=True)
                 self.BVDtwin2.autoscale_view(tight=None, scalex=True, scaley=True)
                 self.BVDax3.set_ylim([self.BVDtwin2.get_ylim()[0], self.BVDtwin2.get_ylim()[1]])
-
+                self.BVDax3.relim()
+                self.BVDax3.autoscale(tight=None, axis='both', enable=True)
+                self.BVDax3.autoscale_view(tight=None, scalex=True, scaley=True)
                 self.BVDcanvas.draw()
                 self.BVDcanvas.flush_events()
                 self.BVDfig.set_tight_layout(True)
@@ -1251,7 +1345,7 @@ class Ui_mainWindow(object):
                 self.Allanax42_ref[0].set_data(array(bva_tau_time), array(bvb_adev))
             else:
                 self.Allanax1_ref = self.Allanax1.plot(bvd_tau_time, bvd_adev, 'ko-', lw=1.25, ms=4, alpha = self.alpha) # ADev for BVD
-                self.Allanax11_ref = self.Allanax1.plot(bvd_tau_time,  rttau, 'r', lw = 2, alpha=self.alpha-0.1)
+                self.Allanax11_ref = self.Allanax1.plot(bvd_tau_time,  rttau, 'r', lw = 2, alpha=self.alpha-0.1, label=r'$1/\sqrt(\tau)$')
                 self.Allanax2_ref = self.Allanax2.plot(bvd_tau_time, C1_adev, 'bo-', lw=1.25, ms=4, alpha = self.alpha) # ADev for C1
                 self.Allanax3_ref = self.Allanax3.plot(bvd_tau_time, C2_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha) # ADev for C2
                 self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha) # ADev for bv a
@@ -1298,25 +1392,61 @@ class Ui_mainWindow(object):
         # Ali's custom PSD calculation...[works but slower than scipy welch]
         # mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvdList)*float(samp_freq)))
         # freq_bvd, mypsa_bvd = mystat.calc_fft(1./(float(samp_freq)), array(self.bvdList), array(mywindow_mystat))
-
+        lag_bvd, acf_bvd, pci_bvd, nci_bvd, cutoff_lag_bvd = mystat.autoCorrelation(array(self.bvdList))
+        lag_bva, acf_bva, pci_bva, nci_bva, cutoff_lag_bva = mystat.autoCorrelation(array(self.A))
+        lag_bvb, acf_bvb, pci_bvb, nci_bvb, cutoff_lag_bvb = mystat.autoCorrelation(array(self.B))
+        (pow_bvd, noise_bvd) = mystat.noise1D(array(self.bvdList))
+        (pow_bva, noise_bva) = mystat.noise1D(array(self.A))
+        (pow_bvb, noise_bvb) = mystat.noise1D(array(self.B))
+        
         if self.plottedSpec:
             self.SpecAx_ref[0].set_data(array(freq_bvd), array(mypsd_bvd))
             self.SpecAx_ref1[0].set_data(array(freq_bvd), mean(mypsd_bvd[1:])*ones(len(freq_bvd)))
             self.specA_ref[0].set_data(array(freqA), array(mypsdA))
             self.specB_ref[0].set_data(array(freqB), array(mypsdB))
+            self.acf_bvd_ref[0].set_data(array(lag_bvd[0:]), array(acf_bvd[0:]))
+            self.acf_bvd_ref1[0].set_data(array(lag_bvd[0:]), array(pci_bvd[0:]))
+            self.acf_bvd_ref2[0].set_data(array(lag_bvd[0:]), array(nci_bvd[0:]))
+            self.acf_bv_refa[0].set_data(array(lag_bva), array(acf_bva))
+            self.acf_bv_refb[0].set_data(array(lag_bvb), array(acf_bvb))
         else:
+            # PSD of BVD
             self.SpecAx_ref = self.SpecAx.plot(freq_bvd, mypsd_bvd, 'ko-', lw=1.25, ms=2, alpha=self.alpha)
-            self.SpecAx_ref1 = self.SpecAx.plot(freq_bvd, mean(mypsd_bvd[1:])*ones(len(freq_bvd)), 'r', lw=2, alpha=self.alpha-0.1)
+            self.SpecAx_ref1 = self.SpecAx.plot(freq_bvd, mean(mypsd_bvd[1:])*ones(len(freq_bvd)), 'r', lw=2, alpha=self.alpha-0.1, label=r'$h_0$')
+            # PSD of BVA and BVB
             self.specA_ref = self.specAB.plot(freqA, mypsdA, 'ro-', lw=1.25, ms=2, alpha=self.alpha)
             self.specB_ref = self.specAB.plot(freqB, mypsdB, 'bo-', lw=1.25, ms=2, alpha=self.alpha)
+            # ACF of BVD
+            self.acf_bvd_ref = self.acf_bvd.plot(lag_bvd[0:], acf_bvd[0:], 'ko-', lw=0.5, ms = 4, alpha=self.alpha)
+            self.acf_bvd_ref1 = self.acf_bvd.plot(lag_bvd[0:], pci_bvd[0:], ':', lw=2, color='red')
+            self.acf_bvd_ref2 = self.acf_bvd.plot(lag_bvd[0:], nci_bvd[0:], ':', lw=2, color='red')
+            # ACF of BVA and BVB
+            self.acf_bv_refa = self.acf_bv.plot(lag_bva[0:], acf_bva[0:], 'ro', ms=2, alpha=self.alpha)
+            self.acf_bv_refb = self.acf_bv.plot(lag_bvb[0:], acf_bvb[0:], 'bo', ms=2, alpha=self.alpha)
+            
+            # print(acf_bvd[0:]+ pci_bvd[0:])
+            # self.autoCorr_ref1 = self.autoCorr.fill_between(lag_bvd[0:], acf_bvd[0:]+pci_bvd[0:], acf_bvd[0:]-nci_bvd[0:], lw=2, facecolor='red')
             self.plottedSpec = True
         self.SpecAx.relim()
         self.SpecAx.autoscale(tight=None, axis='both', enable=True)
         self.SpecAx.autoscale_view(tight=None, scalex=True, scaley=True)
-        self.Specfig.set_tight_layout(True)
         self.specAB.relim()
         self.specAB.autoscale(tight=None, axis='both', enable=True)
         self.specAB.autoscale_view(tight=None, scalex=True, scaley=True)
+        self.acf_bvd.relim()
+        self.acf_bvd.autoscale(tight=None, axis='both', enable=True)
+        self.acf_bvd.autoscale_view(tight=None, scalex=True, scaley=True)
+        self.acf_bv.relim()
+        self.acf_bv.autoscale(tight=None, axis='both', enable=True)
+        self.acf_bv.autoscale_view(tight=None, scalex=True, scaley=True)
+        
+        self.le_lag_bvd.setText(str(cutoff_lag_bvd))
+        self.le_alpha_bvd.setText(str(pow_bvd) + ': ' + noise_bvd)
+        self.le_lag_bva.setText(str(cutoff_lag_bva))
+        self.le_alpha_bva.setText(str(pow_bva) + ': ' + noise_bva)
+        self.le_lag_bvb.setText(str(cutoff_lag_bvb))
+        self.le_alpha_bvb.setText(str(pow_bvb) + ': ' + noise_bvb)
+        
         self.Specfig.set_tight_layout(True)
         self.SpecCanvas.draw()
 
@@ -1355,6 +1485,12 @@ class Ui_mainWindow(object):
         if self.plottedSpec:
             try:
                 self.SpecAx_ref[0].set_data([], [])
+                self.SpecAx_ref1[0].set_data([], [])
+                self.acf_bvd_ref[0].set_data([], [])
+                self.acf_bvd_ref1[0].set_data([], [])
+                self.acf_bvd_ref2[0].set_data([], [])
+                self.acf_bv_refa[0].set_data([], [])
+                self.acf_bv_refb[0].set_data([],[])
             except Exception as e:
                 print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
                 pass
