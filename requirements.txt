@@ -2,7 +2,7 @@ AllanTools==2019.9
 altgraph==0.17.4
 contourpy==1.1.0
 cycler==0.11.0
-fonttools==4.42.0
+fonttools==4.49.0
 kiwisolver==1.4.4
 matplotlib==3.7.2
 numpy==1.25.2
