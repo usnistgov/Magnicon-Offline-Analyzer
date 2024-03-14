@@ -14,8 +14,8 @@ class writeDataFile():
                  bvd_mean: float, N: int, samplesUsed: int, meas: float, delay: float) -> None:
         # Creates the MDSS file name according to the input .txt file's name
         self.savepath = savepath
-        dataFileName = (text.split('/')[-1]).replace('.txt', "")
-        dataFileName = self.savepath + os.sep + f'{dataFileName}_MDSS.txt'
+        dataFileName = (text.split('/')[-1]).replace('_bvd.txt', "")
+        dataFileName = self.savepath + os.sep + f'{dataFileName}_pyMDSS.txt'
 
         with open(dataFileName, 'w') as f:
             if RStatus == 'R1':

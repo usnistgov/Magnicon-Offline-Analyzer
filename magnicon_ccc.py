@@ -100,7 +100,7 @@ class magnicon_ccc:
             t2_str         = f'{t2[0]}:{t2[1]}:{t2[2]}'
             t2_obj         = datetime.strptime(t2_str, '%H:%M:%S')
             t2_am_pm       = t2_obj.strftime('%I:%M:%S %p')
-            self.avgDT     = (dt1-dt2)/2
+            self.avgDT     = (dt1-dt2)/2.0
             self.DT        = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]) + timedelta(days = self.avgDT.days, seconds = self.avgDT.seconds, microseconds = self.avgDT.microseconds)
             self.timeStamp = mktime(self.DT.timetuple())
             self.startDate = f'{d2[1]}/{d2[2]}/{d2[0]} {t2_am_pm}'
@@ -152,10 +152,13 @@ class magnicon_ccc:
                 self.bvdMean = float(array[2])
                 self.stddrt = float(array[3])
             else:
-                self.bvd = 0
+                self.bvd = []
                 self.bvdMean = 0
                 self.stddrt = 0
-            self.bvdStd = std(self.bvd, ddof=1)
+            if len(self.bvd) > 0:
+                self.bvdStd = std(self.bvd, ddof=1)
+            else:
+                self.bvdStd = 0
 
     # Parses the .cfg file
     def load_cfg(self) -> None:

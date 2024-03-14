@@ -14,4 +14,5 @@ __ChangeLog__   =       """
                                     this file, update to 1.4
                         031324:     ENH: Added autocorrelation (ACF) plots and ability to determine dominant power law noise in data, update
                                     to 1.5
+                        031424:     FIX: apply fix for crash when bvd file has no data, mdss file save name changed. write _adev.txt, _psd.txt and CCCRAW.mea files
                         """
