@@ -4,8 +4,8 @@ from threading import Thread
 
 # Class that does calculations on the raw data
 class bvd_stat:
-    def __init__(self, text: str, samples_used: int):
-        self.mag = magnicon_ccc(text)
+    def __init__(self, text: str, samples_used: int, mag):
+        self.mag = mag
         self.i      = 0
         self.points = 0
         self.start  = False

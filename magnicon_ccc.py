@@ -1,7 +1,7 @@
 from time import mktime
 from datetime import datetime, timedelta
 import sys, os
-from numpy import std, floor
+from numpy import std, floor, nan
 
 # Put ResDataBase.py in branch to use on non-NIST computers
 from ResDataBase import ResData
@@ -21,13 +21,14 @@ else:
 # Class for parsing CCC files
 class magnicon_ccc:
     def __init__(self, text: str) -> None:
+        self.text = text
         # Reads in file and checks that it is a .txt file
-        if '_bvd.txt' in text:
+        if '_bvd.txt' in self.text:
             # If the file is a .txt file, it will parse it along with the bvd and cfg files after it
             self.validFile = True
-            self.rawFile = text.rstrip('_bvd.txt') + '.txt'
-            self.bvdFile = text
-            self.cfgFile = text.rstrip('_bvd.txt') + '_cccdrive.cfg'
+            self.rawFile = self.text.rstrip('_bvd.txt') + '.txt'
+            self.bvdFile = self.text
+            self.cfgFile = self.text.rstrip('_bvd.txt') + '_cccdrive.cfg'
             # print (self.rawFile, self.bvdFile, self.cfgFile)
             self.load_raw()
             self.load_bvd()
@@ -45,50 +46,53 @@ class magnicon_ccc:
         self.rawData  = []
         self.phase    = []
         self.error    = []
-        with open (self.rawFile, "r") as file:
-            for line in file.readlines():
-                if line.startswith('R1 Info'):
-                    self.R1SN = line.split(':')[-1].rstrip(' \n')
-                    self.R1SN = self.R1SN.lstrip(' \t')
-                elif line.startswith('R2 Info'):
-                    self.R2SN = line.split(':')[-1].rstrip(' \n')
-                    self.R2SN = self.R2SN.lstrip(' \t')
-                elif line.startswith('number of samples per half cycle'):
-                    self.SHC = int(line.split(':')[-1].rstrip(' \n'))
-                elif line.startswith('ignored first samples'):
-                    self.ignored = int(line.split(':')[-1].rstrip(' \n'))
-                    self.samplesUsed = self.SHC - self.ignored
-                elif line.startswith('remarks'):
-                    self.comments = line.split(':')[-1].rstrip(' \n')
-                    self.comments = self.comments.lstrip(' \t')
-                elif line.startswith('stop date'):
-                    if 'x' in line:
-                        stopDate = False
-                    else:
-                        stopDate = True
-                        d1 = [int(line.split('-')[0].lstrip('stop date: \t')), int(line.split('-')[1]), int(line.split('-')[2].rstrip(' \n'))]
-                elif line.startswith('start date'):
-                    d2 = [int(line.split('-')[0].lstrip('start date: \t')), int(line.split('-')[1]), int(line.split('-')[2].rstrip(' \n'))]
-                elif line.startswith('stop time'):
-                    if 'x' in line:
-                        stopDate = False
-                    else:
-                        stopDate = True
-                        t1       = [int(line.split('.')[0].lstrip('stop time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
-                elif line.startswith('start time'):
-                    t2 = [int(line.split('.')[0].lstrip('start time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
-                elif collectData:
-                    self.rawData.append(float(line.split('\t')[0]))
-                    self.phase.append(int(line.split('\t')[1]))
-                    self.error.append(int(line.split('\t')[2]))
-                elif line.startswith('data(V)'):
-                    collectData = True
-                elif line.startswith('time base (Hz)'):
-                    self.timeBase = line.split(':')[-1].rstrip(' \n')
-                    self.timeBase = int(self.timeBase.lstrip(' \t'))
-                elif line.startswith('integration time'):
-                    self.intTime = line.split(':')[-1].rstrip(' \n')
-                    self.intTime = int(self.intTime.lstrip(' \t'))
+        try:
+            with open (self.rawFile, "r") as file:
+                for line in file.readlines():
+                    if line.startswith('R1 Info'):
+                        self.R1SN = line.split(':')[-1].rstrip(' \n')
+                        self.R1SN = self.R1SN.lstrip(' \t')
+                    elif line.startswith('R2 Info'):
+                        self.R2SN = line.split(':')[-1].rstrip(' \n')
+                        self.R2SN = self.R2SN.lstrip(' \t')
+                    elif line.startswith('number of samples per half cycle'):
+                        self.SHC = int(line.split(':')[-1].rstrip(' \n'))
+                    elif line.startswith('ignored first samples'):
+                        self.ignored = int(line.split(':')[-1].rstrip(' \n'))
+                        self.samplesUsed = self.SHC - self.ignored
+                    elif line.startswith('remarks'):
+                        self.comments = line.split(':')[-1].rstrip(' \n')
+                        self.comments = self.comments.lstrip(' \t')
+                    elif line.startswith('stop date'):
+                        if 'x' in line:
+                            stopDate = False
+                        else:
+                            stopDate = True
+                            d1 = [int(line.split('-')[0].lstrip('stop date: \t')), int(line.split('-')[1]), int(line.split('-')[2].rstrip(' \n'))]
+                    elif line.startswith('start date'):
+                        d2 = [int(line.split('-')[0].lstrip('start date: \t')), int(line.split('-')[1]), int(line.split('-')[2].rstrip(' \n'))]
+                    elif line.startswith('stop time'):
+                        if 'x' in line:
+                            stopDate = False
+                        else:
+                            stopDate = True
+                            t1       = [int(line.split('.')[0].lstrip('stop time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
+                    elif line.startswith('start time'):
+                        t2 = [int(line.split('.')[0].lstrip('start time: \t')), int(line.split('.')[1]), int(line.split('.')[2].rstrip(' \n'))]
+                    elif collectData:
+                        self.rawData.append(float(line.split('\t')[0]))
+                        self.phase.append(int(line.split('\t')[1]))
+                        self.error.append(int(line.split('\t')[2]))
+                    elif line.startswith('data(V)'):
+                        collectData = True
+                    elif line.startswith('time base (Hz)'):
+                        self.timeBase = line.split(':')[-1].rstrip(' \n')
+                        self.timeBase = int(self.timeBase.lstrip(' \t'))
+                    elif line.startswith('integration time'):
+                        self.intTime = line.split(':')[-1].rstrip(' \n')
+                        self.intTime = int(self.intTime.lstrip(' \t'))
+        except Exception as e:
+            pass
 
         # Averages the datetime start and stop and creates a timestamp of the average
         if stopDate:
@@ -113,59 +117,65 @@ class magnicon_ccc:
         # self.timeStamp = mktime(datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2]).timetuple())
     # Parses the bvd.txt file
     def load_bvd(self) -> None:
+        self.relHum = self.comTemp = self.cnTemp = self.nvTemp = self.deltaNApN1 = self.deltaI2R2 = ''
         if not self.validFile:
             return
-        with open (self.bvdFile, "r") as file:
-            start    = False
-            self.bvd = []
-            for line in file.readlines():
-                if line.startswith('com rel. hum'):
-                    try:
-                        self.relHum = float(line.split(':')[-1].rstrip(' \n'))
-                    except ValueError:
-                        self.relHum = 'xx.x'
-                elif line.startswith('com temp'):
-                    try:
-                        self.comTemp = float(line.split(':')[-1].rstrip(' \n'))
-                    except ValueError:
-                        self.comTemp = 'xx.xx'
-                elif line.startswith('cn temp'):
-                    try:
-                        self.cnTemp = float(line.split(':')[-1].rstrip(' \n'))
-                    except ValueError:
-                        self.cnTemp = 'xx.xx'
-                elif line.startswith('nv temp'):
-                    try:
-                        self.nvTemp = float(line.split(':')[-1].rstrip(' \n'))
-                    except ValueError:
-                        self.nvTemp = 'xx.xx'
-                elif line.startswith('delta N1/NA'):
-                    self.deltaNApN1 = float(line.split(':')[-1].rstrip(' \n')) * 0.001
-                elif line.startswith('delta (I2*R2)'):
-                    self.deltaI2R2 = float(line.split(':')[-1].rstrip(' \n'))
-                elif line.startswith('#points'):
-                    start = True
-                if start and line.split()[0].isnumeric():
-                    self.bvd.append(float(line.split()[1]))
-            array = line.split()
-            if array[0].isnumeric():
-                self.bvdMean = float(array[2])
-                self.stddrt = float(array[3])
-            else:
+        try:
+            with open (self.bvdFile, "r") as file:
+                start    = False
                 self.bvd = []
-                self.bvdMean = 0
-                self.stddrt = 0
-            if len(self.bvd) > 0:
-                self.bvdStd = std(self.bvd, ddof=1)
-            else:
-                self.bvdStd = 0
+                for line in file.readlines():
+                    if line.startswith('com rel. hum'):
+                        try:
+                            self.relHum = float(line.split(':')[-1].rstrip(' \n'))
+                        except ValueError:
+                            self.relHum = 'xx.x'
+                    elif line.startswith('com temp'):
+                        try:
+                            self.comTemp = float(line.split(':')[-1].rstrip(' \n'))
+                        except ValueError:
+                            self.comTemp = 'xx.xx'
+                    elif line.startswith('cn temp'):
+                        try:
+                            self.cnTemp = float(line.split(':')[-1].rstrip(' \n'))
+                        except ValueError:
+                            self.cnTemp = 'xx.xx'
+                    elif line.startswith('nv temp'):
+                        try:
+                            self.nvTemp = float(line.split(':')[-1].rstrip(' \n'))
+                        except ValueError:
+                            self.nvTemp = 'xx.xx'
+                    elif line.startswith('delta N1/NA'):
+                        self.deltaNApN1 = float(line.split(':')[-1].rstrip(' \n')) * 0.001
+                    elif line.startswith('delta (I2*R2)'):
+                        self.deltaI2R2 = float(line.split(':')[-1].rstrip(' \n'))
+                    elif line.startswith('#points'):
+                        start = True
+                    if start and line.split()[0].isnumeric():
+                        self.bvd.append(float(line.split()[1]))
+                array = line.split()
+                if array[0].isnumeric():
+                    self.bvdMean = float(array[2])
+                    self.stddrt = float(array[3])
+                else:
+                    self.bvd = []
+                    self.bvdMean = 0
+                    self.stddrt = 0
+                if len(self.bvd) > 0:
+                    self.bvdStd = std(self.bvd, ddof=1)
+                else:
+                    self.bvdStd = 0
+        except Exception as e:
+            pass
 
     # Parses the .cfg file
     def load_cfg(self) -> None:
         if not self.validFile:
             return
+        self.low16 = self.ncor = self.rangeShunt = self.R1NomVal = self.R2NomVal = self.I1 = self.I2 = self.I1Feedin = self.I2Feedin = nan
         feedinIndex = [-97, -94.5, -92.0, -89.5, -87.0, -84.5, -82.0, -79.5, -77.0, -74.5, -72.0, -69.5, -67.0, -64.5, -62.0,
                        -59.5, -57.0, -54.5, -52.0, -49.5, -47.0, -44.5, -42.0, -39.5, -37.0, -34.5, -32.0, -29.5, -27.0]
+        rangeShuntList=[512, 64, 8, 1]
         with open (self.cfgFile, "r") as file:
             for line in file.readlines():
                 if line.startswith('r1 '):
@@ -176,7 +186,7 @@ class magnicon_ccc:
                     elif ('8604.2' in line) or ('8.6042' in line):
                         self.R1NomVal = 25812.8074593045/3.0
                     else:
-                        self.R1NomVal = float(line.split('=')[-1].rstrip(' \n'))
+                        self.R1NomVal = float(line.split('=')[-1].strip())
                 elif line.startswith('r2 '):
                     if ('12906.4' in line) or ('12.9064' in line):
                         self.R2NomVal = 25812.8074593045/2.0
@@ -185,39 +195,45 @@ class magnicon_ccc:
                     elif ('8604.2' in line) or ('8.6042' in line):
                         self.R2NomVal = 25812.8074593045/3.0
                     else:
-                        self.R2NomVal = float(line.split('=')[-1].rstrip(' \n'))
+                        self.R2NomVal = float(line.split('=')[-1].strip())
                 elif line.startswith('cs_amplitude 3'):
-                    self.I1 = float(line.split('=')[-1].rstrip(' \n'))
+                    self.I1 = float(line.split(' = ')[-1].strip())
                 elif line.startswith('cs_amplitude 4'):
-                    self.I2 = float(line.split('=')[-1].rstrip(' \n'))
+                    self.I2 = float(line.split(' = ')[-1].strip())
                 elif line.startswith('cs_feedin 3'):
-                    I1FeedinIndex = int(line.split('=')[-1].rstrip(' \n'))
+                    I1FeedinIndex = int(line.split(' = ')[-1].strip())
                     self.I1Feedin = feedinIndex[I1FeedinIndex - 1]
                 elif line.startswith('cs_feedin 4'):
-                    I2FeedinIndex = int(line.split('=')[-1].rstrip(' \n'))
+                    I2FeedinIndex = int(line.split(' = ')[-1].strip())
                     self.I2Feedin = feedinIndex[I2FeedinIndex - 1]
                 elif line.startswith('c1_sum'):
-                    self.N1 = int(line.split('=')[-1].rstrip(' \n'))
+                    self.N1 = int(line.split(' = ')[-1].strip())
                 elif line.startswith('c2_sum'):
-                    self.N2 = int(line.split('=')[-1].rstrip(' \n'))
+                    self.N2 = int(line.split(' = ')[-1].strip())
                 elif line.startswith('aux_sum'):
-                    self.NA = int(line.split('=')[-1].rstrip(' \n'))
+                    self.NA = int(line.split(' = ')[-1].strip())
                     if self.NA == 0:
-                        self.NA = 1
+                        self.NA = 1 # override Na to one if someone forgot...
                 elif line.startswith("co_extpower 2"):
                     if 'TRUE' in line:
                         self.extpower = 'ON'
                     else:
                         self.extpower = 'OFF'
                 elif line.startswith("co_amplitude 2"):
-                    self.screenVolt = line.split('= ')[-1].rstrip(' \n')
+                    self.screenVolt = line.split(' = ')[-1].strip()
                 elif line.startswith('ra_steptime 2'):
-                    self.rStepTime = int(line.split('=')[-1].rstrip(' \n'))
+                    self.rStepTime = int(line.split(' = ')[-1].strip())
                 elif line.startswith('ra_stepcount 2'):
-                    self.rStepCount = int(line.split('=')[-1].rstrip(' \n'))
+                    self.rStepCount = int(line.split(' = ')[-1].strip())
                 elif line.startswith('daq_numcycles_stop'):
-                    self.numCycStop = int(line.split('=')[-1].rstrip(' \n'))
-
+                    self.numCycStop = int(line.split(' = ')[-1].strip())
+                elif line.startswith('cn_rangeshunt 3'):
+                    self.rangeShunt = rangeShuntList[int(line.split('=')[-1].strip())]
+                elif line.startswith('cn_ncor 3'):
+                    self.ncor = int(line.split(" = ")[-1].strip())
+                elif line.startswith('cn_icdac 3'):
+                    self.low16 = int(line.split(" = ")[-1].strip())
+        # print(self.rangeShunt, self.rStepCount)
     # Calculations using the parsed data
     def calculations(self) -> None:
         try:
@@ -255,7 +271,8 @@ class magnicon_ccc:
 
         # Time calculations
         if self.validFile:
-            # self.appVolt       = self.R1NomVal*self.I1
+            if self.deltaI2R2 == '':
+                self.deltaI2R2 = 2*self.I1*self.R1NomVal
             self.appVolt       = self.deltaI2R2/2.0
             self.rampTime      = self.rStepTime*self.rStepCount*2/1000000
             self.fullCyc       = self.SHC*self.intTime/self.timeBase*2
