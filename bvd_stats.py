@@ -80,8 +80,8 @@ class bvd_stat:
                 # A2 = sum(temp)/len(temp)
                 A2 = mean(self.temp)
                 stdA2 = std(self.temp, ddof=1)
-                self.V1.append(B2-A1)
-                self.V2.append(B1-A2)
+                self.V1.append(B2-A1) # C1
+                self.V2.append(B1-A2) # C2
                 self.A.append(A1)
                 self.A.append(A2)
                 self.stdA.append(stdA1)
@@ -98,7 +98,7 @@ class bvd_stat:
                 break
             self.i += 1
         for j, V1 in enumerate(self.V1):
-            self.bvdList.append((self.V1[j]+self.V2[j])/2)
+            self.bvdList.append((self.V1[j] + self.V2[j])/2)
         
     
     def send_bvd_stats(self):

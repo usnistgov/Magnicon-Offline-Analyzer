@@ -28,7 +28,7 @@ from create_mag_ccc_datafile import writeDataFile
 import mystat
 
 # python globals
-__version__ = '1.6' # Program version string
+__version__ = '1.6.1' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -102,6 +102,20 @@ class aboutWindow(QWidget):
         layout.addWidget(self.te_about)
         self.setLayout(layout)
 
+class timingDiagramWindow(QWidget):
+    def __init__(self):
+        """QWidget class for showing the timing diagram window to display CCC's
+           sampling routing
+        """
+        super(QWidget, self).__init__()
+        self.setFixedSize(1120, 550)
+        lbl_timing_diagram = QLabel(self)
+        lbl_timing_diagram.setPixmap(QPixmap(base_dir + r"\icons\timing_diagram.png"))
+        lbl_timing_diagram.show()
+        layout = QVBoxLayout()
+        layout.addWidget(lbl_timing_diagram)
+        self.setLayout(layout)
+
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
@@ -157,7 +171,11 @@ class Ui_mainWindow(object):
         self.about_action = QAction("&About")
         self.about_action.setStatusTip("Program information & license")
         self.about_action.triggered.connect(self._about)
-
+        
+        self.timing_action = QAction("&Timing Diagram")
+        self.timing_action.setStatusTip("Show timing diagram for CCC Measurements")
+        self.timing_action.triggered.connect(self._showTimingDiagram)
+        
         mainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(parent=mainWindow)
         self.menubar.setGeometry(QRect(0, 0, winSizeH, 22))
@@ -234,11 +252,17 @@ class Ui_mainWindow(object):
         # self.file_menu.setShortcutEnabled(True)
         self.help_menu = self.menubar.addMenu("&Help")
         self.help_menu.addAction(self.about_action)
+        self.help_menu.addAction(self.timing_action)
+        
 
     def _about(self,) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.about_window = aboutWindow()
         self.about_window.show()
+    
+    def _showTimingDiagram(self, ) -> None:
+        self.timing_window = timingDiagramWindow()
+        self.timing_window.show()
 
     def closeEvent(self, event):
         mainWindow.close()
@@ -885,7 +909,7 @@ class Ui_mainWindow(object):
         self.AllanTypeComboBox = QComboBox(parent=self.AllanTab)
         self.AllanTypeComboBox.setEditable(False)
         self.AllanTypeComboBox.addItem('all')
-        self.AllanTypeComboBox.addItem('2^n')
+        self.AllanTypeComboBox.addItem('2^n (octave)')
         self.AllanTypeComboBox.currentIndexChanged.connect(self.plotAdev)
 
         self.OverlappingComboBox = QComboBox(parent=self.AllanTab)
@@ -1292,7 +1316,7 @@ class Ui_mainWindow(object):
     def plotAllan(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.bvdList:
-            if self.AllanTypeComboBox.currentText() == '2^n':
+            if self.AllanTypeComboBox.currentText() == '2^n (octave)':
                 tau_list = self.powers_of_2(int(len(self.bvdList)//2))
                 mytaus = 'octave'
             elif self.AllanTypeComboBox.currentText() == 'all':

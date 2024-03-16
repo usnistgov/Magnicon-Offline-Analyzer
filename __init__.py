@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "1.6"
+__version__ 	=       "1.6.1"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -16,4 +16,5 @@ __ChangeLog__   =       """
                                     to 1.5
                         031424:     FIX: apply fix for crash when bvd file has no data, mdss file save name changed. write _pyadev.txt, _pypsd.txt and pyCCCRAW.mea files
                         031524      FIX: Add plot labels where necessary, fix more bugs, update to 1.6
+                        031624      ENH: Add timing diagram in Help menu, update to 1.6.1
                         """
