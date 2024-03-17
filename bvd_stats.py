@@ -33,7 +33,7 @@ class bvd_stat:
             # Ensure the index is not greater than the length of the data
             if self.i >= len(self.mag.rawData):
                 break
-            # Start at the first cycle ramping down
+            # Start at the first cycle ramping down, this is -I cycle
             if self.mag.phase[self.i] == 4 and not(self.start):
                 self.i    += self.mag.SHC - self.samples_used + int((self.samples_used)/2)
                 self.start = True
