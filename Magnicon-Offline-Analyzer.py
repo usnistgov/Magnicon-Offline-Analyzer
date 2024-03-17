@@ -110,7 +110,7 @@ class timingDiagramWindow(QWidget):
         super(QWidget, self).__init__()
         self.setFixedSize(1120, 550)
         lbl_timing_diagram = QLabel(self)
-        lbl_timing_diagram.setPixmap(QPixmap(base_dir + r"\icons\timing_diagram.png"))
+        lbl_timing_diagram.setPixmap(QPixmap(base_dir + r"\icons\timing_diagram.PNG"))
         lbl_timing_diagram.show()
         layout = QVBoxLayout()
         layout.addWidget(lbl_timing_diagram)
@@ -482,7 +482,7 @@ class Ui_mainWindow(object):
         self.LogoLabel.setGeometry(QRect(550, 700, 300, 76))
 
         self.lbl_equation = QLabel(parent=self.SetResTab)
-        self.pixmap_equation = QPixmap(base_dir + r'\icons\ccc_equation.png')
+        self.pixmap_equation = QPixmap(base_dir + r'\icons\ccc_equation.PNG')
         self.lbl_equation.setPixmap(self.pixmap_equation)
         self.lbl_equation.setGeometry(QRect(550, 475, 314, 222))
 
@@ -1680,15 +1680,21 @@ class Ui_mainWindow(object):
                 self.plotStatMeasures()
                 getPlot_end = perf_counter() - getData_start
                 print("Time taken to plot all data in GUI: ", str(getPlot_end))
+                getData_end = perf_counter() - getData_start
+                print("Time taken to get and analyze data: " +  str(getData_end))
+                self.statusbar.showMessage('Time taken to process and display data ' + str("{:2.2f}".format(getData_end)) + ' s', 5000)
             else:
                 self.setInvalidData()
+                self.statusbar.showMessage('Invalid file selected...', 5000)
                 # self.clearPlots()
         else:
             # self.clearPlots()
             self.setInvalidData()
-        getData_end = perf_counter() - getData_start
-        self.statusbar.showMessage('Time taken to process and display data ' + str("{:2.2f}".format(getData_end)) + ' s', 5000)
-        print("Time taken to get and analyze data: " +  str(getData_end))
+            self.statusbar.showMessage('Invalid file! Filename should end in _bvd.txt', 5000)
+        
+        
+       
+        
 
     def plotStatMeasures(self,) -> None:
         self.plotSpec()
