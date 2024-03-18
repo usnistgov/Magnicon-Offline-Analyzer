@@ -31,9 +31,13 @@ class magnicon_ccc:
             self.cfgFile = self.text.rstrip('_bvd.txt') + '_cccdrive.cfg'
             # print (self.rawFile, self.bvdFile, self.cfgFile)
             self.load_raw()
+            print("Raw loaded...")
             self.load_bvd()
+            print("BVD loaded...")
             self.load_cfg()
+            print("Config loaded...")
             self.calculations()
+            print("Calculations done...")
         else:
             self.validFile = False
 
@@ -238,8 +242,10 @@ class magnicon_ccc:
     def calculations(self) -> None:
         try:
             R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
-        except FileNotFoundError:
+        except Exception as e:
+            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
             R = ResData(base_dir)
+            pass
 
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:

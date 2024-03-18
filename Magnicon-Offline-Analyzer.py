@@ -1652,6 +1652,8 @@ class Ui_mainWindow(object):
             self.txtFile = self.txtFilePath.split('/')[-1]
             self.pathString = self.txtFilePath.split('_bvd.txt')[0]
             self.dat = magnicon_ccc(self.txtFilePath)
+            getFile_end = perf_counter() - getData_start
+            print("Time taken to read files: " +  str(getFile_end))
             if len(self.dat.bvd) > 0:
                 self.validFile = True
             else:
@@ -1664,9 +1666,9 @@ class Ui_mainWindow(object):
             except:
                 self.R1Temp = 25
                 self.R2Temp = 25
+                pass
             self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
-            getFile_end = perf_counter() - getData_start
-            print("Time taken to read files: " +  str(getFile_end))
+
             self.cleanUp()
             # getResults_end = perf_counter() - getData_start
             # print("Time taken to get Results: " + str(getResults_end))
