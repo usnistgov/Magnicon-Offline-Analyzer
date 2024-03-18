@@ -2,6 +2,9 @@ from time import mktime
 from datetime import datetime, timedelta
 import sys, os, inspect
 from numpy import std, floor, nan
+import smbclient
+
+
 
 # Put ResDataBase.py in branch to use on non-NIST computers
 from ResDataBase import ResData
@@ -96,6 +99,7 @@ class magnicon_ccc:
                         self.intTime = line.split(':')[-1].rstrip(' \n')
                         self.intTime = int(self.intTime.lstrip(' \t'))
         except Exception as e:
+            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
             pass
 
         # Averages the datetime start and stop and creates a timestamp of the average
@@ -134,21 +138,25 @@ class magnicon_ccc:
                             self.relHum = float(line.split(':')[-1].rstrip(' \n'))
                         except ValueError:
                             self.relHum = 'xx.x'
+                            pass
                     elif line.startswith('com temp'):
                         try:
                             self.comTemp = float(line.split(':')[-1].rstrip(' \n'))
                         except ValueError:
                             self.comTemp = 'xx.xx'
+                            pass
                     elif line.startswith('cn temp'):
                         try:
                             self.cnTemp = float(line.split(':')[-1].rstrip(' \n'))
                         except ValueError:
                             self.cnTemp = 'xx.xx'
+                            pass
                     elif line.startswith('nv temp'):
                         try:
                             self.nvTemp = float(line.split(':')[-1].rstrip(' \n'))
                         except ValueError:
                             self.nvTemp = 'xx.xx'
+                            pass
                     elif line.startswith('delta N1/NA'):
                         self.deltaNApN1 = float(line.split(':')[-1].rstrip(' \n')) * 0.001
                     elif line.startswith('delta (I2*R2)'):
@@ -170,6 +178,7 @@ class magnicon_ccc:
                 else:
                     self.bvdStd = 0
         except Exception as e:
+            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
             pass
 
     # Parses the .cfg file
@@ -238,15 +247,27 @@ class magnicon_ccc:
                 elif line.startswith('cn_icdac 3'):
                     self.low16 = int(line.split(" = ")[-1].strip())
         # print(self.rangeShunt, self.rStepCount)
-    # Calculations using the parsed data
-    def calculations(self) -> None:
-        try:
-            R = ResData(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files')
-        except Exception as e:
-            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
-            R = ResData(base_dir)
+
+
+    def check_network_path(self, path):
+       try:
+            smbclient.register_session(r"\\elwood.nist.gov")
+            return True
+       except Exception as e:
+            return False
             pass
 
+    def calculations(self) -> None:
+        # Calculations using the parsed data
+        print("In calculations...")
+        p = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'
+        if self.check_network_path(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'):
+            print("Using ResDatabase.dat located at: ", p)
+            R = ResData(p)
+        else:
+            # default to the local one supplied with this project
+            print("Using ResDatabase.dat located at: ", base_dir)
+            R = ResData(base_dir) 
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:
             self.R1NomVal  = R.ResDict[self.R1SN]['NomVal']
@@ -333,10 +354,3 @@ class magnicon_ccc:
 # For testing
 if __name__ == '__main__':
     print("I am main")
-    # file1 = base_dir + r'\2016-02-18_CCC\160218_016_1548.txt'
-    # file2 = base_dir + r'\2023-06-01_CCC\230601_001_1134.txt'
-    # file3 = base_dir + r'\2016-02-18_CCC\160218_001_0935.txt'
-    # diffFile = base_dir + r'/2023-05-31_CCC/230531_008_2200.txt'
-    # # mc = magnicon_ccc(file2)
-    # mc = magnicon_ccc(diffFile)
-    # print(mc.I1Feedin, mc.I2Feedin)
