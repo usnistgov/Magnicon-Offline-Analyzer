@@ -39,7 +39,6 @@ class ResData():
                     self.ResDict[SN]['Drift'] = float(line.split('=')[-1].rstrip(' \n'))
                 elif line.startswith('StdTemp'):
                     self.ResDict[SN]['StdTemp'] = float(line.split('=')[-1].rstrip(' \n'))
-        print(len(self.ResDict))
     # Returns the predicted resistor value from the input SN and datetime in mm/dd/yyyy format
     def predictedValueDate(self, mySN: str, myDate: str) -> float:
         # Converts the input datetime into a timestamp

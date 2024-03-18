@@ -2,9 +2,7 @@ from time import mktime
 from datetime import datetime, timedelta
 import sys, os, inspect
 from numpy import std, floor, nan
-import smbclient
-
-
+import win32file
 
 # Put ResDataBase.py in branch to use on non-NIST computers
 from ResDataBase import ResData
@@ -246,22 +244,33 @@ class magnicon_ccc:
                     self.ncor = int(line.split(" = ")[-1].strip())
                 elif line.startswith('cn_icdac 3'):
                     self.low16 = int(line.split(" = ")[-1].strip())
-        # print(self.rangeShunt, self.rStepCount)
+       
+    def check_shared_drive_exists(self, drive_path):
+        try:
+            # Open the handle to the network share
+            handle = win32file.CreateFile(
+                drive_path,
+                win32file.GENERIC_READ,
+                win32file.FILE_SHARE_READ,
+                None,
+                win32file.OPEN_EXISTING,
+                win32file.FILE_FLAG_BACKUP_SEMANTICS,
+                None
+            )
 
-
-    def check_network_path(self, path):
-       try:
-            smbclient.register_session(r"\\elwood.nist.gov")
+            # Close the handle
+            win32file.CloseHandle(handle)
             return True
-       except Exception as e:
+        except Exception as e:
+            print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
+            # Error occurred, the share doesn't exist or inaccessible
             return False
-            pass
 
     def calculations(self) -> None:
         # Calculations using the parsed data
         print("In calculations...")
         p = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'
-        if self.check_network_path(r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'):
+        if self.check_shared_drive_exists(r'\\elwood.nist.gov\68_PML'):
             print("Using ResDatabase.dat located at: ", p)
             R = ResData(p)
         else:
