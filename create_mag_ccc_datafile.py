@@ -30,14 +30,14 @@ class writeDataFile():
             f.write(f'|{"{:.2f}".format(dat_obj.fullCyc)}')
             f.write(f'|{dat_obj.N1}/{dat_obj.N2}')
             if RStatus == 'R1':
-                f.write(f'|{dat_obj.R1SN} ({"{:.4f}".format(dat_obj.R1Pred)})')
+                f.write(f'|{dat_obj.R1SN} ({"{:.4f}".format(R1PPM)})')
                 f.write(f'|{dat_obj.R2SN}')
                 f.write(f'|{"{:.4f}".format(meanR1)}')
                 f.write(f'|{"{:.4f}".format(stdR1ppm)}')
                 f.write(f'|{"{:.4f}".format(dat_obj.R2Pred)}')
                 f.write(f'|{"{:.10E}".format(R2MeanChkOhm).replace("E+0", "E+")}')
             else:
-                f.write(f'|{dat_obj.R2SN} ({"{:.4f}".format(dat_obj.R2Pred)})')
+                f.write(f'|{dat_obj.R2SN} ({"{:.4f}".format(R2PPM)})')
                 f.write(f'|{dat_obj.R1SN}')
                 f.write(f'|{"{:.4f}".format(meanR2)}')
                 f.write(f'|{"{:.4f}".format(stdR2ppm)}')
@@ -70,9 +70,9 @@ class writeDataFile():
             f.write(f'|{samplesUsed}')
             f.write(f'|{"{:.2f}".format(dat_obj.rampTime)}/{"{:.2f}".format(delay)}/{"{:.2f}".format(meas)}')
             if RStatus == 'R1':
-                f.write(f'|{"{:.4f}".format(R1PPM)}')
+                f.write(f'|{"{:.4f}".format(dat_obj.R1Pred)}') # Corrected Reference value to STP
             else:
-                f.write(f'|{"{:.4f}".format(R2PPM)}')
+                f.write(f'|{"{:.4f}".format(dat_obj.R2Pred)}')
             f.write(f'|{dat_obj.comments} ')
             if RStatus == 'R1':
                 f.write(f'|{"{:.4f}".format(dat_obj.R1pcr)}')

@@ -28,7 +28,7 @@ from create_mag_ccc_datafile import writeDataFile
 import mystat
 
 # python globals
-__version__ = '1.6.1' # Program version string
+__version__ = '1.6.3' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -410,6 +410,10 @@ class Ui_mainWindow(object):
         self.R2TempLabel.setGeometry(QRect(self.col3x, 390, self.lbl_width, self.lbl_height))
         self.RelHumLabel = QLabel(parent=self.SetResTab)
         self.RelHumLabel.setGeometry(QRect(self.col3x, 450, self.lbl_width, self.lbl_height))
+        self.lbl_start_time = QLabel(parent=self.SetResTab)
+        self.lbl_start_time.setGeometry(QRect(self.col3x,510, self.lbl_width, self.lbl_height))
+        self.lbl_end_time = QLabel(parent=self.SetResTab)
+        self.lbl_end_time.setGeometry(QRect(self.col3x, 570, self.lbl_width, self.lbl_height))
         self.SquidFeedLabel = QLabel(parent=self.SetResTab)
         self.SquidFeedLabel.setGeometry(QRect(self.col3x, 630, self.lbl_width, self.lbl_height))
         self.CurrentButLabel = QLabel(parent=self.SetResTab)
@@ -526,7 +530,7 @@ class Ui_mainWindow(object):
         self.R2PresLineEdit.setGeometry(QRect(self.col0x, self.coly*8, self.lbl_width, self.lbl_height))
         self.R2PresLineEdit.returnPressed.connect(self.R2PresChanged)
         self.txtFileLineEdit = QLineEdit(parent=self.SetResTab)
-        self.txtFileLineEdit.setGeometry(QRect(self.col0x, self.coly*10, int(self.lbl_width*3.2), self.lbl_height))
+        self.txtFileLineEdit.setGeometry(QRect(self.col0x, self.coly*10, int(self.lbl_width*2.8), self.lbl_height))
         self.txtFileLineEdit.returnPressed.connect(self.folderEdited)
         # col1
         self.R1PPMLineEdit = QLineEdit(parent=self.SetResTab)
@@ -639,6 +643,17 @@ class Ui_mainWindow(object):
         self.RelHumLineEdit.setReadOnly(True)
         self.RelHumLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_start_time = QLineEdit(parent=self.SetResTab)
+        self.le_start_time.setGeometry(QRect(self.col3x, self.coly*9, self.lbl_width, self.lbl_height))
+        self.le_start_time.setReadOnly(True)
+        self.le_start_time.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_end_time = QLineEdit(parent=self.SetResTab)
+        self.le_end_time.setGeometry(QRect(self.col3x, self.coly*10, self.lbl_width, self.lbl_height))
+        self.le_end_time.setReadOnly(True)
+        self.le_end_time.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        
         # col4
         self.VMeanLineEdit = QLineEdit(parent=self.SetResTab)
         self.VMeanLineEdit.setGeometry(QRect(self.col4x, self.coly, self.lbl_width, self.lbl_height))
@@ -995,7 +1010,7 @@ class Ui_mainWindow(object):
         self.le_alpha_bvd.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
 
-        lbl_lag_bva = QLabel('Lag of A', parent=gridWidget)
+        lbl_lag_bva = QLabel('Lag of I-', parent=gridWidget)
         self.le_lag_bva = QLineEdit(gridWidget)
         self.le_lag_bva.setReadOnly(True)
         self.le_lag_bva.setFixedWidth(100)
@@ -1003,7 +1018,7 @@ class Ui_mainWindow(object):
         self.le_lag_bva.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
 
-        lbl_alpha_bva = QLabel('Alpha [A]', parent=gridWidget)
+        lbl_alpha_bva = QLabel('Alpha [I-]', parent=gridWidget)
         self.le_alpha_bva= QLineEdit(gridWidget)
         self.le_alpha_bva.setReadOnly(True)
         self.le_alpha_bva.setFixedWidth(130)
@@ -1011,7 +1026,7 @@ class Ui_mainWindow(object):
         self.le_alpha_bva.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
 
-        lbl_lag_bvb = QLabel('Lag of B', parent=gridWidget)
+        lbl_lag_bvb = QLabel('Lag of I+', parent=gridWidget)
         self.le_lag_bvb = QLineEdit(gridWidget)
         self.le_lag_bvb.setReadOnly(True)
         self.le_lag_bvb.setFixedWidth(100)
@@ -1019,7 +1034,7 @@ class Ui_mainWindow(object):
         self.le_lag_bvb.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
 
-        lbl_alpha_bvb = QLabel('Alpha [B]', parent=gridWidget)
+        lbl_alpha_bvb = QLabel('Alpha [I+]', parent=gridWidget)
         self.le_alpha_bvb= QLineEdit(gridWidget)
         self.le_alpha_bvb.setReadOnly(True)
         self.le_alpha_bvb.setFixedWidth(130)
@@ -1049,7 +1064,7 @@ class Ui_mainWindow(object):
     def setButtons(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.folderToolButton = QToolButton(parent=self.SetResTab)
-        self.folderToolButton.setGeometry(QRect(self.col3x, self.coly*10, 40, self.lbl_height))
+        self.folderToolButton.setGeometry(QRect(self.col3x - 48, self.coly*10, 40, self.lbl_height))
         self.folderToolButton.setIcon(QIcon(base_dir + r'\icons\folder.ico'))
         self.folderToolButton.clicked.connect(self.folderClicked)
         self.SquidFeedBut = QPushButton(parent=self.SetResTab)
@@ -1180,6 +1195,8 @@ class Ui_mainWindow(object):
         self.R2OilDepthLabel.setText(_translate("mainWindow", "R<sub>2</sub> Oil Depth [mm]"))
         self.ProbeLabel.setText(_translate("mainWindow", "Probe"))
         self.CurrentButLabel.setText(_translate("mainWindow", "SQUID Feedin Arm"))
+        self.lbl_start_time.setText(_translate("mainWindow", "Start time"))
+        self.lbl_end_time.setText(_translate("mainWindow", "End time"))
         self.CurrentBut.setText(_translate("mainWindow", self.CurrentButStatus))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.BVDTab), _translate("mainWindow", "BVD"))
@@ -1218,8 +1235,8 @@ class Ui_mainWindow(object):
                     self.BVDax3.set_ylim([self.BVDtwin2.get_ylim()[0], self.BVDtwin2.get_ylim()[1]])
                 else:
                     # plot the individual bridge voltages
-                    self.BVDax1_ref = self.BVDax1.errorbar(count, self.A, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label='I+')
-                    self.BVDax12_ref = self.BVDax1.errorbar(count, self.B, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label='I-')
+                    self.BVDax1_ref = self.BVDax1.errorbar(count, self.A, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label='I-')
+                    self.BVDax12_ref = self.BVDax1.errorbar(count, self.B, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label='I+')
                     self.BVDax1.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower right', frameon=True, shadow=True, ncols=2, columnspacing=0)
 
                     if self.RButStatus == 'R1':
@@ -1261,8 +1278,7 @@ class Ui_mainWindow(object):
                 self.SkewnessEdit.setText(str("{:.3f}".format(mystat.skewness(self.bvdList))))
                 self.KurtosisEdit.setText(str("{:.3f}".format(mystat.kurtosis(self.bvdList))))
                 self.plottedBVD = True
-                
-                
+ 
     def changedR1STPPred(self,):
         self.changedR1STPBool = True
         self.R1STP = float(self.R1STPLineEdit.text())
@@ -1373,8 +1389,8 @@ class Ui_mainWindow(object):
                 self.Allanax11_ref = self.Allanax1.plot(bvd_tau_time,  rttau, 'r', lw = 2, alpha=self.alpha-0.1, label=r'$1/\sqrt{\tau}$')
                 self.Allanax2_ref = self.Allanax2.plot(bvd_tau_time, C1_adev, 'bo-', lw=1.25, ms=4, alpha = self.alpha) # ADev for C1
                 self.Allanax3_ref = self.Allanax3.plot(bvd_tau_time, C2_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha) # ADev for C2
-                self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha, label='I+') # ADev for bv a
-                self.Allanax42_ref = self.Allanax4.plot(bva_tau_time, bvb_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha, label='I-') # ADev for bv b
+                self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha, label='I-') # ADev for bv a
+                self.Allanax42_ref = self.Allanax4.plot(bva_tau_time, bvb_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha, label='I+') # ADev for bv b
                 self.plottedAllan = True
         self.Allanax1.legend(loc='upper right', frameon=True, shadow=True, ncols=1, columnspacing=0)
         self.Allanax1.relim()
@@ -1403,7 +1419,7 @@ class Ui_mainWindow(object):
             adev_file.write('\n')
 
         with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-            adev_file.write('tau (s)' + '\t' + 'adev [BV A]' + '\t' + 'adev err [BV A]' + \
+            adev_file.write('tau (s)' + '\t' + 'adev [BV I-]' + '\t' + 'adev err [BV I-]' + \
                             '\n')
         with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
             for i, j, k, in zip(bva_tau_time, bva_adev, bva_aerr):
@@ -1411,7 +1427,7 @@ class Ui_mainWindow(object):
             adev_file.write('\n')
         
         with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-            adev_file.write('tau (s)' + '\t' + 'adev [BV B]' + '\t' + 'adev err [BV B]' + \
+            adev_file.write('tau (s)' + '\t' + 'adev [BV I+]' + '\t' + 'adev err [BV I+]' + \
                             '\n')
         with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
             for i, j, k, in zip(bvb_tau_time, bvb_adev, bvb_aerr):
@@ -1464,17 +1480,17 @@ class Ui_mainWindow(object):
         else:
             # PSD of BVD
             self.SpecAx_ref = self.SpecAx.plot(freq_bvd, mypsd_bvd, 'ko-', lw=1.25, ms=2, alpha=self.alpha)
-            self.SpecAx_ref1 = self.SpecAx.plot(freq_bvd, mean(mypsd_bvd[1:])*ones(len(freq_bvd)), 'r', lw=2, alpha=self.alpha-0.1, label=r'$h_0$')
+            self.SpecAx_ref1 = self.SpecAx.plot(freq_bvd, mean(mypsd_bvd[1:])*ones(len(freq_bvd)), 'r', lw=2, alpha=self.alpha-0.1, label=r'$h_0 = $' + str("{:2.2e}".format(self.h0)))
             # PSD of BVA and BVB
-            self.specA_ref = self.specAB.plot(freqA, mypsdA, 'ro-', lw=1.25, ms=2, alpha=self.alpha, label='I+')
-            self.specB_ref = self.specAB.plot(freqB, mypsdB, 'bo-', lw=1.25, ms=2, alpha=self.alpha, label='I-')
+            self.specA_ref = self.specAB.plot(freqA, mypsdA, 'ro-', lw=1.25, ms=2, alpha=self.alpha, label='I-')
+            self.specB_ref = self.specAB.plot(freqB, mypsdB, 'bo-', lw=1.25, ms=2, alpha=self.alpha, label='I+')
             # ACF of BVD
             self.acf_bvd_ref = self.acf_bvd.plot(lag_bvd[0:], acf_bvd[0:], 'ko-', lw=0.5, ms = 4, alpha=self.alpha)
             self.acf_bvd_ref1 = self.acf_bvd.plot(lag_bvd[0:], pci_bvd[0:], ':', lw=2, color='red')
             self.acf_bvd_ref2 = self.acf_bvd.plot(lag_bvd[0:], nci_bvd[0:], ':', lw=2, color='red')
             # ACF of BVA and BVB
-            self.acf_bv_refa = self.acf_bv.plot(lag_bva[0:], acf_bva[0:], 'ro', ms=2, alpha=self.alpha, label='I+')
-            self.acf_bv_refb = self.acf_bv.plot(lag_bvb[0:], acf_bvb[0:], 'bo', ms=2, alpha=self.alpha, label='I-')
+            self.acf_bv_refa = self.acf_bv.plot(lag_bva[0:], acf_bva[0:], 'ro', ms=2, alpha=self.alpha, label='I-')
+            self.acf_bv_refb = self.acf_bv.plot(lag_bvb[0:], acf_bvb[0:], 'bo', ms=2, alpha=self.alpha, label='I+')
             
             # print(acf_bvd[0:]+ pci_bvd[0:])
             # self.autoCorr_ref1 = self.autoCorr.fill_between(lag_bvd[0:], acf_bvd[0:]+pci_bvd[0:], acf_bvd[0:]-nci_bvd[0:], lw=2, facecolor='red')
@@ -1514,14 +1530,14 @@ class Ui_mainWindow(object):
             psd_file.write('\n')
 
         with open(self.pathString + '_pypsd.txt', 'a') as psd_file:
-            psd_file.write('f (Hz)' + '\t' + 'psd [BV A]' + '\n')
+            psd_file.write('f (Hz)' + '\t' + 'psd [BV I-]' + '\n')
         with open(self.pathString + '_pypsd.txt', 'a') as psd_file:
             for i, j, in zip(freqA, mypsdA):
                 psd_file.write(str(i) + '\t' + str(j) + '\n')
             psd_file.write('\n')
         
         with open(self.pathString + '_pypsd.txt', 'a') as psd_file:
-            psd_file.write('f (Hz)' + '\t' + 'psd [BV B]' + '\n')
+            psd_file.write('f (Hz)' + '\t' + 'psd [BV I+]' + '\n')
         with open(self.pathString + '_pypsd.txt', 'a') as psd_file:
             for i, j, in zip(freqB, mypsdB):
                 psd_file.write(str(i) + '\t' + str(j) + '\n')
@@ -1693,10 +1709,6 @@ class Ui_mainWindow(object):
             # self.clearPlots()
             self.setInvalidData()
             self.statusbar.showMessage('Invalid file! Filename should end in _bvd.txt', 5000)
-        
-        
-       
-        
 
     def plotStatMeasures(self,) -> None:
         self.plotSpec()
@@ -1896,6 +1908,8 @@ class Ui_mainWindow(object):
             self.kLineEdit.setStyleSheet("color: red")
         else:
             self.kLineEdit.setStyleSheet("color: black")
+        self.le_start_time.setText(str(self.dat.startDate))
+        self.le_end_time.setText(str(self.dat.endDate))
         self.R1TempLineEdit.setText(str("{:.5f}".format(self.R1Temp)))
         self.R2TempLineEdit.setText(str("{:.5f}".format(self.R2Temp)))
         self.R1PresLineEdit.setText(str(self.R1pres))
@@ -1955,6 +1969,8 @@ class Ui_mainWindow(object):
         self.R1ValueLineEdit.setText("")
         self.CommentsTextBrowser.setText("")
         self.RelHumLineEdit.setText("")
+        self.le_start_time.setText("")
+        self.le_end_time.setText("")
         self.R1TotalPresLineEdit.setText("")
         self.R2TotalPresLineEdit.setText("")
         self.R1TempLineEdit.setText("")
