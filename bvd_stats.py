@@ -28,7 +28,6 @@ class bvd_stat:
     
     def _process_thread(self,):
         # Runs through the raw data
-        # for a new version this should be in a seperate thread
         while (self.i < len(self.mag.rawData)):
             # Ensure the index is not greater than the length of the data
             if self.i >= len(self.mag.rawData):
@@ -97,10 +96,9 @@ class bvd_stat:
             if self.i > len(self.mag.rawData):
                 break
             self.i += 1
-        for j, V1 in enumerate(self.V1):
-            self.bvdList.append((self.V1[j] + self.V2[j])/2)
-        
-    
+        for V1, V2 in zip(self.V1, self.V2):
+            self.bvdList.append((V1 + V2)/2.)
+
     def send_bvd_stats(self):
         return (self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB)
     

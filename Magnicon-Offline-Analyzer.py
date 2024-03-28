@@ -28,7 +28,7 @@ from create_mag_ccc_datafile import writeDataFile
 import mystat
 
 # python globals
-__version__ = '1.6.3' # Program version string
+__version__ = '1.6.4' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -1462,10 +1462,16 @@ class Ui_mainWindow(object):
         lag_bvd, acf_bvd, pci_bvd, nci_bvd, cutoff_lag_bvd = mystat.autoCorrelation(array(self.bvdList))
         lag_bva, acf_bva, pci_bva, nci_bva, cutoff_lag_bva = mystat.autoCorrelation(array(self.A))
         lag_bvb, acf_bvb, pci_bvb, nci_bvb, cutoff_lag_bvb = mystat.autoCorrelation(array(self.B))
-        (pow_bvd, noise_bvd) = mystat.noise1D(array(self.bvdList))
-        (pow_bva, noise_bva) = mystat.noise1D(array(self.A))
-        (pow_bvb, noise_bvb) = mystat.noise1D(array(self.B))
-        
+        try:
+            (pow_bvd, noise_bvd) = mystat.noise1D(array(self.bvdList))
+            (pow_bva, noise_bva) = mystat.noise1D(array(self.A))
+            (pow_bvb, noise_bvb) = mystat.noise1D(array(self.B))
+        except:
+            (pow_bvd, noise_bvd) = (nan, '')
+            (pow_bva, noise_bva) = (nan, '')
+            (pow_bvb, noise_bvb) = (nan, '')
+            pass
+
         if self.plottedSpec:
             self.clearSpecPlot()
             self.SpecAx_ref[0].set_data(array(freq_bvd), array(mypsd_bvd))

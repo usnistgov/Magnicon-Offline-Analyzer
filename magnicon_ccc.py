@@ -117,6 +117,8 @@ class magnicon_ccc:
             self.endDate   = f'{d1[1]}/{d1[2]}/{d1[0]} {t1_am_pm}'
         # Returns the start datetime if there is no stop date
         else:
+            self.startDate = 'xx/xx/xx xx:xx:xx'
+            self.endDate = 'xx/xx/xx xx:xx:xx'
             self.DT        = datetime(d2[0], d2[1], d2[2], t2[0], t2[1], t2[2])
             self.timeStamp = mktime(self.DT.timetuple())
         # This does not average
@@ -135,7 +137,7 @@ class magnicon_ccc:
                         try:
                             self.relHum = float(line.split(':')[-1].rstrip(' \n'))
                         except ValueError:
-                            self.relHum = 'xx.x'
+                            self.relHum = 'xx.xx'
                             pass
                     elif line.startswith('com temp'):
                         try:
