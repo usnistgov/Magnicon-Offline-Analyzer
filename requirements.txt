@@ -11,7 +11,7 @@ matplotlib==3.7.2
 numpy==1.25.2
 packaging==23.1
 pefile==2023.2.7
-pillow==10.2.0
+pillow==10.3.0
 pyasn1==0.5.1
 pycparser==2.21
 pyinstaller==6.5.0
