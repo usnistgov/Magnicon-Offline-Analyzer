@@ -26,9 +26,10 @@ from bvd_stats import bvd_stat
 from magnicon_ccc import magnicon_ccc
 from create_mag_ccc_datafile import writeDataFile
 import mystat
+from env import env
 
 # python globals
-__version__ = '1.6.4' # Program version string
+__version__ = '1.7' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -190,7 +191,19 @@ class Ui_mainWindow(object):
             self.dialog.setDirectory(r"C:")
         self.dialog.setNameFilters(["Text files (*_bvd.txt)"])
         self.dialog.selectNameFilter("Text files (*_bvd.txt)")
+        
+        self.temperature1_dialog = QFileDialog(parent=mainWindow)
+        if os.path.exists(r"C:\Environment"):
+            self.temperature1_dialog.setDirectory(r"C:\Environment")
+        else:
+            self.temperature1_dialog.setDirectory(r"C:")
 
+        self.temperature2_dialog = QFileDialog(parent=mainWindow)
+        if os.path.exists(r"C:\Environment"):
+            self.temperature2_dialog.setDirectory(r"C:\Environment")
+        else:
+            self.temperature2_dialog.setDirectory(r"C:")
+        
         self.statusbar = QStatusBar(parent=mainWindow)
         mainWindow.setStatusBar(self.statusbar)
         self.statusbar.showMessage("Ready", 2000)
@@ -376,6 +389,10 @@ class Ui_mainWindow(object):
         self.R1OilDepthLabel.setGeometry(QRect(self.col1x, 390, self.lbl_width, self.lbl_height))
         self.R2OilDepthLabel = QLabel(parent=self.SetResTab)
         self.R2OilDepthLabel.setGeometry(QRect(self.col1x, 450, self.lbl_width, self.lbl_height))
+        self.lbl_path_temperature1 = QLabel(parent=self.SetResTab)
+        self.lbl_path_temperature1.setGeometry(QRect(self.col1x, 510, self.lbl_width, self.lbl_height))
+        self.lbl_path_temperature2 = QLabel(parent=self.SetResTab)
+        self.lbl_path_temperature2.setGeometry(QRect(self.col1x, 570, self.lbl_width, self.lbl_height))
         # col2
         self.R1ValueLabel = QLabel(parent=self.SetResTab)
         self.R1ValueLabel.setGeometry(QRect(self.col2x, 30, self.lbl_width, self.lbl_height))
@@ -563,6 +580,13 @@ class Ui_mainWindow(object):
         self.RampLineEdit.setReadOnly(True)
         self.RampLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_path_temperature1 = QLineEdit(parent=self.SetResTab)
+        self.le_path_temperature1.setGeometry(QRect(self.col1x, self.coly*11, self.lbl_width+80, self.lbl_height))
+        self.le_path_temperature1.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
+
+        self.le_path_temperature2 = QLineEdit(parent=self.SetResTab)
+        self.le_path_temperature2.setGeometry(QRect(self.col1x, self.coly*12, self.lbl_width+80, self.lbl_height))
+        self.le_path_temperature2.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
         # col2
         self.R1ValueLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1ValueLineEdit.setGeometry(QRect(self.col2x, self.coly, self.lbl_width, self.lbl_height))
@@ -1067,6 +1091,17 @@ class Ui_mainWindow(object):
         self.folderToolButton.setGeometry(QRect(self.col3x - 48, self.coly*10, 40, self.lbl_height))
         self.folderToolButton.setIcon(QIcon(base_dir + r'\icons\folder.ico'))
         self.folderToolButton.clicked.connect(self.folderClicked)
+        
+        self.btn_temperature1 = QToolButton(parent=self.SetResTab)
+        self.btn_temperature1.setGeometry(QRect(self.col3x - 48, self.coly*11, 40, self.lbl_height))
+        self.btn_temperature1.setIcon(QIcon(base_dir + r'\icons\folder.ico'))
+        self.btn_temperature1.clicked.connect(self.get_temperature1)
+        
+        self.btn_temperature2 = QToolButton(parent=self.SetResTab)
+        self.btn_temperature2.setGeometry(QRect(self.col3x - 48, self.coly*12, 40, self.lbl_height))
+        self.btn_temperature2.setIcon(QIcon(base_dir + r'\icons\folder.ico'))
+        self.btn_temperature2.clicked.connect(self.get_temperature2)
+        
         self.SquidFeedBut = QPushButton(parent=self.SetResTab)
         self.SquidFeedBut.setGeometry(QRect(self.col3x, self.coly*11, self.lbl_width, int(self.lbl_height*1.2)))
         self.SquidFeedBut.setStyleSheet(blue_style)
@@ -1180,6 +1215,8 @@ class Ui_mainWindow(object):
         self.RampLabel.setText(_translate("mainWindow", "Ramp [s]"))
         self.R1PPMLabel.setText(_translate("mainWindow", f'R<sub>1</sub> [{chr(956)}{chr(937)}/{chr(937)}]'))
         self.R2PPMLabel.setText(_translate("mainWindow", f'R<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]'))
+        self.lbl_path_temperature1.setText(_translate("mainWindow", 'R<sub>1</sub> Environment Path'))
+        self.lbl_path_temperature2.setText(_translate("mainWindow", 'R<sub>2</sub> Environment Path'))
         self.R1ValueLabel.setText(_translate("mainWindow", f"R<sub>1</sub> Value [{chr(937)}]"))
         self.AppVoltLabel.setText(_translate("mainWindow", "Applied Voltage"))
         self.MeasLabel.setText(_translate("mainWindow", "Meas [s]"))
@@ -1683,14 +1720,25 @@ class Ui_mainWindow(object):
             # print("File Validity: ", self.validFile)
             # get the standard temperature for the two resistors if they exist
             try:
-                self.R1Temp = self.dat.R1stdTemp
-                self.R2Temp = self.dat.R2stdTemp
-            except:
+                if self.le_path_temperature1.text() != '':
+                    env1_obj = env(self.le_path_temperature1.text(), self.dat.startDate, self.dat.endDate)
+                    (self.R1Temp, self.R1Pres) = env1_obj.calc_average()
+                    print(self.R1Temp)
+                else:
+                    self.R1Temp = self.dat.R1stdTemp
+                    self.R1Pres = 101325
+                if self.le_path_temperature2.text() != '':
+                    env2_obj = env(self.le_path_temperature2.text(), self.dat.startDate, self.dat.endDate)
+                    (self.R2Temp, self.R2Pres) = env2_obj.calc_average()
+                else:
+                    self.R2Temp = self.dat.R2stdTemp
+                    self.R2Pres = 101325
+            except Exception as e:
+                print("Error",  e)
                 self.R1Temp = 25
                 self.R2Temp = 25
                 pass
             self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
-
             self.cleanUp()
             # getResults_end = perf_counter() - getData_start
             # print("Time taken to get Results: " + str(getResults_end))
@@ -1787,8 +1835,8 @@ class Ui_mainWindow(object):
             # This calculation is done using the bridge voltages i.e the raw text file
             if mag.N2 != 0 and mag.N1 != 0 and myDeltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
                 self.ratioMeanList.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvdList[i]/myDeltaI2R2))
-                self.R1List.append((self.R1/self.ratioMeanList[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
-                self.R2List.append((self.R2*self.ratioMeanList[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
+                self.R1List.append((((self.R1/self.ratioMeanList[i]) - mag.R2NomVal)/mag.R2NomVal) * 10**6 - R2corr)
+                self.R2List.append(((self.R2*self.ratioMeanList[i] - mag.R1NomVal)/mag.R1NomVal) * 10**6 - R1corr)
                 ratioMeanC1.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V1[i]/myDeltaI2R2))
                 ratioMeanC2.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V2[i]/myDeltaI2R2))
                 self.C1R1List.append((self.R1/ratioMeanC1[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
@@ -1796,8 +1844,7 @@ class Ui_mainWindow(object):
                 self.C2R1List.append((self.R1/ratioMeanC2[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
                 self.C2R2List.append((self.R2*ratioMeanC2[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
             else:
-                self.R1List.append(0)
-                self.R2List.append(0)
+                pass
         if  self.ratioMeanList != []:
             self.meanR1     = mean(self.R1List)
             self.meanR2     = mean(self.R2List)
@@ -1854,10 +1901,11 @@ class Ui_mainWindow(object):
             self.bvd_stdmean_chk = nan
             
         if mag.N2 != 0 and mag.N1 != 0 and myDeltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
-            self.ratioMean = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvd_mean/myDeltaI2R2) # calculated from raw bridge voltages
-            self.ratioMeanChk   = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvd_mean_chk/myDeltaI2R2) # calculated from bvd file
-            self.R1MeanChk = (self.R1/self.ratioMeanChk - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr
-            self.R2MeanChk = (self.R2*self.ratioMeanChk - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr
+            self.ratioMean = (mag.N1/mag.N2) * (1 + (self.k*mag.NA/mag.N1))*(1 + (self.bvd_mean/myDeltaI2R2)) # calculated from raw bridge voltages
+            self.ratioMeanChk   = (mag.N1/mag.N2) * (1 + (self.k*mag.NA/mag.N1))*(1 + (self.bvd_mean_chk/myDeltaI2R2)) # calculated from bvd file
+            
+            self.R1MeanChk = (((self.R1/self.ratioMeanChk) - mag.R2NomVal)/mag.R2NomVal) * 10**6 - R2corr
+            self.R2MeanChk = ((self.R2*self.ratioMeanChk - mag.R1NomVal)/mag.R1NomVal) * 10**6 - R1corr
 
             self.R1CorVal = ((self.R1STPPred/1000000 + 1) * mag.R1NomVal)
             self.R2CorVal = ((self.R2STPPred/1000000 + 1) * mag.R2NomVal)
@@ -1875,6 +1923,9 @@ class Ui_mainWindow(object):
             self.R2MeanChkOhm = nan
             # self.remTime      = mag.measTime - (self.N*mag.fullCyc)
             # self.remTimeStamp = mag.sec2ts(self.remTime)
+        print('Ratio Check: ', self.ratioMean, mean(self.ratioMean), self.ratioMeanChk, ((self.ratioMean - self.ratioMeanChk)))
+        print('BVD Check: ', self.bvd_mean, self.bvd_mean_chk, ((self.bvd_mean - self.bvd_mean_chk)))
+        print('R Check: ', ((self.meanR1 - self.R1MeanChk)))
 
     def setValidData(self) -> None:
         """Sets the texts in all GUI line edits and spin boxes
@@ -1937,7 +1988,7 @@ class Ui_mainWindow(object):
         self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdppm*10**6)))
         self.NLineEdit.setText(str(self.N))
         self.MeasTimeLineEdit.setText(self.dat.measTimeStamp)
-        self.MDSSButton.setStyleSheet(red_style)
+        # self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setEnabled(True)
         self.plotCountCombo.clear()
         self.SetResTab.update()
@@ -2175,12 +2226,27 @@ class Ui_mainWindow(object):
         self.txtFileLineEdit.setText(self.txtFilePath)
         self.validFile = False
         self.getData()
+        
+    def get_temperature1(self) -> None:
+        self.temperature1_folder = self.temperature1_dialog.getExistingDirectory(None, "Select Folder")
+        self.le_path_temperature1.setText(self.temperature1_folder)
+        
+    def get_temperature2(self) -> None:
+        self.temperature2_folder = self.temperature2_dialog.getExistingDirectory(None, "Select Folder")
+        self.le_path_temperature2.setText(self.temperature2_folder)    
 
     def folderEdited(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.txtFilePath = self.txtFileLineEdit.text()
         self.validFile = False
         self.getData()
+    
+    def temperature1_folder_edited(self) -> None:
+        self.temperature1_folder = self.le_path_temperature1.text()
+    
+    def temperature2_folder_edited(self) -> None:
+        self.temperature2_folder = self.le_path_temperature2.text()
+        
 
     def MDSSClicked(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
@@ -2203,10 +2269,7 @@ class Ui_mainWindow(object):
             os.mkdir(self.mdssdir)
         self.statusbar.showMessage('Saving...', 2000)
         self.progressBar.setProperty('value', 25)
-        self.saveStatus = False
-        self.MDSSButton.setStyleSheet(red_style)
-        self.MDSSButton.setText('No')
-        self.saveButton.setEnabled(False)
+
         self.dat.comments = self.CommentsTextBrowser.toPlainText()
         writeDataFile(savepath=self.mdssdir, text=self.txtFile, dat_obj=self.dat, \
                       bvd_stat_obj=self.bvd_stat_obj, RStatus=self.RButStatus, \
@@ -2241,6 +2304,11 @@ class Ui_mainWindow(object):
         with open(self.pathString + '_CCCRAW.mea', 'a') as mea_file:
             for i, j, in zip(self.bvdList, self.ratioMeanList):
                 mea_file.write(str(i) + '\t' + str(j) + '\n')
+
+        self.saveStatus = False
+        self.MDSSButton.setStyleSheet(red_style)
+        self.MDSSButton.setText('No')
+        self.saveButton.setEnabled(False)
         self.progressBar.setProperty('value', 100)
         self.statusbar.showMessage('Done', 2000)
 
