@@ -1562,6 +1562,32 @@ class Ui_mainWindow(object):
                 self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha, label='I-') # ADev for bv a
                 self.Allanax42_ref = self.Allanax4.plot(bva_tau_time, bvb_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha, label='I+') # ADev for bv b
                 self.plottedAllan = True
+            
+            with open(self.pathString + '_pyadev.txt', 'w') as adev_file:
+                # Create header string
+                adev_file.write('tau (s)' + '\t' + 'adev [BVD]' + '\t' + 'adev err [BVD]' + \
+                                '\n')
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                for i, j, k, in zip(bvd_tau_time, bvd_adev, bvd_aerr):
+                    adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
+                adev_file.write('\n')
+
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                adev_file.write('tau (s)' + '\t' + 'adev [BV I-]' + '\t' + 'adev err [BV I-]' + \
+                                '\n')
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                for i, j, k, in zip(bva_tau_time, bva_adev, bva_aerr):
+                    adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
+                adev_file.write('\n')
+            
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                adev_file.write('tau (s)' + '\t' + 'adev [BV I+]' + '\t' + 'adev err [BV I+]' + \
+                                '\n')
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                for i, j, k, in zip(bvb_tau_time, bvb_adev, bvb_aerr):
+                    adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
+                adev_file.write('\n')
+            
         self.Allanax1.legend(loc='upper right', frameon=True, shadow=True, ncols=1, columnspacing=0)
         self.Allanax1.relim()
         self.Allanax1.autoscale(tight=None, axis='both', enable=True)
@@ -1578,31 +1604,6 @@ class Ui_mainWindow(object):
         self.Allanax4.autoscale_view(tight=None, scalex=True, scaley=True)
         self.Allanfig.set_tight_layout(True)
         self.AllanCanvas.draw()
-        
-        with open(self.pathString + '_pyadev.txt', 'w') as adev_file:
-            # Create header string
-            adev_file.write('tau (s)' + '\t' + 'adev [BVD]' + '\t' + 'adev err [BVD]' + \
-                            '\n')
-        with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-            for i, j, k, in zip(bvd_tau_time, bvd_adev, bvd_aerr):
-                adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
-            adev_file.write('\n')
-
-        with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-            adev_file.write('tau (s)' + '\t' + 'adev [BV I-]' + '\t' + 'adev err [BV I-]' + \
-                            '\n')
-        with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-            for i, j, k, in zip(bva_tau_time, bva_adev, bva_aerr):
-                adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
-            adev_file.write('\n')
-        
-        with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-            adev_file.write('tau (s)' + '\t' + 'adev [BV I+]' + '\t' + 'adev err [BV I+]' + \
-                            '\n')
-        with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-            for i, j, k, in zip(bvb_tau_time, bvb_adev, bvb_aerr):
-                adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
-            adev_file.write('\n')
 
     def plotSpec(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
