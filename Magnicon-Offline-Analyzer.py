@@ -29,7 +29,7 @@ import mystat
 from env import env
 
 # python globals
-__version__ = '1.7' # Program version string
+__version__ = '1.8' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -390,9 +390,9 @@ class Ui_mainWindow(object):
         self.R2OilDepthLabel = QLabel(parent=self.SetResTab)
         self.R2OilDepthLabel.setGeometry(QRect(self.col1x, 450, self.lbl_width, self.lbl_height))
         self.lbl_path_temperature1 = QLabel(parent=self.SetResTab)
-        self.lbl_path_temperature1.setGeometry(QRect(self.col1x, 510, self.lbl_width, self.lbl_height))
+        self.lbl_path_temperature1.setGeometry(QRect(self.col1x, 630, self.lbl_width, self.lbl_height))
         self.lbl_path_temperature2 = QLabel(parent=self.SetResTab)
-        self.lbl_path_temperature2.setGeometry(QRect(self.col1x, 570, self.lbl_width, self.lbl_height))
+        self.lbl_path_temperature2.setGeometry(QRect(self.col1x, 690, self.lbl_width, self.lbl_height))
         # col2
         self.R1ValueLabel = QLabel(parent=self.SetResTab)
         self.R1ValueLabel.setGeometry(QRect(self.col2x, 30, self.lbl_width, self.lbl_height))
@@ -485,6 +485,8 @@ class Ui_mainWindow(object):
         self.RatioMeanLabel.setGeometry(QRect(self.col7x, 510, self.lbl_width, self.lbl_height))
         self.SampUsedLabel = QLabel(parent=self.centralwidget)
         self.SampUsedLabel.setGeometry(QRect(self.col7x, 570, self.lbl_width, self.lbl_height))
+        self.lbl_error = QLabel(parent=self.centralwidget)
+        self.lbl_error.setGeometry(QRect(self.col7x, 630, self.lbl_width, self.lbl_height))
         self.ResultsLabel = QLabel(parent=self.SetResTab)
         self.ResultsLabel.setGeometry(QRect(650, 10, self.lbl_width, self.lbl_height))
         self.ResultsLabel.setStyleSheet(
@@ -793,6 +795,129 @@ class Ui_mainWindow(object):
         self.SampUsedLineEdit.setReadOnly(False)
         self.SampUsedLineEdit.returnPressed.connect(self.changedSamplesUsed)
 
+        self.le_error = QLineEdit(parent=self.centralwidget)
+        self.le_error.setGeometry(QRect(self.col7x, self.coly*11, self.lbl_width, self.lbl_height))
+        self.le_error.setReadOnly(True)
+        self.le_error.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: red; font-weight: bold }""")
+        self.show_tooltip()
+
+    def remove_tooltip(self) -> None:
+        self.R1SNLineEdit.setToolTip('')
+        self.R2SNLineEdit.setToolTip('')
+        self.AppVoltLineEdit.setToolTip('')
+        self.N1LineEdit.setToolTip('')
+        self.MeasCycLineEdit.setToolTip('')
+        self.FullCycLineEdit.setToolTip('')
+        self.R1PresLineEdit.setToolTip('')
+        self.R2PresLineEdit.setToolTip('')
+        self.txtFileLineEdit.setToolTip('')
+        self.R1PPMLineEdit.setToolTip('')
+        self.R2PPMLineEdit.setToolTip('')
+        self.Current1LineEdit.setToolTip('')
+        self.N2LineEdit.setToolTip('')
+        self.SHCLineEdit.setToolTip('')
+        self.RampLineEdit.setToolTip('')
+        self.le_path_temperature1.setToolTip('')
+        self.le_path_temperature2.setToolTip('')
+        self.R1ValueLineEdit.setToolTip('')
+        self.R2ValueLineEdit.setToolTip('')
+        self.Current2LineEdit.setToolTip('')
+        self.NAuxLineEdit.setToolTip('')
+        self.DelayLineEdit.setToolTip('')
+        self.MeasLineEdit.setToolTip('')
+        self.R1OilPresLineEdit.setToolTip('')
+        self.R2OilPresLineEdit.setToolTip('')
+        self.kLineEdit.setToolTip('')
+        self.MeasTimeLineEdit.setToolTip('')
+        self.le_deltaI2R2.setToolTip('')
+        self.R1TotalPresLineEdit.setToolTip('')
+        self.R2TotalPresLineEdit.setToolTip('')
+        self.R1TempLineEdit.setToolTip('')
+        self.R2TempLineEdit.setToolTip('')
+        self.RelHumLineEdit.setToolTip('')
+        self.le_start_time.setToolTip('')
+        self.le_end_time.setToolTip('')
+        self.VMeanLineEdit.setToolTip('')
+        self.StdDevLineEdit.setToolTip('')
+        self.StdDevMeanLineEdit.setToolTip('')
+        self.C1LineEdit.setToolTip('')
+        self.C2LineEdit.setToolTip('')
+        self.VMeanChkLineEdit.setToolTip('')
+        self.StdDevChkLineEdit.setToolTip('')
+        self.StdDevMeanChkLineEdit.setToolTip('')
+        self.StdDevC1LineEdit.setToolTip('')
+        self.StdDevC2LineEdit.setToolTip('')
+        self.R1STPLineEdit.setToolTip('')
+        self.R2STPLineEdit.setToolTip('')
+        self.NLineEdit.setToolTip('')
+        self.StdDevPPMLineEdit.setToolTip('')
+        self.StdDevChkPPMLineEdit.setToolTip('')
+        self.ppmMeanLineEdit.setToolTip('')
+        self.RMeanChkPPMLineEdit.setToolTip('')
+        self.StdDevMeanPPMLineEdit.setToolTip('')
+        self.RatioMeanLineEdit.setToolTip('')
+        self.SampUsedLineEdit.setToolTip('')
+        self.le_error.setToolTip('')
+
+    def show_tooltip(self) -> None:
+        self.R1SNLineEdit.setToolTip('Serial number for primary (R<sub>1</sub>) resistor')
+        self.R2SNLineEdit.setToolTip('Serial number for secondary (R<sub>2</sub>) resistor')
+        self.AppVoltLineEdit.setToolTip('Applied Voltage in volts')
+        self.N1LineEdit.setToolTip('Primary winding turns')
+        self.MeasCycLineEdit.setToolTip('Total number of measurements')
+        self.FullCycLineEdit.setToolTip('Period of one full cycle')
+        self.R1PresLineEdit.setToolTip('Air pressure for the primary (R<sub>1</sub>) resistor')
+        self.R2PresLineEdit.setToolTip('Air pressure for the secondary (R<sub>2</sub>) resistor')
+        self.txtFileLineEdit.setToolTip('Path for the _bvd.txt file')
+        self.R1PPMLineEdit.setToolTip(f'Value for R<sub>1</sub> in {chr(956)}{chr(937)}/{chr(937)} corrected for environmentals')
+        self.R2PPMLineEdit.setToolTip(f'Value for R<sub>2</sub> in {chr(956)}{chr(937)}/{chr(937)} corrected for environmentals')
+        self.Current1LineEdit.setToolTip('DC Current in the primary ratio arm. (This is a 16 bit DAC value setting from CCC Viewer)')
+        self.N2LineEdit.setToolTip('Secondary winding turns')
+        self.SHCLineEdit.setToolTip('Number of samples in a half cycle')
+        self.RampLineEdit.setToolTip('Ramp time in seconds')
+        self.le_path_temperature1.setToolTip('path to the environments file for the primary resistor')
+        self.le_path_temperature2.setToolTip('Path to the environments file for the secondary resistor')
+        self.R1ValueLineEdit.setToolTip('Value of the primary resistor corrected for environmentals')
+        self.R2ValueLineEdit.setToolTip('Value of the secondary resistor corrected for environmentals')
+        self.Current2LineEdit.setToolTip('DC Current in the secondary ratio arm. (This is a 16 bit DAC value setting from CCC Viewer)')
+        self.NAuxLineEdit.setToolTip('Auxillary winding turns')
+        self.DelayLineEdit.setToolTip('Settle time in a half cycle, measurements during this time are ignored')
+        self.MeasLineEdit.setToolTip('Measurement time in a half cycle')
+        self.R1OilPresLineEdit.setToolTip('Oil pressure for the primary resistor')
+        self.R2OilPresLineEdit.setToolTip('Oil pressure for the secondary resistor')
+        self.kLineEdit.setToolTip('coupling constant = I<sub>1</sub>/I<sub>A</sub>')
+        self.MeasTimeLineEdit.setToolTip('Total time taken for the measurement to complete')
+        self.le_deltaI2R2.setToolTip('Peak-to-Peak voltage in the secondary ratio arm. This is a calculated value and should be checked regularly')
+        self.R1TotalPresLineEdit.setToolTip('Total pressure experienced by the primary resistor')
+        self.R2TotalPresLineEdit.setToolTip('Total pressure experienced by the secondary resitor')
+        self.R1TempLineEdit.setToolTip('Temperature of the primary resistor')
+        self.R2TempLineEdit.setToolTip('Temperature of the secondary resistor')
+        self.RelHumLineEdit.setToolTip('Relative Humidity of the CCC Drive Electronics Chassis')
+        self.le_start_time.setToolTip('Start date and time of the measurement')
+        self.le_end_time.setToolTip('End date and time of the measurement')
+        self.VMeanLineEdit.setToolTip('Mean of the bridge voltage difference calculated from the raw .txt file')
+        self.StdDevLineEdit.setToolTip('Standard deviation of the bridge voltage difference calculated from the raw .txt file')
+        self.StdDevMeanLineEdit.setToolTip('Standard deviation of the mean of the bridge voltage difference calculated from the raw .txt file')
+        self.C1LineEdit.setToolTip('')
+        self.C2LineEdit.setToolTip('')
+        self.VMeanChkLineEdit.setToolTip('Mean of the bridge voltage difference calculated from the _bvd.txt file')
+        self.StdDevChkLineEdit.setToolTip('Standard deviation of the bridge voltage difference calculated from the _bvd.txt file')
+        self.StdDevMeanChkLineEdit.setToolTip('Standard deviation of the mean of the bridge voltage difference calculated from the _bvd.txt file')
+        self.StdDevC1LineEdit.setToolTip('R Mean - R Mean Chk')
+        self.StdDevC2LineEdit.setToolTip('R Mean - R Mean Chk')
+        self.R1STPLineEdit.setToolTip('Value of the primary resistor at standard temperature and pressure')
+        self.R2STPLineEdit.setToolTip('Value of the secondary resistor at standard temperature and pressure')
+        self.NLineEdit.setToolTip('Total number of measurements or total number of full cycles')
+        self.StdDevPPMLineEdit.setToolTip('Standard deviation of the resistance calculated from the raw .txt file')
+        self.StdDevChkPPMLineEdit.setToolTip('Standard deviation of the resistance calculated from the _bvd.txt file')
+        self.ppmMeanLineEdit.setToolTip('Mean resistance value calculated from the raw .txt file')
+        self.RMeanChkPPMLineEdit.setToolTip('Mean resistance value calculated from the _bvd.txt file')
+        self.StdDevMeanPPMLineEdit.setToolTip('')
+        self.RatioMeanLineEdit.setToolTip('Mean of the Ratio  R<sub>1</sub>/R<sub>2</sub>')
+        self.SampUsedLineEdit.setToolTip('Set the number of used mesurements in every half cycle')
+        self.le_error.setToolTip('R Mean - R Mean Chk')
+        
     def BVDTabSetUp(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         global winSizeH
@@ -1180,14 +1305,14 @@ class Ui_mainWindow(object):
         self.StandardRLabel.setText(_translate("mainWindow", "Standard R"))
         self.MeasTimeLabel.setText(_translate("mainWindow", "Measurement Time"))
         self.lbl_deltaI2R2.setText(_translate("mainWindow", f"{chr(916)}(I<sub>2</sub>R<sub>2</sub>) [V]"))
-        self.kLabel.setText(_translate("mainWindow", "k [mTurns]"))
+        self.kLabel.setText(_translate("mainWindow", "k [Turns]"))
         self.SquidFeedLabel.setText(_translate("mainWindow", "SQUID Feedin Polarity"))
         self.StandardRBut.setText(_translate("mainWindow", self.RButStatus))
         self.R1TotalPresLabel.setText(_translate("mainWindow", "R<sub>1</sub> Total Pres. [Pa]"))
         self.VMeanLabel.setText(_translate("mainWindow", "Mean [V]"))
         self.RMeanChkPPMLabel.setText(_translate("mainWindow", f"R Mean Chk [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.C2Label.setText(_translate("mainWindow", f"C<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
-        self.StdDevMeanLabel.setText(_translate("mainWindow", "Std. Mean"))
+        self.StdDevMeanLabel.setText(_translate("mainWindow", "Std. Mean [V]"))
         self.R1STPLabel.setText(_translate("mainWindow", f"R1STPPred [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.R2STPLabel.setText(_translate("mainWindow", f"R2STPPred [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.C1Label.setText(_translate("mainWindow", f"C<sub>1</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
@@ -1197,7 +1322,7 @@ class Ui_mainWindow(object):
         self.ppmMeanLabel.setText(_translate("mainWindow", f"Mean [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.C1C2Label.setText(_translate("mainWindow", f"C<sub>1</sub>-C<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.StdDevMeanPPMLabel.setText(_translate("mainWindow", f"Std. Mean [{chr(956)}{chr(937)}/{chr(937)}]"))
-        self.StdDevLabel.setText(_translate("mainWindow", "Std. Dev."))
+        self.StdDevLabel.setText(_translate("mainWindow", "Std. Dev. [V]"))
         self.StdDevPPMLabel.setText(_translate("mainWindow", f"Std. Dev. [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.NLabel.setText(_translate("mainWindow", "N"))
         self.StdDevChkPPMLabel.setText(_translate("mainWindow", f"Std. Dev. Chk [{chr(956)}{chr(937)}/{chr(937)}]"))
@@ -1222,6 +1347,7 @@ class Ui_mainWindow(object):
         self.MeasLabel.setText(_translate("mainWindow", "Meas [s]"))
         self.DelayLabel.setText(_translate("mainWindow", "Delay [s]"))
         self.SampUsedLabel.setText(_translate("mainWindow", "Samples Used"))
+        self.lbl_error.setText(_translate("mainWindow", f"Error [n{chr(937)}/{chr(937)}]"))
         self.ResultsLabel.setText(_translate("mainWindow", "RESULTS"))
         self.lbl_ccceq.setText(_translate("mainWindow", "CCC EQUATION"))
         self.SquidFeedBut.setText(_translate("mainWindow", "Negative"))
@@ -1241,8 +1367,8 @@ class Ui_mainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SpecTab), _translate("mainWindow", "Power Spec."))
         self.txtFileLabel.setText(_translate("mainWindow", ".txt file"))
         self.VMeanChkLabel.setText(_translate("mainWindow", "Mean Chk [V]"))
-        self.StdDevChkLabel.setText(_translate("mainWindow", "Std. Dev. Chk"))
-        self.StdDevMeanChkLabel.setText(_translate("mainWindow", "Std. Mean Chk"))
+        self.StdDevChkLabel.setText(_translate("mainWindow", "Std. Dev. Chk [V]"))
+        self.StdDevMeanChkLabel.setText(_translate("mainWindow", "Std. Mean Chk [V]"))
         self.saveButton.setText(_translate("mainWindow", "Save"))
         self.MDSSButton.setText(_translate("mainWindow", "No"))
         self.MDSSLabel.setText(_translate("mainWindow", "Save MDSS"))
@@ -1475,9 +1601,9 @@ class Ui_mainWindow(object):
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         samp_freq = 1./(self.dat.fullCyc)
         # sig_freq = 1./(self.dat.fullCyc)
-        print("BVD Sampling frequency: ", samp_freq)
-        print("Measurement time: ", self.dat.measTime)
-        print("BV Sampling frequency: ", self.dat.dt)
+        # print("BVD Sampling frequency: ", samp_freq)
+        # print("Measurement time: ", self.dat.measTime)
+        # print("BV Sampling frequency: ", self.dat.dt)
         # Create the window function
         freq_bvd, mypsd_bvd = signal.welch(array(self.bvdList), fs=samp_freq, window='hann', \
                                          nperseg=len(self.bvdList), scaling='density', \
@@ -1489,9 +1615,9 @@ class Ui_mainWindow(object):
                                          nperseg=len(self.B),  scaling='density', \
                                          axis=-1, average='mean', return_onesided=True)
         self.h0 = mean(mypsd_bvd[1:])
-        print("Noise power BVD: ", mean(mypsd_bvd[1:]))
-        print("Noise power BVA: ", mean(mypsdA[1:]))
-        print("Noise power BVB: ", mean(mypsdB[1:]))
+        # print("Noise power BVD: ", mean(mypsd_bvd[1:]))
+        # print("Noise power BVA: ", mean(mypsdA[1:]))
+        # print("Noise power BVB: ", mean(mypsdB[1:]))
 
         # Ali's custom PSD calculation...[works but slower than scipy welch]
         # mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvdList)*float(samp_freq)))
@@ -1665,12 +1791,14 @@ class Ui_mainWindow(object):
             self.StandardRBut.setStyleSheet(green_style)
             if self.validFile:
                 self.stdR(self.RButStatus)
+                # print("Standard is R2")
         else:
             self.RButStatus = 'R1'
             self.StandardRBut.setText('R1')
             self.StandardRBut.setStyleSheet(red_style)
             if self.validFile:
                 self.stdR(self.RButStatus)
+                # print("Standard is R1")
         self.plotBVD()
 
     def SquidButClicked(self) -> None:
@@ -1744,16 +1872,16 @@ class Ui_mainWindow(object):
             # print("Time taken to get Results: " + str(getResults_end))
             if self.validFile:
                 self.getBVD()
-                getBVD_end = perf_counter() - getData_start
-                print("Time taken to get BVD: " +  str(getBVD_end))
+                # getBVD_end = perf_counter() - getData_start
+                # print("Time taken to get BVD: " +  str(getBVD_end))
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
                 self.setValidData()
                 self.plotBVD()
                 self.plotStatMeasures()
-                getPlot_end = perf_counter() - getData_start
-                print("Time taken to plot all data in GUI: ", str(getPlot_end))
+                # getPlot_end = perf_counter() - getData_start
+                # print("Time taken to plot all data in GUI: ", str(getPlot_end))
                 getData_end = perf_counter() - getData_start
-                print("Time taken to get and analyze data: " +  str(getData_end))
+                # print("Time taken to get and analyze data: " +  str(getData_end))
                 self.statusbar.showMessage('Time taken to process and display data ' + str("{:2.2f}".format(getData_end)) + ' s', 5000)
             else:
                 self.setInvalidData()
@@ -1797,11 +1925,11 @@ class Ui_mainWindow(object):
             self.k = 0
             # (mag.N1*2048*mag.rangeShunt)
         else:
-            self.k     = mag.deltaNApN1/mag.NA
+            self.k     = mag.deltaNApN1/mag.NA # in turns
         # correction factor for R1 and R2 due to temperature and pressure
         R1corr     = (mag.R1alpha*(T1-mag.R1stdTemp) + mag.R1beta*(T1-mag.R1stdTemp)**2) + (mag.R1pcr*(P1-101325))/1000
         R2corr     = (mag.R2alpha*(T2-mag.R2stdTemp) + mag.R2beta*(T2-mag.R2stdTemp)**2) + (mag.R2pcr*(P2-101325))/1000
-        
+        # print('R1 and R2 Corr: ', R1corr, R2corr)
         self.R2STPPred = mag.R2Pred
         if not self.changedR1STPBool:
             self.R1PPM = R1corr + mag.R1Pred
@@ -1817,7 +1945,7 @@ class Ui_mainWindow(object):
             self.R2STPPred = float(self.R2STP)
         self.R1    = (self.R1PPM/1000000 + 1) * mag.R1NomVal
         self.R2    = (self.R2PPM/1000000 + 1) * mag.R2NomVal
-        # print (self.R1, self.R2)
+
         self.ratioMeanList = []
         self.R1List   = []
         self.R2List   = []
@@ -1831,44 +1959,70 @@ class Ui_mainWindow(object):
             myDeltaI2R2 = float(self.le_deltaI2R2.text())
         else:
             myDeltaI2R2 = float(mag.deltaI2R2)
-        for i, V1 in enumerate(self.V1):
+        try:
+            compensation = mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))
+        except ZeroDivisionError:
+            compensation = 0
+            pass
+        for v1, v2, bvd in zip(self.V1, self.V2, self.bvdList):
             # This calculation is done using the bridge voltages i.e the raw text file
-            if mag.N2 != 0 and mag.N1 != 0 and myDeltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
-                self.ratioMeanList.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.bvdList[i]/myDeltaI2R2))
-                self.R1List.append((((self.R1/self.ratioMeanList[i]) - mag.R2NomVal)/mag.R2NomVal) * 10**6 - R2corr)
-                self.R2List.append(((self.R2*self.ratioMeanList[i] - mag.R1NomVal)/mag.R1NomVal) * 10**6 - R1corr)
-                ratioMeanC1.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V1[i]/myDeltaI2R2))
-                ratioMeanC2.append(mag.N1/mag.N2 * (1 + (self.k*mag.NA/mag.N1))*(1 + self.V2[i]/myDeltaI2R2))
-                self.C1R1List.append((self.R1/ratioMeanC1[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
-                self.C1R2List.append((self.R2*ratioMeanC1[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
-                self.C2R1List.append((self.R1/ratioMeanC2[i] - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
-                self.C2R2List.append((self.R2*ratioMeanC2[i] - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
-            else:
+            try:
+                self.ratioMeanList.append(compensation*(1 + (bvd/myDeltaI2R2)))
+                ratioMeanC1.append(compensation*(1 + v1/myDeltaI2R2))
+                ratioMeanC2.append(compensation*(1 + v2/myDeltaI2R2))
+            except ZeroDivisionError:
+                self.ratioMeanList.append(0)
+                ratioMeanC1.append(0)
+                ratioMeanC2.append(0)
                 pass
-        if  self.ratioMeanList != []:
-            self.meanR1     = mean(self.R1List)
-            self.meanR2     = mean(self.R2List)
-            self.stdppm     = std(self.ratioMeanList, ddof=1)/mean(self.ratioMeanList)
-            self.stdR1ppm   = std(self.R1List, ddof=1)
-            self.stdR2ppm   = std(self.R2List, ddof=1)
-            self.stdMeanPPM = self.stdppm/sqrt(len(self.R1List))
+        for rm, rmC1, rmC2 in zip(self.ratioMeanList, ratioMeanC1, ratioMeanC2):
+            try:
+                self.R1List.append(float(((((self.R1*(1./rm))/mag.R2NomVal) - 1) * 10**6) - R2corr)) # this is actually R2List
+                self.C1R1List.append((self.R1/rmC1 - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
+                self.C2R1List.append((self.R1/rmC2 - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
+            except ZeroDivisionError:
+                self.R1List.append(0)
+                self.C1R1List.append(0)
+                self.C2R1List.append(0)
+                pass
+            try:
+                self.R2List.append(float(((((self.R2*rm)/mag.R1NomVal) - 1) * 10**6) - R1corr)) # this is actually R1List
+                self.C1R2List.append((self.R2*rmC1 - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
+                self.C2R2List.append((self.R2*rmC2 - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
+            except ZeroDivisionError:
+                self.R2List.append(0)
+                self.C1R2List.append(0)
+                self.C2R2List.append(0)
+        # print(self.R1List, mean(self.R1List), len(self.R1List))
+        if self.ratioMeanList != []:
+            # self.ratioMean = compensation*(1 + (self.bvd_mean/myDeltaI2R2)) # calculated from raw bridge voltages
+            self.ratioMean = mean(self.ratioMeanList)
+            self.meanR1     = mean(self.R1List) # this is mean of R2
+            # self.meanR1     = float(((((self.R1/mean(self.ratioMeanList))/mag.R2NomVal) - 1) * 10**6) - R2corr)
+            self.stdR1ppm   = std(self.R1List, ddof=1) # in ppm
             self.C1R1       = mean(self.C1R1List)
-            self.C1R2       = mean(self.C1R2List)
+            # self.C1R1       = float(((((self.R1/mean(ratioMeanC1))/mag.R2NomVal) - 1) * 10**6) - R2corr)
             self.C2R1       = mean(self.C2R1List)
-            self.C2R2       = mean(self.C2R2List)
+            # self.C2R1       = float(((((self.R1/mean(ratioMeanC2))/mag.R2NomVal) - 1) * 10**6) - R2corr)
             self.stdC1R1    = std(self.C1R1List, ddof=1)
-            self.stdC1R2    = std(self.C1R2List, ddof=1)
             self.stdC2R1    = std(self.C2R1List, ddof=1)
+            self.stdMeanR1  = self.stdR1ppm/sqrt(len(self.R1List))
+            self.meanR2     = mean(self.R2List) # this is mean of r1
+            # self.meanR2     = float(((((self.R2*mean(self.ratioMeanList))/mag.R1NomVal) - 1) * 10**6) - R1corr)
+            self.stdR2ppm   = std(self.R2List, ddof=1)
+            self.C1R2       = mean(self.C1R2List)
+            # self.C1R2       = float(((((self.R2*mean(ratioMeanC1))/mag.R1NomVal) - 1) * 10**6) - R1corr)
+            self.C2R2       = mean(self.C2R2List)
+            # self.C2R2       = float(((((self.R2*mean(ratioMeanC2))/mag.R1NomVal) - 1) * 10**6) - R1corr)
+            self.stdC1R2    = std(self.C1R2List, ddof=1)
             self.stdC2R2    = std(self.C2R2List, ddof=1)
-            self.stdMeanR1 = self.stdR1ppm/sqrt(len(self.R1List))
-            self.stdMeanR2 = self.stdR2ppm/sqrt(len(self.R2List))
+            self.stdMeanR2  = self.stdR2ppm/sqrt(len(self.R2List))
         else:
+            self.ratioMean  = nan
             self.meanR1     = nan
             self.meanR2     = nan
-            self.stdppm     = nan
             self.stdR1ppm   = nan
             self.stdR2ppm   = nan
-            self.stdMeanPPM = nan
             self.C1R1       = nan
             self.C1R2       = nan
             self.C2R1       = nan
@@ -1882,50 +2036,71 @@ class Ui_mainWindow(object):
 
         if self.bvdList != []:
             self.N         = len(self.bvdList)
-            self.bvd_mean   = mean(self.bvdList)
-            self.std       = std(self.bvdList, ddof=1)
-            self.stdMean   = self.std/sqrt(len(self.bvdList))
+            self.bvd_mean  = mean(self.bvdList)
+            self.bvd_std   = std(self.bvdList, ddof=1)
+            self.bvd_stdMean   = self.bvd_std/sqrt(len(self.bvdList))
         else:
             self.bvd_mean = nan
-            self.std = nan
-            self.stdMean = nan
+            self.bvd_std  = nan
+            self.bvd_stdMean  = nan
 
         if mag.bvd != []:
-            self.bvdList_chk = mag.bvd
-            self.bvd_mean_chk = mean(self.bvdList_chk)
-            self.bvd_std_chk = std(mag.bvd, ddof=1)
-            self.bvd_stdmean_chk = self.bvd_std_chk/sqrt(len(self.bvdList_chk))
+            # this comes from _bvd.txt files
+            self.bvdList_chk        = mag.bvd
+            self.bvd_mean_chk       = mean(self.bvdList_chk)
+            self.bvd_std_chk        = std(self.bvdList_chk, ddof=1)
+            self.bvd_stdmean_chk    = self.bvd_std_chk/sqrt(len(self.bvdList_chk))
         else:
             self.bvd_mean_ck = nan
             self.bvd_std_chk = nan
             self.bvd_stdmean_chk = nan
+        
+        self.ratioMeanChkList = []
+        self.R1MeanChkList    = []
+        self.R2MeanChkList    = []
+        if myDeltaI2R2 != 0:
+            for i, j in enumerate(self.bvdList_chk):
+                self.ratioMeanChkList.append(compensation*(1 + (j/myDeltaI2R2)))
+            self.ratioMeanChk   = mean(self.ratioMeanChkList) # calculated from bvd.txt file
+            self.stdppm     = std(self.ratioMeanChkList, ddof=1)/mean(self.ratioMeanChkList)
+            self.stdMeanPPM = self.stdppm/sqrt(len(self.ratioMeanChkList))
+            # print (self.ratioMeanChkList)
+        if mag.R2NomVal != 0 and mag.R1NomVal != 0:
+            for i, j in enumerate(self.ratioMeanChkList):
+                # print(j, self.R1, mag.R2NomVal, R2corr)
+                self.R1MeanChkList.append((((self.R1/j) - mag.R2NomVal)/mag.R2NomVal) * 10**6 - R2corr) # this is actually R2
+                self.R2MeanChkList.append(((self.R2*j - mag.R1NomVal)/mag.R1NomVal) * 10**6 - R1corr) # this is actually R1
+            self.R1MeanChk    = mean(self.R1MeanChkList) # this is R2
+            self.stdR1Chk     = std(self.R1MeanChkList, ddof=1) # this is R2
+            self.stdMeanR1Chk = self.stdR1Chk/sqrt(len(self.R1MeanChkList)) # this is R2
+            self.R2MeanChkOhm = (self.R1MeanChk/1000000 + 1) * mag.R2NomVal
+            self.R2MeanChk    = mean(self.R2MeanChkList)
+            self.stdR2Chk     = std(self.R2MeanChkList, ddof=1)
+            self.stdMeanR2Chk = self.stdR2Chk/sqrt(len(self.R2MeanChkList))
+            self.R1MeanChkOhm = (self.R2MeanChk/1000000 + 1) * mag.R1NomVal
             
-        if mag.N2 != 0 and mag.N1 != 0 and myDeltaI2R2 != 0 and mag.R2NomVal != 0 and mag.R1NomVal != 0:
-            self.ratioMean = (mag.N1/mag.N2) * (1 + (self.k*mag.NA/mag.N1))*(1 + (self.bvd_mean/myDeltaI2R2)) # calculated from raw bridge voltages
-            self.ratioMeanChk   = (mag.N1/mag.N2) * (1 + (self.k*mag.NA/mag.N1))*(1 + (self.bvd_mean_chk/myDeltaI2R2)) # calculated from bvd file
-            
-            self.R1MeanChk = (((self.R1/self.ratioMeanChk) - mag.R2NomVal)/mag.R2NomVal) * 10**6 - R2corr
-            self.R2MeanChk = ((self.R2*self.ratioMeanChk - mag.R1NomVal)/mag.R1NomVal) * 10**6 - R1corr
-
-            self.R1CorVal = ((self.R1STPPred/1000000 + 1) * mag.R1NomVal)
-            self.R2CorVal = ((self.R2STPPred/1000000 + 1) * mag.R2NomVal)
-
-            self.R1MeanChkOhm = (self.meanR2/1000000 + 1) * mag.R1NomVal
-            self.R2MeanChkOhm = (self.meanR1/1000000 + 1) * mag.R2NomVal
         else:
-            self.ratioMean = nan
-            self.ratioMeanChk = nan
-            self.R1MeanChk = nan
-            self.R2MeanChk = nan
-            self.R1CorVal = nan
-            self.R2CorVal = nan
-            self.R1MeanChkOhm = nan
-            self.R2MeanChkOhm = nan
+            self.ratioMeanChk   = nan
+            self.stdppm         = nan
+            self.stdMeanPPM     = nan
+            self.R1MeanChk      = nan
+            self.stdR1Chk       = nan
+            self.stdMeanR1Chk   = nan
+            self.R2MeanChk      = nan
+            self.stdR2Chk       = nan
+            self.stdMeanR2Chk   = nan
+            self.R1CorVal       = nan
+            self.R2CorVal       = nan
+            self.R1MeanChkOhm   = nan
+            self.R2MeanChkOhm   = nan
             # self.remTime      = mag.measTime - (self.N*mag.fullCyc)
             # self.remTimeStamp = mag.sec2ts(self.remTime)
-        print('Ratio Check: ', self.ratioMean, mean(self.ratioMean), self.ratioMeanChk, ((self.ratioMean - self.ratioMeanChk)))
-        print('BVD Check: ', self.bvd_mean, self.bvd_mean_chk, ((self.bvd_mean - self.bvd_mean_chk)))
-        print('R Check: ', ((self.meanR1 - self.R1MeanChk)))
+        self.R1CorVal = ((self.R1STPPred/1000000 + 1) * mag.R1NomVal)
+        self.R2CorVal = ((self.R2STPPred/1000000 + 1) * mag.R2NomVal)
+        # print('k: ', self.k)
+        # print('Ratio Check: ', self.ratioMean,self.ratioMeanChk)
+        # print('BVD Check: ', self.bvd_mean, self.bvd_mean_chk, ((self.bvd_mean - self.bvd_mean_chk)))
+        # print('R Check: ', self.meanR1, self.R1MeanChk)
 
     def setValidData(self) -> None:
         """Sets the texts in all GUI line edits and spin boxes
@@ -1935,8 +2110,8 @@ class Ui_mainWindow(object):
         None
         """
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
-        self.VMeanLineEdit.setText(str("{:.6e}".format(self.bvd_mean)))
-        self.VMeanChkLineEdit.setText(str("{:.6e}".format(self.bvd_mean_chk)))
+        self.VMeanLineEdit.setText(str("{:.9e}".format(self.bvd_mean)))
+        self.VMeanChkLineEdit.setText(str("{:.9e}".format(self.bvd_mean_chk)))
         self.Current1LineEdit.setText(str(self.dat.I1))
         self.FullCycLineEdit.setText(str(self.dat.fullCyc))
         if self.SampUsedCt != 0:
@@ -1960,15 +2135,15 @@ class Ui_mainWindow(object):
         self.N1LineEdit.setText(str(self.dat.N1))
         self.CommentsTextBrowser.setText(self.dat.comments)
         self.RelHumLineEdit.setText(str(self.dat.relHum))
-        self.kLineEdit.setText(str("{:2.9f}".format(self.k)))
+        self.kLineEdit.setText(str("{:.12f}".format(self.k)))
         if self.k == 0:
             self.kLineEdit.setStyleSheet("color: red")
         else:
             self.kLineEdit.setStyleSheet("color: black")
         self.le_start_time.setText(str(self.dat.startDate))
         self.le_end_time.setText(str(self.dat.endDate))
-        self.R1TempLineEdit.setText(str("{:.5f}".format(self.R1Temp)))
-        self.R2TempLineEdit.setText(str("{:.5f}".format(self.R2Temp)))
+        self.R1TempLineEdit.setText(str("{:.7f}".format(self.R1Temp)))
+        self.R2TempLineEdit.setText(str("{:.7f}".format(self.R2Temp)))
         self.R1PresLineEdit.setText(str(self.R1pres))
         self.R2PresLineEdit.setText(str(self.R2pres))
         self.R1OilPresLineEdit.setText(str(self.R1OilPres))
@@ -1981,11 +2156,11 @@ class Ui_mainWindow(object):
         self.RampLineEdit.setText(str(self.dat.rampTime))
         self.MeasCycLineEdit.setText(str(int(self.dat.measCyc)))
         self.RatioMeanLineEdit.setText(str("{:.12f}".format(self.ratioMean)))
-        self.StdDevLineEdit.setText(str("{:.6e}".format(self.std)))
+        self.StdDevLineEdit.setText(str("{:.6e}".format(self.bvd_std)))
         self.StdDevChkLineEdit.setText(str("{:.6e}".format(self.bvd_std_chk)))
-        self.StdDevMeanLineEdit.setText(str("{:.6e}".format(self.stdMean)))
+        self.StdDevMeanLineEdit.setText(str("{:.6e}".format(self.bvd_stdMean)))
         self.StdDevMeanChkLineEdit.setText(str("{:.6e}".format(self.bvd_stdmean_chk)))
-        self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdppm*10**6)))
+        # self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdppm*10**6)))
         self.NLineEdit.setText(str(self.N))
         self.MeasTimeLineEdit.setText(self.dat.measTimeStamp)
         # self.MDSSButton.setStyleSheet(red_style)
@@ -2101,6 +2276,9 @@ class Ui_mainWindow(object):
             self.StdDevC2LineEdit.setText(str("{:.7f}".format(self.stdC2R1)))
             self.StdDevPPMLineEdit.setText(str("{:.7f}".format(self.stdR1ppm)))
             self.StdDevMeanPPMLineEdit.setText(str("{:.7f}".format(self.stdMeanR1)))
+            self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdR1Chk)))
+            err = (self.meanR1 - self.R1MeanChk)*1e3
+            self.le_error.setText(str("{:.9f}".format(err)))
             if self.R1PPM:
                 self.R1PPMLineEdit.setText(str("{:2.7f}".format(self.R1PPM)))
             else:
@@ -2118,6 +2296,9 @@ class Ui_mainWindow(object):
             self.StdDevC2LineEdit.setText(str("{:.7f}".format(self.stdC2R2)))
             self.StdDevPPMLineEdit.setText(str("{:.7f}".format(self.stdR2ppm)))
             self.StdDevMeanPPMLineEdit.setText(str("{:.7f}".format(self.stdMeanR2)))
+            self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdR2Chk)))
+            err = (self.meanR2 - self.R2MeanChk)*1e3
+            self.le_error.setText(str("{:.7f}".format(err)))
             if self.R2PPM:
                 self.R2PPMLineEdit.setText(str("{:2.7f}".format(self.R2PPM)))
             else:

@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "1.7"
+__version__ 	=       "1.8"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -21,4 +21,6 @@ __ChangeLog__   =       """
                         032924:     FIX: Fix crash when loading incomplete bvd files, update to 1.6.4
                         040924:     ENH: Add folder paths for temperature and calculate the average temperatures for R1 and R2 automatically, fix color issue
                                          with MDSS Save button, update to version 1.7
+                        041024:     FIX: Remove unused imports, add more precision digits to temperature line edits, fix issues with checks and add some 
+                                         tooltips, update to 1.8
                         """

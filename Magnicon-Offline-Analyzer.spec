@@ -20,7 +20,7 @@ a = Analysis(
     binaries=[],
     datas=[('.\\bvd_stats.py', '.'), ('.\\create_mag_ccc_datafile.py', '.'), \
            ('.\\magnicon_ccc.py', '.'),  ('.\\ResDataBase.py', '.'),  ('.\\mystat.py', '.'), ('.\\icons', 'icons'), 
-           ('..\\Lib\\site-packages\\allantools\\allantools_info.json', 'allantools')],
+           ('..\\Lib\\site-packages\\allantools\\allantools_info.json', 'allantools'), ('.\\env.py', '.')],
     hiddenimports = ['pyi_splash', 'allantools'],
     #hiddenimports=['pyi_splash','pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt6', 'pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt6', 'pyqtgraph.imageview.ImageViewTemplate_pyqt6'],
     hookspath=[f'{PACKAGE_SITE}/pyupdater/hooks'],
