@@ -331,6 +331,13 @@ class Ui_mainWindow(object):
         self.deletedR2    = []
         self.dat          = None # magnicon_ccc class object
         self.bvd_stat_obj = None # bvd_stats class object
+        self.bvdList      = []
+        self.V1           = []
+        self.V2           = [] 
+        self.A            = []
+        self.B            = [] 
+        self.stdA         = []
+        self.stdB         = []
 
         self.lbl_width = 110
         self.lbl_height = 25
@@ -1494,7 +1501,7 @@ class Ui_mainWindow(object):
 
     def plotAllan(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
-        if self.bvdList:
+        if self.bvdList != []:
             if self.AllanTypeComboBox.currentText() == '2^n (octave)':
                 tau_list = self.powers_of_2(int(len(self.bvdList)//2))
                 mytaus = 'octave'
@@ -1865,7 +1872,10 @@ class Ui_mainWindow(object):
                 print("Error",  e)
                 self.R1Temp = 25
                 self.R2Temp = 25
+                self.R1Pres = 101325
+                self.R2Pres = 101325
                 pass
+
             self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
             self.cleanUp()
             # getResults_end = perf_counter() - getData_start
