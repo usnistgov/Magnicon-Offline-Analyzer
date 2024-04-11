@@ -29,7 +29,7 @@ import mystat
 from env import env
 
 # python globals
-__version__ = '1.8' # Program version string
+__version__ = '1.9' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -109,7 +109,7 @@ class timingDiagramWindow(QWidget):
            sampling routing
         """
         super(QWidget, self).__init__()
-        self.setFixedSize(1120, 550)
+        self.setFixedSize(1100, 550)
         lbl_timing_diagram = QLabel(self)
         lbl_timing_diagram.setPixmap(QPixmap(base_dir + r"\icons\timing_diagram.PNG"))
         lbl_timing_diagram.show()
@@ -176,6 +176,11 @@ class Ui_mainWindow(object):
         self.timing_action = QAction("&Timing Diagram")
         self.timing_action.setStatusTip("Show timing diagram for CCC Measurements")
         self.timing_action.triggered.connect(self._showTimingDiagram)
+        
+        self.tooltip_action = QAction("&Show tooltip")
+        self.tooltip_action.setStatusTip("Show/hide tooltip")
+        self.tooltip_action.setCheckable(True)
+        self.tooltip_action.triggered.connect(self._showToolTip)
         
         mainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(parent=mainWindow)
@@ -264,9 +269,9 @@ class Ui_mainWindow(object):
         self.file_menu.addAction(self.close_action)
         # self.file_menu.setShortcutEnabled(True)
         self.help_menu = self.menubar.addMenu("&Help")
+        self.help_menu.addAction(self.tooltip_action)
         self.help_menu.addAction(self.about_action)
         self.help_menu.addAction(self.timing_action)
-        
 
     def _about(self,) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
@@ -276,6 +281,14 @@ class Ui_mainWindow(object):
     def _showTimingDiagram(self, ) -> None:
         self.timing_window = timingDiagramWindow()
         self.timing_window.show()
+    
+    def _showToolTip(self, ) -> None:
+        if self.tooltip_action.isChecked():
+            self.show_tooltip()
+            self.tooltip_action.setText("Hide Tooltip")
+        else:
+            self.hide_tooltip()
+            self.tooltip_action.setText("Show Tooltip")
 
     def closeEvent(self, event):
         mainWindow.close()
@@ -807,9 +820,8 @@ class Ui_mainWindow(object):
         self.le_error.setReadOnly(True)
         self.le_error.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: red; font-weight: bold }""")
-        self.show_tooltip()
 
-    def remove_tooltip(self) -> None:
+    def hide_tooltip(self) -> None:
         self.R1SNLineEdit.setToolTip('')
         self.R2SNLineEdit.setToolTip('')
         self.AppVoltLineEdit.setToolTip('')
@@ -866,6 +878,18 @@ class Ui_mainWindow(object):
         self.RatioMeanLineEdit.setToolTip('')
         self.SampUsedLineEdit.setToolTip('')
         self.le_error.setToolTip('')
+        self.MagElecComboBox.setToolTip('')
+        self.ProbeComboBox.setToolTip('')
+        self.R1OilDepthSpinBox.setToolTip('')
+        self.R2OilDepthSpinBox.setToolTip('')
+        self.folderToolButton.setToolTip('')
+        self.btn_temperature1.setToolTip('')
+        self.btn_temperature2.setToolTip('')
+        self.SquidFeedBut.setToolTip('')
+        self.CurrentBut.setToolTip('')
+        self.StandardRBut.setToolTip('')
+        self.MDSSButton.setToolTip('')
+        self.saveButton.setToolTip('')
 
     def show_tooltip(self) -> None:
         self.R1SNLineEdit.setToolTip('Serial number for primary (R<sub>1</sub>) resistor')
@@ -903,11 +927,11 @@ class Ui_mainWindow(object):
         self.RelHumLineEdit.setToolTip('Relative Humidity of the CCC Drive Electronics Chassis')
         self.le_start_time.setToolTip('Start date and time of the measurement')
         self.le_end_time.setToolTip('End date and time of the measurement')
-        self.VMeanLineEdit.setToolTip('Mean of the bridge voltage difference calculated from the raw .txt file')
+        self.VMeanLineEdit.setToolTip('Mean of the bridge voltage difference (C<sub>1</cub> + C<sub>2</sub>)/2 calculated from the raw .txt file')
         self.StdDevLineEdit.setToolTip('Standard deviation of the bridge voltage difference calculated from the raw .txt file')
         self.StdDevMeanLineEdit.setToolTip('Standard deviation of the mean of the bridge voltage difference calculated from the raw .txt file')
-        self.C1LineEdit.setToolTip('')
-        self.C2LineEdit.setToolTip('')
+        self.C1LineEdit.setToolTip('Bridge voltage difference measured after t<sub>ramp</sub> + t<sub>settle</sub>  + t<sub>meas</sub>/2')
+        self.C2LineEdit.setToolTip('Bridge voltage difference measured after t<sub>ramp</sub> + t<sub>settle</sub>')
         self.VMeanChkLineEdit.setToolTip('Mean of the bridge voltage difference calculated from the _bvd.txt file')
         self.StdDevChkLineEdit.setToolTip('Standard deviation of the bridge voltage difference calculated from the _bvd.txt file')
         self.StdDevMeanChkLineEdit.setToolTip('Standard deviation of the mean of the bridge voltage difference calculated from the _bvd.txt file')
@@ -924,6 +948,19 @@ class Ui_mainWindow(object):
         self.RatioMeanLineEdit.setToolTip('Mean of the Ratio  R<sub>1</sub>/R<sub>2</sub>')
         self.SampUsedLineEdit.setToolTip('Set the number of used mesurements in every half cycle')
         self.le_error.setToolTip('R Mean - R Mean Chk')
+        
+        self.MagElecComboBox.setToolTip('S/N of the CCCDrive')
+        self.ProbeComboBox.setToolTip('Type or S/N of probe')
+        self.R1OilDepthSpinBox.setToolTip('Set the oil depth of the primary resistor')
+        self.R2OilDepthSpinBox.setToolTip('Set the oil depth of the secondary resistor')
+        self.folderToolButton.setToolTip('Select the _bvd.txt file to load')
+        self.btn_temperature1.setToolTip('Select the folder for the primary resistors environment')
+        self.btn_temperature2.setToolTip('Select the folder for the secondary resistors environment')
+        self.SquidFeedBut.setToolTip('Sets the SQUID feedback polarity')
+        self.CurrentBut.setToolTip('Set which side/arm the SQUID feedback is applied')
+        self.StandardRBut.setToolTip('Set the primary or secondary resistor as standard')
+        self.MDSSButton.setToolTip('Click to save pipe seperated results file')
+        self.saveButton.setToolTip('Save a pipe seperated results file')
         
     def BVDTabSetUp(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])

@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "1.8"
+__version__ 	=       "1.9"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -23,4 +23,5 @@ __ChangeLog__   =       """
                                          with MDSS Save button, update to version 1.7
                         041024:     FIX: Remove unused imports, add more precision digits to temperature line edits, fix issues with checks and add some 
                                          tooltips, update to 1.8
+                        041124:     ENh: Add show/hide tooltip submenu under help menu, fix timing diagram equation, update to 1.9
                         """
