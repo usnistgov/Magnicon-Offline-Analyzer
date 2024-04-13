@@ -29,7 +29,7 @@ import mystat
 from env import env
 
 # python globals
-__version__ = '1.9' # Program version string
+__version__ = '1.91' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -1895,23 +1895,24 @@ class Ui_mainWindow(object):
             try:
                 if self.le_path_temperature1.text() != '':
                     env1_obj = env(self.le_path_temperature1.text(), self.dat.startDate, self.dat.endDate)
-                    (self.R1Temp, self.R1Pres) = env1_obj.calc_average()
-                    print(self.R1Temp)
+                    (self.R1Temp, self.R1pres) = env1_obj.calc_average()
+                    print(self.R1Temp, self.R1pres)
                 else:
                     self.R1Temp = self.dat.R1stdTemp
-                    self.R1Pres = 101325
+                    self.R1pres = 101325
                 if self.le_path_temperature2.text() != '':
                     env2_obj = env(self.le_path_temperature2.text(), self.dat.startDate, self.dat.endDate)
-                    (self.R2Temp, self.R2Pres) = env2_obj.calc_average()
+                    (self.R2Temp, self.R2pres) = env2_obj.calc_average()
+                    print(self.R2Temp, self.R2pres)
                 else:
                     self.R2Temp = self.dat.R2stdTemp
-                    self.R2Pres = 101325
+                    self.R2pres = 101325
             except Exception as e:
                 print("Error",  e)
                 self.R1Temp = 25
                 self.R2Temp = 25
-                self.R1Pres = 101325
-                self.R2Pres = 101325
+                self.R1pres = 101325
+                self.R2pres = 101325
                 pass
 
             self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
@@ -2530,7 +2531,7 @@ class Ui_mainWindow(object):
                            '# Ramp Time: ' + str(self.RampLineEdit.text()) + '\n' + '# Measurement Time: ' + str(self.MeasLineEdit.text()) + '\n' + \
                            '# Delay: ' + str(self.DelayLineEdit.text()) + '\n\n') 
 
-        with open(self.pathString + '_CCCRAW.mea', 'a') as mea_file:
+        with open(self.pathString + '_pyCCCRAW.mea', 'a') as mea_file:
             for i, j, in zip(self.bvdList, self.ratioMeanList):
                 mea_file.write(str(i) + '\t' + str(j) + '\n')
 
