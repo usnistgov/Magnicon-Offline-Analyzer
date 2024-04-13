@@ -29,7 +29,7 @@ import mystat
 from env import env
 
 # python globals
-__version__ = '1.91' # Program version string
+__version__ = '1.9.2' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -1896,7 +1896,7 @@ class Ui_mainWindow(object):
                 if self.le_path_temperature1.text() != '':
                     env1_obj = env(self.le_path_temperature1.text(), self.dat.startDate, self.dat.endDate)
                     (self.R1Temp, self.R1pres) = env1_obj.calc_average()
-                    print(self.R1Temp, self.R1pres)
+                    self.R1TotPres = self.R1pres + self.R1OilPres
                 else:
                     self.R1Temp = self.dat.R1stdTemp
                     self.R1pres = 101325
@@ -1904,6 +1904,7 @@ class Ui_mainWindow(object):
                     env2_obj = env(self.le_path_temperature2.text(), self.dat.startDate, self.dat.endDate)
                     (self.R2Temp, self.R2pres) = env2_obj.calc_average()
                     print(self.R2Temp, self.R2pres)
+                    self.R2TotPres = self.R2pres + self.R2OilPres
                 else:
                     self.R2Temp = self.dat.R2stdTemp
                     self.R2pres = 101325
