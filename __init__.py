@@ -25,5 +25,5 @@ __ChangeLog__   =       """
                                          tooltips, update to 1.8
                         041124:     ENH: Add show/hide tooltip submenu under help menu, fix timing diagram equation, update to 1.9
                         041324:     FIX: Fix filename for .mea file, fix pressure readout, update to 1.9.1
-                        
+                        041324:     FIX: mdss files writes correct R1STP and R2STP prediction values if user changes them to be custom values.
                         """

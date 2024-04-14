@@ -11,7 +11,8 @@ class writeDataFile():
                  R1MeanChkOhm: float, R2MeanChkOhm: float, C1R1: float, C2R1: float, \
                  stdC1R1: float, stdC2R1: float, C1R2: float, C2R2: float, \
                  stdC1R2: float, stdC2R2: float, R1PPM: float, R2PPM: float, \
-                 bvd_mean: float, N: int, samplesUsed: int, meas: float, delay: float) -> None:
+                 bvd_mean: float, N: int, samplesUsed: int, meas: float, delay: float, \
+                 R1PredictionSTP: float, R2PredictionSTP: float) -> None:
         # Creates the MDSS file name according to the input .txt file's name
         self.savepath = savepath
         dataFileName = (text.split('/')[-1]).replace('_bvd.txt', "")
@@ -70,9 +71,9 @@ class writeDataFile():
             f.write(f'|{samplesUsed}')
             f.write(f'|{"{:.2f}".format(dat_obj.rampTime)}/{"{:.2f}".format(delay)}/{"{:.2f}".format(meas)}')
             if RStatus == 'R1':
-                f.write(f'|{"{:.4f}".format(dat_obj.R1Pred)}') # Corrected Reference value to STP
+                f.write(f'|{"{:.4f}".format(R1PredictionSTP)}') # Corrected Reference value to STP
             else:
-                f.write(f'|{"{:.4f}".format(dat_obj.R2Pred)}')
+                f.write(f'|{"{:.4f}".format(R2PredictionSTP)}') # Corrected Refrence value ot STP
             f.write(f'|{dat_obj.comments} ')
             if RStatus == 'R1':
                 f.write(f'|{"{:.4f}".format(dat_obj.R1pcr)}')

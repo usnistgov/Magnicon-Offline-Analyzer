@@ -2514,7 +2514,8 @@ class Ui_mainWindow(object):
                       C2R2=self.C2R2, stdC1R2=self.stdC1R2, stdC2R2=self.stdC2R2,\
                       R1PPM=self.R1PPM, R2PPM=self.R2PPM, bvd_mean=self.bvd_mean, \
                       N=self.N, samplesUsed=int(self.SampUsedLineEdit.text()), \
-                      meas=float(self.MeasLineEdit.text()), delay=float(self.DelayLineEdit.text()))
+                      meas=float(self.MeasLineEdit.text()), delay=float(self.DelayLineEdit.text()), \
+                      R1PredictionSTP=float(self.R1STPLineEdit.text()), R2PredictionSTP=float(self.R2STPLineEdit.text()))
         
         with open(self.pathString + '_pyCCCRAW.mea', 'w') as mea_file:
             if self.RButStatus == 'R1':
