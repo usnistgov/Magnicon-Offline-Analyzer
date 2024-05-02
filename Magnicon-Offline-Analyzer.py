@@ -29,7 +29,7 @@ import mystat
 from env import env
 
 # python globals
-__version__ = '1.9.2' # Program version string
+__version__ = '1.9.3' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -91,6 +91,7 @@ class aboutWindow(QWidget):
         # print('Class: aboutWindow, In function: ' + inspect.stack()[0][3])
         super().__init__()
         self.setWindowTitle("About")
+        self.setWindowIcon(QIcon(base_dir + r'\icons\main.png'))
         self.setFixedSize(300, 200)
         self.te_about = QTextEdit()
         self.te_about.setReadOnly(True)
@@ -110,6 +111,7 @@ class timingDiagramWindow(QWidget):
         """
         super(QWidget, self).__init__()
         self.setFixedSize(1100, 550)
+        self.setWindowIcon(QIcon(base_dir + r'\icons\main.png'))
         lbl_timing_diagram = QLabel(self)
         lbl_timing_diagram.setPixmap(QPixmap(base_dir + r"\icons\timing_diagram.PNG"))
         lbl_timing_diagram.show()
@@ -122,7 +124,7 @@ class Ui_mainWindow(object):
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         global winSizeH, winSizeV
         mainWindow.setFixedSize(winSizeH, winSizeV)
-        mainWindow.setWindowIcon(QIcon(base_dir + r'\icons\analyzer.ico'))
+        mainWindow.setWindowIcon(QIcon(base_dir + r'\icons\main.png'))
         self.initializations()
 
         self.centralwidget = QWidget(parent=mainWindow)
@@ -309,6 +311,8 @@ class Ui_mainWindow(object):
 
     def initializations(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
+        global c
+        global g
         self.txtFilePath  = ''
         # flags
         self.validFile    = False
@@ -326,8 +330,8 @@ class Ui_mainWindow(object):
         self.R1OilDepth = 0
         self.R2OilDepth = 0
         self.alpha      = 0.5
-        self.R1OilPres  = 0.8465*9.81*self.R1OilDepth
-        self.R2OilPres  = 0.8465*9.81*self.R2OilDepth
+        self.R1OilPres  = c*g*self.R1OilDepth
+        self.R2OilPres  = c*g*self.R2OilDepth
         self.R1TotPres  = self.R1pres + self.R1OilPres
         self.R2TotPres  = self.R2pres + self.R2OilPres
 
@@ -503,10 +507,12 @@ class Ui_mainWindow(object):
         self.C1C2Label.setGeometry(QRect(self.col7x, 450, self.lbl_width, self.lbl_height))
         self.RatioMeanLabel = QLabel(parent=self.centralwidget)
         self.RatioMeanLabel.setGeometry(QRect(self.col7x, 510, self.lbl_width, self.lbl_height))
+        self.lbl_ratioStdMean = QLabel(parent=self.centralwidget)
+        self.lbl_ratioStdMean.setGeometry(QRect(self.col7x, 570, self.lbl_width, self.lbl_height))
         self.SampUsedLabel = QLabel(parent=self.centralwidget)
-        self.SampUsedLabel.setGeometry(QRect(self.col7x, 570, self.lbl_width, self.lbl_height))
+        self.SampUsedLabel.setGeometry(QRect(self.col7x, 630, self.lbl_width, self.lbl_height))
         self.lbl_error = QLabel(parent=self.centralwidget)
-        self.lbl_error.setGeometry(QRect(self.col7x, 630, self.lbl_width, self.lbl_height))
+        self.lbl_error.setGeometry(QRect(self.col7x, 690, self.lbl_width, self.lbl_height))
         self.ResultsLabel = QLabel(parent=self.SetResTab)
         self.ResultsLabel.setGeometry(QRect(650, 10, self.lbl_width, self.lbl_height))
         self.ResultsLabel.setStyleSheet(
@@ -564,9 +570,11 @@ class Ui_mainWindow(object):
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         self.R1PresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1PresLineEdit.setGeometry(QRect(self.col0x, self.coly*7, self.lbl_width, self.lbl_height))
+        self.R1PresLineEdit.setValidator(QDoubleValidator())
         self.R1PresLineEdit.returnPressed.connect(self.R1PresChanged)
         self.R2PresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2PresLineEdit.setGeometry(QRect(self.col0x, self.coly*8, self.lbl_width, self.lbl_height))
+        self.R2PresLineEdit.setValidator(QDoubleValidator())
         self.R2PresLineEdit.returnPressed.connect(self.R2PresChanged)
         self.txtFileLineEdit = QLineEdit(parent=self.SetResTab)
         self.txtFileLineEdit.setGeometry(QRect(self.col0x, self.coly*10, int(self.lbl_width*2.8), self.lbl_height))
@@ -680,9 +688,11 @@ class Ui_mainWindow(object):
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         self.R1TempLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1TempLineEdit.setGeometry(QRect(self.col3x, self.coly*6, self.lbl_width, self.lbl_height))
+        self.R1TempLineEdit.setValidator(QDoubleValidator())
         self.R1TempLineEdit.returnPressed.connect(self.temp1Changed)
         self.R2TempLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2TempLineEdit.setGeometry(QRect(self.col3x, self.coly*7, self.lbl_width, self.lbl_height))
+        self.R2TempLineEdit.setValidator(QDoubleValidator())
         self.R2TempLineEdit.returnPressed.connect(self.temp2Changed)
         self.RelHumLineEdit = QLineEdit(parent=self.SetResTab)
         self.RelHumLineEdit.setGeometry(QRect(self.col3x, self.coly*8, self.lbl_width, self.lbl_height))
@@ -810,13 +820,18 @@ class Ui_mainWindow(object):
         self.RatioMeanLineEdit.setReadOnly(True)
         self.RatioMeanLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
+        self.le_ratioStdMean = QLineEdit(parent=self.centralwidget)
+        self.le_ratioStdMean.setGeometry(QRect(self.col7x, self.coly*10, self.lbl_width, self.lbl_height))
+        self.le_ratioStdMean.setReadOnly(True)
+        self.le_ratioStdMean.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
         self.SampUsedLineEdit = QLineEdit(parent=self.centralwidget)
-        self.SampUsedLineEdit.setGeometry(QRect(self.col7x, self.coly*10, self.lbl_width, self.lbl_height))
+        self.SampUsedLineEdit.setGeometry(QRect(self.col7x, self.coly*11, self.lbl_width, self.lbl_height))
         self.SampUsedLineEdit.setReadOnly(False)
         self.SampUsedLineEdit.returnPressed.connect(self.changedSamplesUsed)
 
         self.le_error = QLineEdit(parent=self.centralwidget)
-        self.le_error.setGeometry(QRect(self.col7x, self.coly*11, self.lbl_width, self.lbl_height))
+        self.le_error.setGeometry(QRect(self.col7x, self.coly*12, self.lbl_width, self.lbl_height))
         self.le_error.setReadOnly(True)
         self.le_error.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: red; font-weight: bold }""")
@@ -876,6 +891,7 @@ class Ui_mainWindow(object):
         self.RMeanChkPPMLineEdit.setToolTip('')
         self.StdDevMeanPPMLineEdit.setToolTip('')
         self.RatioMeanLineEdit.setToolTip('')
+        self.le_ratioStdMean.setToolTip('')
         self.SampUsedLineEdit.setToolTip('')
         self.le_error.setToolTip('')
         self.MagElecComboBox.setToolTip('')
@@ -946,6 +962,7 @@ class Ui_mainWindow(object):
         self.RMeanChkPPMLineEdit.setToolTip('Mean resistance value calculated from the _bvd.txt file')
         self.StdDevMeanPPMLineEdit.setToolTip('')
         self.RatioMeanLineEdit.setToolTip('Mean of the Ratio  R<sub>1</sub>/R<sub>2</sub>')
+        self.le_ratioStdMean.setToolTip('')
         self.SampUsedLineEdit.setToolTip('Set the number of used mesurements in every half cycle')
         self.le_error.setToolTip('R Mean - R Mean Chk')
         
@@ -1363,6 +1380,7 @@ class Ui_mainWindow(object):
         self.StdDevC2Label.setText(_translate("mainWindow", f"Std Dev C<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.StdDevC1Label.setText(_translate("mainWindow", f"Std Dev C<sub>1</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.RatioMeanLabel.setText(_translate("mainWindow", "Ratio Mean"))
+        self.lbl_ratioStdMean.setText(_translate("mainWindow", "Ratio Std. Mean"))
         self.ppmMeanLabel.setText(_translate("mainWindow", f"Mean [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.C1C2Label.setText(_translate("mainWindow", f"C<sub>1</sub>-C<sub>2</sub> [{chr(956)}{chr(937)}/{chr(937)}]"))
         self.StdDevMeanPPMLabel.setText(_translate("mainWindow", f"Std. Mean [{chr(956)}{chr(937)}/{chr(937)}]"))
@@ -2047,6 +2065,7 @@ class Ui_mainWindow(object):
         if self.ratioMeanList != []:
             # self.ratioMean = compensation*(1 + (self.bvd_mean/myDeltaI2R2)) # calculated from raw bridge voltages
             self.ratioMean = mean(self.ratioMeanList)
+            self.ratioStdMean = std(self.ratioMeanList, ddof=1)/sqrt(len(self.ratioMeanList))
             self.meanR1     = mean(self.R1List) # this is mean of R2
             # self.meanR1     = float(((((self.R1/mean(self.ratioMeanList))/mag.R2NomVal) - 1) * 10**6) - R2corr)
             self.stdR1ppm   = std(self.R1List, ddof=1) # in ppm
@@ -2068,21 +2087,22 @@ class Ui_mainWindow(object):
             self.stdC2R2    = std(self.C2R2List, ddof=1)
             self.stdMeanR2  = self.stdR2ppm/sqrt(len(self.R2List))
         else:
-            self.ratioMean  = nan
-            self.meanR1     = nan
-            self.meanR2     = nan
-            self.stdR1ppm   = nan
-            self.stdR2ppm   = nan
-            self.C1R1       = nan
-            self.C1R2       = nan
-            self.C2R1       = nan
-            self.C2R2       = nan
-            self.stdC1R1    = nan
-            self.stdC1R2    = nan
-            self.stdC2R1    = nan
-            self.stdC2R2    = nan
-            self.stdMeanR1  = nan
-            self.stdMeanR2  = nan
+            self.ratioMean      = nan
+            self.ratioStdMean   = nan
+            self.meanR1         = nan
+            self.meanR2         = nan
+            self.stdR1ppm       = nan
+            self.stdR2ppm       = nan
+            self.C1R1           = nan
+            self.C1R2           = nan
+            self.C2R1           = nan
+            self.C2R2           = nan
+            self.stdC1R1        = nan
+            self.stdC1R2        = nan
+            self.stdC2R1        = nan
+            self.stdC2R2        = nan
+            self.stdMeanR1      = nan
+            self.stdMeanR2      = nan
 
         if self.bvdList != []:
             self.N         = len(self.bvdList)
@@ -2183,7 +2203,7 @@ class Ui_mainWindow(object):
         self.R2SNLineEdit.setText(self.dat.R2SN)
         self.SHCLineEdit.setText(str(self.dat.SHC))
         self.N1LineEdit.setText(str(self.dat.N1))
-        self.CommentsTextBrowser.setText(self.dat.comments)
+        self.CommentsTextBrowser.setText(self.dat.comments + ', Ratio: ' + str(self.ratioMean) + ' +/- ' + str(self.ratioStdMean))
         self.RelHumLineEdit.setText(str(self.dat.relHum))
         self.kLineEdit.setText(str("{:.12f}".format(self.k)))
         if self.k == 0:
@@ -2206,6 +2226,7 @@ class Ui_mainWindow(object):
         self.RampLineEdit.setText(str(self.dat.rampTime))
         self.MeasCycLineEdit.setText(str(int(self.dat.measCyc)))
         self.RatioMeanLineEdit.setText(str("{:.12f}".format(self.ratioMean)))
+        self.le_ratioStdMean.setText(str("{:.12f}".format(self.ratioStdMean)))
         self.StdDevLineEdit.setText(str("{:.6e}".format(self.bvd_std)))
         self.StdDevChkLineEdit.setText(str("{:.6e}".format(self.bvd_std_chk)))
         self.StdDevMeanLineEdit.setText(str("{:.6e}".format(self.bvd_stdMean)))
@@ -2266,6 +2287,7 @@ class Ui_mainWindow(object):
         self.R1PPMLineEdit.setText("")
         self.R2PPMLineEdit.setText("")
         self.RatioMeanLineEdit.setText("")
+        self.le_ratioStdMean.setText("")
         self.StdDevLineEdit.setText("")
         self.StdDevMeanLineEdit.setText("")
         self.ppmMeanLineEdit.setText("")
@@ -2515,7 +2537,8 @@ class Ui_mainWindow(object):
                       R1PPM=self.R1PPM, R2PPM=self.R2PPM, bvd_mean=self.bvd_mean, \
                       N=self.N, samplesUsed=int(self.SampUsedLineEdit.text()), \
                       meas=float(self.MeasLineEdit.text()), delay=float(self.DelayLineEdit.text()), \
-                      R1PredictionSTP=float(self.R1STPLineEdit.text()), R2PredictionSTP=float(self.R2STPLineEdit.text()))
+                      R1PredictionSTP=float(self.R1STPLineEdit.text()), R2PredictionSTP=float(self.R2STPLineEdit.text()), \
+                      comments = str(self.dat.comments))
         
         with open(self.pathString + '_pyCCCRAW.mea', 'w') as mea_file:
             if self.RButStatus == 'R1':

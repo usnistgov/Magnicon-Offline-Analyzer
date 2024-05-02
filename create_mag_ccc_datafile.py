@@ -12,7 +12,7 @@ class writeDataFile():
                  stdC1R1: float, stdC2R1: float, C1R2: float, C2R2: float, \
                  stdC1R2: float, stdC2R2: float, R1PPM: float, R2PPM: float, \
                  bvd_mean: float, N: int, samplesUsed: int, meas: float, delay: float, \
-                 R1PredictionSTP: float, R2PredictionSTP: float) -> None:
+                 R1PredictionSTP: float, R2PredictionSTP: float, comments: str) -> None:
         # Creates the MDSS file name according to the input .txt file's name
         self.savepath = savepath
         dataFileName = (text.split('/')[-1]).replace('_bvd.txt', "")
@@ -74,7 +74,7 @@ class writeDataFile():
                 f.write(f'|{"{:.4f}".format(R1PredictionSTP)}') # Corrected Reference value to STP
             else:
                 f.write(f'|{"{:.4f}".format(R2PredictionSTP)}') # Corrected Refrence value ot STP
-            f.write(f'|{dat_obj.comments} ')
+            f.write(f'|{comments} ')
             if RStatus == 'R1':
                 f.write(f'|{"{:.4f}".format(dat_obj.R1pcr)}')
                 f.write(f'|{"{:.4f}".format(dat_obj.R1alpha)}')

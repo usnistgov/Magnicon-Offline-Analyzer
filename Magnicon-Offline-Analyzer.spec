@@ -65,7 +65,7 @@ exe = EXE(
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
-    icon=".\\icons\\analyzer.ico",
+    icon=".\\icons\\main.png",
     entitlements_file=None,
 )
 #shutil.copyfile('config.ini', '{0}/config.ini'.format(DISTPATH))

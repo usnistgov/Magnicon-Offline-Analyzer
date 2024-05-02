@@ -63,8 +63,9 @@ class magnicon_ccc:
                     elif line.startswith('number of samples per half cycle'):
                         self.SHC = int(line.split(':')[-1].rstrip(' \n'))
                     elif line.startswith('ignored first samples'):
-                        self.ignored = int(line.split(':')[-1].rstrip(' \n'))
-                        self.samplesUsed = self.SHC - self.ignored
+                        self.ignored_first = int(line.split(':')[-1].rstrip(' \n'))
+                    elif line.startswith('ignored last samples'):
+                        self.ignored_last = int(line.split(':')[-1].rstrip(' \n'))
                     elif line.startswith('remarks'):
                         self.comments = line.split(':')[-1].rstrip(' \n')
                         self.comments = self.comments.lstrip(' \t')
@@ -96,6 +97,7 @@ class magnicon_ccc:
                     elif line.startswith('integration time'):
                         self.intTime = line.split(':')[-1].rstrip(' \n')
                         self.intTime = int(self.intTime.lstrip(' \t'))
+                self.samplesUsed = self.SHC - self.ignored_first - self.ignored_last
         except Exception as e:
             print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
             pass
