@@ -1,0 +1,30 @@
+start date: 	2024-05-08
+start time: 	11.00.06
+stop date: 	2024-05-08
+stop time: 	23.08.20
+com rel. humid (%):	37.6
+com temp (°C):	27.44
+cn temp (°C):	31.37
+nv temp (°C):	33.53
+bvd averages: 	      1
+remarks: 	I1 Source Stability: 0.3 uA Range, I1 = 50.0076 nA
+R1 Info: 	F058A
+R2 Info: 	short
+data filepath: 	W:\68internal\Calibrations\MDSS Data\resist\MagniconData\CCCViewerData\CCC2019-01_Data\2024-05-08_CCC\240508_001_1100.txt
+config filepath: 	W:\68internal\Calibrations\MDSS Data\resist\MagniconData\CCCViewerData\CCC2019-01_Data\2024-05-08_CCC\240508_001_1100_cccdrive.cfg
+time base (Hz): 	60
+integration time (time base multiples):	60
+number of samples per half cycle: 	10922
+ignored first samples: 	240
+ignored last samples: 	0
+amplifier gain: 	300000
+delta N1/NA (mTurns): 	-0.000000000
+delta (I2*R2) (V): 	0.000000000
+N1 (Turns):	0
+N2 (Turns):	0
+NA (Turns):	0
+R1 (Ohm): 	100.000000
+R2 (Ohm): 	0.000000
+
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)
+1	+1.000141E-05	+1.000141E-05	+NaN000000000

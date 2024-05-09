@@ -1,0 +1,30 @@
+start date: 	2024-05-09
+start time: 	02.48.41
+stop date: 	2024-05-09
+stop time: 	14.56.56
+com rel. humid (%):	37.0
+com temp (°C):	27.21
+cn temp (°C):	31.47
+nv temp (°C):	33.41
+bvd averages: 	      1
+remarks: 	input shorted via Rin =100 kohm, 100 ohm still connected
+R1 Info: 	F058A
+R2 Info: 	short
+data filepath: 	W:\68internal\Calibrations\MDSS Data\resist\MagniconData\CCCViewerData\CCC2019-01_Data\2024-05-09_CCC\240509_001_0248.txt
+config filepath: 	W:\68internal\Calibrations\MDSS Data\resist\MagniconData\CCCViewerData\CCC2019-01_Data\2024-05-09_CCC\240509_001_0248_cccdrive.cfg
+time base (Hz): 	60
+integration time (time base multiples):	60
+number of samples per half cycle: 	10922
+ignored first samples: 	240
+ignored last samples: 	0
+amplifier gain: 	300000
+delta N1/NA (mTurns): 	-0.000000000
+delta (I2*R2) (V): 	0.000000000
+N1 (Turns):	0
+N2 (Turns):	0
+NA (Turns):	0
+R1 (Ohm): 	100.000000
+R2 (Ohm): 	0.000000
+
+#points	bvd(V)	bvdmean(V)	stddrtN-1(V)
+1	-7.768658E-10	-7.768658E-10	+NaN000000000
