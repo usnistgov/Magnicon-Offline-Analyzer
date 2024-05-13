@@ -261,7 +261,6 @@ class magnicon_ccc:
                 win32file.FILE_FLAG_BACKUP_SEMANTICS,
                 None
             )
-
             # Close the handle
             win32file.CloseHandle(handle)
             return True
@@ -274,12 +273,14 @@ class magnicon_ccc:
         # Calculations using the parsed data
         print("In calculations...")
         p = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'
+        print ("Looking for Elwood...")
         if self.check_shared_drive_exists(r'\\elwood.nist.gov\68_PML'):
-            print("Using ResDatabase.dat located at: ", p)
+            print("Found Elwood, using ResDatabase.dat located at: ", p)
             R = ResData(p)
         else:
             # default to the local one supplied with this project
-            print("Using ResDatabase.dat located at: ", base_dir)
+            print("Elwood not found, using ResDatabase.dat located at: ", base_dir)
+           
             R = ResData(base_dir) 
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:

@@ -5,7 +5,7 @@ import inspect
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QRect, QMetaObject, QCoreApplication
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainterPath, QPainter,\
-                        QKeySequence, QDoubleValidator, QIntValidator
+                        QKeySequence, QDoubleValidator
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
                              QLabel, QPushButton, QComboBox, QTextBrowser, QTabWidget, \
                              QSpacerItem, QGridLayout, QLineEdit, QFrame, QSizePolicy, \
@@ -29,7 +29,7 @@ import mystat
 from env import env
 
 # python globals
-__version__ = '1.9.3' # Program version string
+__version__ = '1.9.5' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -37,7 +37,7 @@ winSizeH    = 1000
 winSizeV    = 835
 c           = 0.8465 # specific gravity of oil used
 g           = 9.81 # local acceleration due to gravity
-
+# I- == blue, I+ == Red
 params = {
            'axes.labelsize': 14,
            'font.size': 10,
@@ -988,15 +988,21 @@ class Ui_mainWindow(object):
         self.BVDVerticalLayoutWidget.setGeometry(QRect(0, 0, winSizeH-125, 691))
         self.BVDVerticalLayout = QVBoxLayout(self.BVDVerticalLayoutWidget)
         self.BVDfig = plt.figure()
-        self.BVDax1 = self.BVDfig.add_subplot(2, 3, (1, 3))
-        self.BVDax2 = self.BVDfig.add_subplot(2, 3, (4, 5))
-        self.BVDax3 = self.BVDfig.add_subplot(2, 3, 6)
+        self.BVDax1 = self.BVDfig.add_subplot(2, 6, (4, 6))
+        self.BVDax4 = self.BVDfig.add_subplot(2, 6, (1, 3))
+        self.BVDax2 = self.BVDfig.add_subplot(2, 6, (7, 10))
+        self.BVDax3 = self.BVDfig.add_subplot(2, 6, (11, 12))
         self.BVDfig.set_tight_layout(True)
 
         self.BVDax1.tick_params(which='both', direction='in')
         self.BVDax1.set_xlabel('Count')
-        self.BVDax1.set_ylabel('Bridge Voltages [V]')
+        self.BVDax1.set_ylabel('Average Bridge Voltages [V]')
         self.BVDax1.grid(axis='both')
+        
+        self.BVDax4.tick_params(which='both', direction='in')
+        self.BVDax4.set_xlabel('Count')
+        self.BVDax4.set_ylabel('Bridge Voltages [V]')
+        self.BVDax4.grid(axis='both')
 
         self.BVDax2.tick_params(which='both', direction='in')
         self.BVDax2.set_xlabel('Count')
@@ -1007,6 +1013,7 @@ class Ui_mainWindow(object):
         box = self.BVDax2.get_position()
         self.BVDax2.set_position([box.x0, box.y0 + box.height * 0.1,
                  box.width, box.height * 0.9])
+
         self.BVDtwin2 = self.BVDax2.twinx()
         self.BVDtwin2.tick_params(axis='y', direction='in', colors='r')
         self.BVDtwin2.set_yticklabels([])
@@ -1102,7 +1109,7 @@ class Ui_mainWindow(object):
         # self.Allanax1.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.Allanax1.xaxis.set_major_formatter(ScalarFormatter())
 
-        self.Allanax2.set_ylabel('\u03C3(\u03C4), C1 [V]')
+        self.Allanax2.set_ylabel('\u03C3(\u03C4), ' + r'$C_{1}$' + ' and ' + r'$C_{2}$' + ' [V]')
         self.Allanax2.set_xlabel('\u03C4 [s]')
         self.Allanax2.set_yscale('log')
         self.Allanax2.set_xscale('log')
@@ -1110,7 +1117,7 @@ class Ui_mainWindow(object):
         # self.Allanax2.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.Allanax2.xaxis.set_major_formatter(ScalarFormatter())
 
-        self.Allanax3.set_ylabel('\u03C3(\u03C4), C2 [V]')
+        self.Allanax3.set_ylabel('\u03C3(\u03C4), BV [V]')
         self.Allanax3.set_xlabel('\u03C4 [s]')
         self.Allanax3.set_yscale('log')
         self.Allanax3.set_xscale('log')
@@ -1118,7 +1125,7 @@ class Ui_mainWindow(object):
         # self.Allanax3.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.Allanax3.xaxis.set_major_formatter(ScalarFormatter())
 
-        self.Allanax4.set_ylabel('\u03C3(\u03C4), BV [V]')
+        self.Allanax4.set_ylabel('\u03C3(\u03C4), ' + r'$\overline{BV}$' + ' [V]')
         self.Allanax4.set_xlabel('\u03C4 [s]')
         self.Allanax4.set_yscale('log')
         self.Allanax4.set_xscale('log')
@@ -1440,6 +1447,8 @@ class Ui_mainWindow(object):
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         if self.bvd_stat_obj is not None:
             count = linspace(0, len(self.A)-1, num=len(self.A))
+            count_aa = linspace(0, len(self.AA)-1, num=len(self.AA))
+            count_bb = linspace(0, len(self.BB)-1, num=len(self.BB))
             if self.bvdList:
                 BVDmean = mean(self.bvdList)
                 BVDstd  = std(self.bvdList, ddof=1)
@@ -1449,6 +1458,8 @@ class Ui_mainWindow(object):
                     self.clearBVDPlot()
                     self.BVDax1_ref[0].set_data(count, self.A)
                     self.BVDax12_ref[0].set_data(count, self.B)
+                    self.BVDax41_ref[0].set_data(count_aa, self.AA)
+                    self.BVDax42_ref[0].set_data(count_bb, self.BB)
                     if self.RButStatus == 'R1':
                         self.BVDax21_ref[0].set_data(self.bvdCount, self.R1List)
                     else:
@@ -1460,10 +1471,13 @@ class Ui_mainWindow(object):
                     self.BVDax3.set_ylim([self.BVDtwin2.get_ylim()[0], self.BVDtwin2.get_ylim()[1]])
                 else:
                     # plot the individual bridge voltages
-                    self.BVDax1_ref = self.BVDax1.errorbar(count, self.A, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label='I-')
-                    self.BVDax12_ref = self.BVDax1.errorbar(count, self.B, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label='I+')
+                    self.BVDax1_ref = self.BVDax1.errorbar(count, self.A, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label=r'$\overline{I-}$')
+                    self.BVDax12_ref = self.BVDax1.errorbar(count, self.B, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label=r'$\overline{I+}$')
                     self.BVDax1.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower right', frameon=True, shadow=True, ncols=2, columnspacing=0)
-
+                    
+                    self.BVDax41_ref = self.BVDax4.errorbar(count_aa, self.AA, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label=r'$I-$')
+                    self.BVDax42_ref = self.BVDax4.errorbar(count_bb, self.BB, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label=r'$I+$')
+                    self.BVDax4.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower right', frameon=True, shadow=True, ncols=2, columnspacing=0)
                     if self.RButStatus == 'R1':
                         self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R1List, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
                     else:
@@ -1480,9 +1494,9 @@ class Ui_mainWindow(object):
                 self.BVDax2.legend(lines + lines2, labels + labels2, loc='upper center', bbox_to_anchor=(0.5, -0.2),
                                    fancybox=True, shadow=True, ncols=2, columnspacing=0)
                 if self.RButStatus == 'R1':
-                    self.BVDax2.set_ylabel(f'R2 [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
+                    self.BVDax2.set_ylabel(r'$R_{2}$' + f' [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
                 else:
-                    self.BVDax2.set_ylabel(f'R1 [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
+                    self.BVDax2.set_ylabel(r'$R_{1}$' + f' [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
 
                 self.BVDax1.relim()
                 self.BVDax1.autoscale(tight=None, axis='both', enable=True)
@@ -1574,18 +1588,24 @@ class Ui_mainWindow(object):
             # bva_tau, bva_adev, bva_aerr = mystat.adev(array(self.A), self.overlapping, tau_list_bva)
             # bvb_tau, bvb_adev, bvb_aerr = mystat.adev(array(self.B), self.overlapping, tau_list_bvb)
             # using allantools because it is faster than O(n^2)
+            # print(self.dat.intTime, self.dat.timeBase)
+            print("sampling times: ", self.dat.fullCyc, self.dat.intTime/self.dat.timeBase, self.dat.dt )
             if self.overlapping:
-                (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.oadev(array(self.bvdList), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
-                (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.oadev(array(self.V1), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
-                (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.oadev(array(self.V2), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
-                (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.oadev(array(self.A), rate=1/self.dat.dt, data_type="freq", taus=mytaus)
-                (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.oadev(array(self.B), rate=1/self.dat.dt, data_type="freq", taus=mytaus)
+                (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.oadev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.oadev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.oadev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.oadev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.oadev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.oadev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.oadev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
             else:
-                (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.adev(array(self.bvdList), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)  # Compute the overlapping ADEV
-                (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.adev(array(self.V1), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
-                (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.adev(array(self.V2), rate=1/self.dat.fullCyc, data_type="freq", taus=mytaus)
-                (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.adev(array(self.A), rate=1/self.dat.dt, data_type="freq", taus=mytaus)
-                (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.adev(array(self.B), rate=1/self.dat.dt, data_type="freq", taus=mytaus)
+                (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.adev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)  # Compute the overlapping ADEV
+                (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.adev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.adev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.adev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.adev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.adev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.adev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
 
             rttau = []
             # bvd_tau_time = []
@@ -1599,23 +1619,26 @@ class Ui_mainWindow(object):
 
             for i in bvd_tau_time:
                 rttau.append(sqrt(self.h0)*sqrt(1/(2*i)))
-            # print(rttau[0])
 
             if self.plottedAllan:
                 self.clearAllanPlot()
                 self.Allanax1_ref[0].set_data(array(bvd_tau_time), array(bvd_adev))
                 self.Allanax11_ref[0].set_data(array(bvd_tau_time), array(rttau))
-                self.Allanax2_ref[0].set_data(array(bvd_tau_time), array(C1_adev))
-                self.Allanax3_ref[0].set_data(array(bvd_tau_time), array(C2_adev))
+                self.Allanax21_ref[0].set_data(array(C1_tau), array(C1_adev))
+                self.Allanax22_ref[0].set_data(array(C2_tau), array(C2_adev))
+                self.Allanax31_ref[0].set_data(array(aa_tau_time), array(aa_adev))
+                self.Allanax32_ref[0].set_data(array(bb_tau_time), array(bb_adev))
                 self.Allanax41_ref[0].set_data(array(bva_tau_time), array(bva_adev))
-                self.Allanax42_ref[0].set_data(array(bva_tau_time), array(bvb_adev))
+                self.Allanax42_ref[0].set_data(array(bvb_tau_time), array(bvb_adev))
             else:
                 self.Allanax1_ref = self.Allanax1.plot(bvd_tau_time, bvd_adev, 'ko-', lw=1.25, ms=4, alpha = self.alpha) # ADev for BVD
-                self.Allanax11_ref = self.Allanax1.plot(bvd_tau_time,  rttau, 'r', lw = 2, alpha=self.alpha-0.1, label=r'$1/\sqrt{\tau}$')
-                self.Allanax2_ref = self.Allanax2.plot(bvd_tau_time, C1_adev, 'bo-', lw=1.25, ms=4, alpha = self.alpha) # ADev for C1
-                self.Allanax3_ref = self.Allanax3.plot(bvd_tau_time, C2_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha) # ADev for C2
-                self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha, label='I-') # ADev for bv a
-                self.Allanax42_ref = self.Allanax4.plot(bva_tau_time, bvb_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha, label='I+') # ADev for bv b
+                self.Allanax11_ref = self.Allanax1.plot(bvd_tau_time,  rttau, 'r', lw = 2, alpha=self.alpha-0.1, label=r'$1/\sqrt{\tau}$') # white noise fit
+                self.Allanax21_ref = self.Allanax2.plot(C1_tau, C1_adev, 'go-', lw=1.25, ms=4, alpha = self.alpha, label=r'$C_{1}$') # ADev for C1
+                self.Allanax22_ref = self.Allanax2.plot(C2_tau, C2_adev, 'yo-', lw=1.25, ms=4, alpha=self.alpha, label=r'$C_{2}$') # ADev for C2
+                self.Allanax31_ref = self.Allanax3.plot(aa_tau_time, aa_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha, label=r'$I-$')
+                self.Allanax32_ref = self.Allanax3.plot(bb_tau_time, bb_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha, label=r'$I+$')
+                self.Allanax41_ref = self.Allanax4.plot(bva_tau_time, bva_adev, 'bo-', lw=1.25, ms=4, alpha=self.alpha, label=r'$\overline{I-}$') # ADev for bv average(a)
+                self.Allanax42_ref = self.Allanax4.plot(bvb_tau_time, bvb_adev, 'ro-', lw=1.25, ms=4, alpha=self.alpha, label=r'$\overline{I+}$') # ADev for bv average(b)
                 self.plottedAllan = True
             
             with open(self.pathString + '_pyadev.txt', 'w') as adev_file:
@@ -1628,7 +1651,7 @@ class Ui_mainWindow(object):
                 adev_file.write('\n')
 
             with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-                adev_file.write('tau (s)' + '\t' + 'adev [BV I-]' + '\t' + 'adev err [BV I-]' + \
+                adev_file.write('tau (s)' + '\t' + 'adev [BV <I->]' + '\t' + 'adev err [BV <I->]' + \
                                 '\n')
             with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
                 for i, j, k, in zip(bva_tau_time, bva_adev, bva_aerr):
@@ -1636,10 +1659,26 @@ class Ui_mainWindow(object):
                 adev_file.write('\n')
             
             with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
-                adev_file.write('tau (s)' + '\t' + 'adev [BV I+]' + '\t' + 'adev err [BV I+]' + \
+                adev_file.write('tau (s)' + '\t' + 'adev [BV <I+>]' + '\t' + 'adev err [BV <I+>]' + \
                                 '\n')
             with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
                 for i, j, k, in zip(bvb_tau_time, bvb_adev, bvb_aerr):
+                    adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
+                adev_file.write('\n')
+                
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                adev_file.write('tau (s)' + '\t' + 'adev [BV I-]' + '\t' + 'adev err [BV I-]' + \
+                                '\n')
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                for i, j, k, in zip(aa_tau_time, aa_adev, aa_aerr):
+                    adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
+                adev_file.write('\n')
+                    
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                adev_file.write('tau (s)' + '\t' + 'adev [BV I+]' + '\t' + 'adev err [BV I+]' + \
+                                '\n')
+            with open(self.pathString + '_pyadev.txt', 'a') as adev_file:
+                for i, j, k, in zip(bb_tau_time, bb_adev, bb_aerr):
                     adev_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
                 adev_file.write('\n')
             
@@ -1650,13 +1689,15 @@ class Ui_mainWindow(object):
         self.Allanax2.relim()
         self.Allanax2.autoscale(tight=None, axis='both', enable=True)
         self.Allanax2.autoscale_view(tight=None, scalex=True, scaley=True)
+        self.Allanax2.legend(loc='best', frameon=True, shadow=True, ncols=2, columnspacing=1)
         self.Allanax3.relim()
         self.Allanax3.autoscale(tight=None, axis='both', enable=True)
         self.Allanax3.autoscale_view(tight=None, scalex=True, scaley=True)
-        self.Allanax4.legend(loc='lower left', frameon=True, shadow=True, ncols=2, columnspacing=1)
+        self.Allanax3.legend(loc='best', frameon=True, shadow=True, ncols=2, columnspacing=1)
         self.Allanax4.relim()
         self.Allanax4.autoscale(tight=None, axis='both', enable=True)
         self.Allanax4.autoscale_view(tight=None, scalex=True, scaley=True)
+        self.Allanax4.legend(loc='best', frameon=True, shadow=True, ncols=2, columnspacing=1)
         self.Allanfig.set_tight_layout(True)
         self.AllanCanvas.draw()
 
@@ -1714,15 +1755,15 @@ class Ui_mainWindow(object):
             self.SpecAx_ref = self.SpecAx.plot(freq_bvd, mypsd_bvd, 'ko-', lw=1.25, ms=2, alpha=self.alpha)
             self.SpecAx_ref1 = self.SpecAx.plot(freq_bvd, mean(mypsd_bvd[1:])*ones(len(freq_bvd)), 'r', lw=2, alpha=self.alpha-0.1, label=r'$h_0 = $' + str("{:2.2e}".format(self.h0)))
             # PSD of BVA and BVB
-            self.specA_ref = self.specAB.plot(freqA, mypsdA, 'ro-', lw=1.25, ms=2, alpha=self.alpha, label='I-')
-            self.specB_ref = self.specAB.plot(freqB, mypsdB, 'bo-', lw=1.25, ms=2, alpha=self.alpha, label='I+')
+            self.specA_ref = self.specAB.plot(freqA, mypsdA, 'bo-', lw=1.25, ms=2, alpha=self.alpha, label=r'$I-$')
+            self.specB_ref = self.specAB.plot(freqB, mypsdB, 'ro-', lw=1.25, ms=2, alpha=self.alpha, label=r'$I+$')
             # ACF of BVD
             self.acf_bvd_ref = self.acf_bvd.plot(lag_bvd[0:], acf_bvd[0:], 'ko-', lw=0.5, ms = 4, alpha=self.alpha)
             self.acf_bvd_ref1 = self.acf_bvd.plot(lag_bvd[0:], pci_bvd[0:], ':', lw=2, color='red')
             self.acf_bvd_ref2 = self.acf_bvd.plot(lag_bvd[0:], nci_bvd[0:], ':', lw=2, color='red')
             # ACF of BVA and BVB
-            self.acf_bv_refa = self.acf_bv.plot(lag_bva[0:], acf_bva[0:], 'ro', ms=2, alpha=self.alpha, label='I-')
-            self.acf_bv_refb = self.acf_bv.plot(lag_bvb[0:], acf_bvb[0:], 'bo', ms=2, alpha=self.alpha, label='I+')
+            self.acf_bv_refa = self.acf_bv.plot(lag_bva[0:], acf_bva[0:], 'bo', ms=2, alpha=self.alpha, label=r'$I-$')
+            self.acf_bv_refb = self.acf_bv.plot(lag_bvb[0:], acf_bvb[0:], 'ro', ms=2, alpha=self.alpha, label=r'$I+$')
             
             # print(acf_bvd[0:]+ pci_bvd[0:])
             # self.autoCorr_ref1 = self.autoCorr.fill_between(lag_bvd[0:], acf_bvd[0:]+pci_bvd[0:], acf_bvd[0:]-nci_bvd[0:], lw=2, facecolor='red')
@@ -1803,8 +1844,10 @@ class Ui_mainWindow(object):
                  # print("Trying to clear Allan Plots")
                  self.Allanax1_ref[0].set_data(array([]), array([]))
                  self.Allanax11_ref[0].set_data(array([]), array([]))
-                 self.Allanax2_ref[0].set_data(array([]), array([]))
-                 self.Allanax3_ref[0].set_data(array([]), array([]))
+                 self.Allanax21_ref[0].set_data(array([]), array([]))
+                 self.Allanax22_ref[0].set_data(array([]), array([]))
+                 self.Allanax31_ref[0].set_data(array([]), array([]))
+                 self.Allanax32_ref[0].set_data(array([]), array([]))
                  self.Allanax41_ref[0].set_data(array([]), array([]))
                  self.Allanax42_ref[0].set_data(array([]), array([]))
                  
@@ -1977,12 +2020,12 @@ class Ui_mainWindow(object):
         try:
             # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
             self.bvd_stat_obj = bvd_stat(self.txtFilePath, int(self.SampUsedLineEdit.text()), self.dat)
-            self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB = self.bvd_stat_obj.send_bvd_stats()
+            self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB = self.bvd_stat_obj.send_bvd_stats()
             for i in range(len(self.bvdList)):
                 self.bvdCount.append(i)
             self.bvd_stat_obj.clear_bvd_stats()
         except Exception as e:
-            self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB = [], [], [], [], [], [], []
+            self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB = [], [], [], [], [], [], [], [], []
             print("In function: " +  inspect.stack()[0][3] + " Exception: " + str(e))
             pass
         # print(len(self.A), len(self.B))

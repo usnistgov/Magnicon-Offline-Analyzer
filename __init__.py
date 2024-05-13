@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "1.9.3"
+__version__ 	=       "1.9.5"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -28,4 +28,6 @@ __ChangeLog__   =       """
                         041324:     FIX: mdss files writes correct R1STP and R2STP prediction values if user changes them to be custom values.
                         042924:     ADD: new custom icon for the project, add ratio stdMean line edit, add ratio value to comment, set pressure and temperature
                                          line edits to accept only numeric values. Update to 1.9.3
+                        051324:     ADD: Update BVD plots to show raw data as well, fix labels and units in plots. Update ADEV plots to show raw data adev. Update
+                                         to 1.9.5
                         """

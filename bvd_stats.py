@@ -12,6 +12,8 @@ class bvd_stat:
         self.cur    = ''
         self.V1      = []
         self.V2      = []
+        self.AA      = []
+        self.BB      = []
         self.A       = []
         self.stdA    = []
         self.B       = []
@@ -40,6 +42,7 @@ class bvd_stat:
             # Stores A1 data
             if self.start and (self.points != int((self.samples_used)/2)) and self.cur == 'A1':
                 self.temp.append(self.mag.rawData[self.i])
+                self.AA.append(self.mag.rawData[self.i])
                 self.points += 1
             # On the last data point calulate the mean and prepare for B1 and B2
             elif self.start and (self.points == int((self.samples_used)/2)) and self.cur == 'A1':
@@ -56,6 +59,7 @@ class bvd_stat:
                 break
             if self.start and (self.points != (self.samples_used)) and self.cur == 'B':
                 self.temp.append(self.mag.rawData[self.i])
+                self.BB.append(self.mag.rawData[self.i])
                 self.points += 1
             elif self.start and (self.points == (self.samples_used)) and self.cur == 'B':
                 # B1 = sum(temp[0:int((self.samples_used)/2)])/len(temp[0:int((self.samples_used)/2)])
@@ -73,6 +77,7 @@ class bvd_stat:
                 break
             if self.start and (self.points != int((self.samples_used)/2)) and (self.cur == 'A2'):
                 self.temp.append(self.mag.rawData[self.i])
+                self.AA.append(self.mag.rawData[self.i])
                 self.points += 1
             # After storing A2, store all the data obtained and prepare to restart back to A1
             elif self.start and (self.points == int((self.samples_used)/2)) and self.cur == 'A2':
@@ -98,9 +103,12 @@ class bvd_stat:
             self.i += 1
         for V1, V2 in zip(self.V1, self.V2):
             self.bvdList.append((V1 + V2)/2.)
+    
+    def _process_thread_new(self,):
+        return
 
     def send_bvd_stats(self):
-        return (self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB)
+        return (self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB)
     
     def clear_bvd_stats(self) -> None:
         self.V1      = []
