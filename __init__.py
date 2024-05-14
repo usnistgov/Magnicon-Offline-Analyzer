@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "1.9.5"
+__version__ 	=       "1.9.5.1"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -30,4 +30,5 @@ __ChangeLog__   =       """
                                          line edits to accept only numeric values. Update to 1.9.3
                         051324:     ADD: Update BVD plots to show raw data as well, fix labels and units in plots. Update ADEV plots to show raw data adev. Update
                                          to 1.9.5
+                        051324:     FIX: Rescale raw bv plot after each draw, update to 1.9.5.1
                         """

@@ -29,7 +29,7 @@ import mystat
 from env import env
 
 # python globals
-__version__ = '1.9.5' # Program version string
+__version__ = '1.9.5.1' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -1501,6 +1501,9 @@ class Ui_mainWindow(object):
                 self.BVDax1.relim()
                 self.BVDax1.autoscale(tight=None, axis='both', enable=True)
                 self.BVDax1.autoscale_view(tight=None, scalex=True, scaley=True)
+                self.BVDax4.relim()
+                self.BVDax4.autoscale(tight=None, axis='both', enable=True)
+                self.BVDax4.autoscale_view(tight=None, scalex=True, scaley=True)
                 self.BVDax2.relim()
                 self.BVDax2.autoscale(tight=None, axis='both', enable=True)
                 self.BVDax2.autoscale_view(tight=None, scalex=True, scaley=True)
