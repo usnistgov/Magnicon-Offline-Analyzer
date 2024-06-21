@@ -29,7 +29,7 @@ import mystat
 from env import env
 
 # python globals
-__version__ = '1.9.5.1' # Program version string
+__version__ = '1.9.5.1\2☻' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -2630,6 +2630,7 @@ class Ui_mainWindow(object):
         self.changedDeltaI2R2Ct = 0
         self.changedR1STPBool = False
         self.changedR2STPBool = False
+        self.CommentsTextBrowser.setText("")
 
     def deleteBut(self) -> None:
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
