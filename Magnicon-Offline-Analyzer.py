@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__ = '2.0-alpha' # Program version string
+__version__ = '2.0' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -1693,40 +1693,51 @@ class Ui_mainWindow(object):
             # using allantools because it is faster than O(n^2)
             # print(self.dat.intTime, self.dat.timeBase)
             # print("sampling times: ", self.dat.fullCyc, self.dat.intTime/self.dat.timeBase, self.dat.dt )
-            if self.overlapping:
-                if self.VarianceTypeComboBox.currentText() == 'Allan':
-                    (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.oadev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.oadev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.oadev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.oadev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
-                    (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.oadev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
-                    (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.oadev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
-                    (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.oadev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
-                elif self.VarianceTypeComboBox.currentText() == 'Hadamard':
-                    (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.ohdev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.ohdev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.ohdev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.ohdev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
-                    (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.ohdev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
-                    (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.ohdev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
-                    (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.ohdev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
-            else:
-                if self.VarianceTypeComboBox.currentText() == 'Allan':
-                    (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.adev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)  # Compute the overlapping ADEV
-                    (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.adev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.adev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.adev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
-                    (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.adev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
-                    (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.adev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
-                    (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.adev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
-                elif self.VarianceTypeComboBox.currentText() == 'Hadamard':
-                    (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.hdev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)  # Compute the overlapping ADEV
-                    (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.hdev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.hdev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
-                    (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.hdev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
-                    (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.hdev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
-                    (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.hdev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
-                    (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.hdev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+            try:
+                if self.overlapping:
+                    if self.VarianceTypeComboBox.currentText() == 'Allan':
+                        (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.oadev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.oadev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.oadev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.oadev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                        (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.oadev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                        (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.oadev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                        (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.oadev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                    elif self.VarianceTypeComboBox.currentText() == 'Hadamard':
+                        (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.ohdev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.ohdev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.ohdev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.ohdev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                        (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.ohdev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                        (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.ohdev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                        (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.ohdev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                else:
+                    if self.VarianceTypeComboBox.currentText() == 'Allan':
+                        (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.adev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)  # Compute the overlapping ADEV
+                        (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.adev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.adev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.adev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                        (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.adev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                        (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.adev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                        (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.adev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                    elif self.VarianceTypeComboBox.currentText() == 'Hadamard':
+                        (bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn) = allantools.hdev(array(self.bvdList), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)  # Compute the overlapping ADEV
+                        (C1_tau, C1_adev, C1_aerr, C1_adn) = allantools.hdev(array(self.V1), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (C2_tau, C2_adev, C2_aerr, C2_adn) = allantools.hdev(array(self.V2), rate=1./self.dat.fullCyc, data_type="freq", taus=mytaus)
+                        (aa_tau_time, aa_adev, aa_aerr, aa_adn) = allantools.hdev(array(self.AA), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                        (bb_tau_time, bb_adev, bb_aerr, bb_adn) = allantools.hdev(array(self.BB), rate=1./(self.dat.intTime/self.dat.timeBase), data_type="freq", taus=mytaus)
+                        (bva_tau_time, bva_adev, bva_aerr, bva_adn) = allantools.hdev(array(self.A), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+                        (bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn) = allantools.hdev(array(self.B), rate=1./self.dat.dt, data_type="freq", taus=mytaus)
+            except Exception as e:
+                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + ' Error: ' + str(e))
+                bvd_tau_time, bvd_adev, bvd_aerr, bvd_adn,\
+                C1_tau, C1_adev, C1_aerr, C1_adn, \
+                C2_tau, C2_adev, C2_aerr, C2_adn, \
+                aa_tau_time, aa_adev, aa_aerr, aa_adn, \
+                bb_tau_time, bb_adev, bb_aerr, bb_adn, \
+                bva_tau_time, bva_adev, bva_aerr, bva_adn, \
+                bvb_tau_time, bvb_adev, bvb_aerr, bvb_adn  = ([] for _ in range(28))
+                pass
             rttau = []
             # bvd_tau_time = []
             # for i in bvd_tau:
@@ -1855,9 +1866,8 @@ class Ui_mainWindow(object):
             (pow_bva, noise_bva) = mystat.noise1D(array(self.A))
             (pow_bvb, noise_bvb) = mystat.noise1D(array(self.B))
         except Exception as e:
-            if debug_mode:
-                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                               ' Error: ' + str(e))
+            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                           ' Error: ' + str(e))
             (pow_bvd, noise_bvd) = (nan, '')
             (pow_bva, noise_bva) = (nan, '')
             (pow_bvb, noise_bvb) = (nan, '')
@@ -1959,9 +1969,8 @@ class Ui_mainWindow(object):
                 # self.BVDtwin2.clear()
                 # self.BVDax3.clear()
             except Exception as e:
-                if debug_mode:
-                    logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                                   ' Error: ' + str(e))
+                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                               ' Error: ' + str(e))
                 pass
 
     def clearAllanPlot(self) -> None:
@@ -1983,10 +1992,9 @@ class Ui_mainWindow(object):
                  # self.Allanax3.clear()
                  # self.Allanax4.clear()
             except Exception as e:
-                  if debug_mode:
-                      logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                                     ' Error: ' + str(e))
-                  pass
+                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                               ' Error: ' + str(e))
+                pass
 
     def clearSpecPlot(self) -> None:
         if debug_mode:
@@ -2008,9 +2016,8 @@ class Ui_mainWindow(object):
                 # self.acf_bvd.clear()
                 # self.acf_bv.clear()
             except Exception as e:
-                if debug_mode:
-                    logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                                   ' Error: ' + str(e))
+                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                               ' Error: ' + str(e))
                 pass
 
     def clearPlots(self) -> None:
@@ -2105,9 +2112,8 @@ class Ui_mainWindow(object):
                     self.R2Temp = self.dat.R2stdTemp
                     self.R2pres = 101325
             except Exception as e:
-                if debug_mode:
-                    logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                                   ' Error: ' + str(e))
+                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                               ' Error: ' + str(e))
                 self.R1Temp = 25
                 self.R2Temp = 25
                 self.R1pres = 101325
@@ -2170,9 +2176,8 @@ class Ui_mainWindow(object):
                 self.bvdCount.append(i)
             self.bvd_stat_obj.clear_bvd_stats()
         except Exception as e:
-            if debug_mode:
-                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                               ' Error: ' + str(e))
+            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                           ' Error: ' + str(e))
             self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList = [], [], [], [], [], [], [], [], []
             pass
         # print(len(self.A), len(self.B))
@@ -2592,9 +2597,8 @@ class Ui_mainWindow(object):
                 self.setValidData()
                 self.plotBVD()
         except Exception as e:
-            if debug_mode:
-                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                               ' Error: ' + str(e))
+            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                           ' Error: ' + str(e))
             self.R1PresLineEdit.setText(str("{:.4f}".format(self.R1Totpres)))
             pass
 
@@ -2612,9 +2616,8 @@ class Ui_mainWindow(object):
                 self.setValidData()
                 self.plotBVD()
         except Exception as e:
-            if debug_mode:
-                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                               ' Error: ' + str(e))
+            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                           ' Error: ' + str(e))
             self.R2PresLineEdit.setText(str("{:.4f}".format(self.R2Totpres)))
             pass
 
@@ -2664,9 +2667,8 @@ class Ui_mainWindow(object):
                 self.setValidData()
                 self.plotBVD()
         except Exception as e:
-            if debug_mode:
-                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                               ' Error: ' + str(e))
+            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                           ' Error: ' + str(e))
             self.R1TempLineEdit.setText(str("{:.4f}".format(self.R1Temp)))
             pass
 
@@ -2682,9 +2684,8 @@ class Ui_mainWindow(object):
                 self.setValidData()
                 self.plotBVD()
         except Exception as e:
-            if debug_mode:
-                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                               ' Error: ' + str(e))
+            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                           ' Error: ' + str(e))
             self.R2TempLineEdit.setText(str("{:.4f}".format(self.R2Temp)))
             pass
 
@@ -2785,9 +2786,32 @@ class Ui_mainWindow(object):
                            '# Ramp Time: ' + str(self.RampLineEdit.text()) + '\n' + '# Measurement Time: ' + str(self.MeasLineEdit.text()) + '\n' + \
                            '# Delay: ' + str(self.DelayLineEdit.text()) + '\n\n')
 
+        with open(self.pathString + '_pyBV.mea', 'w') as mea_file:
+             if self.RButStatus == 'R1':
+                 unk = 'R2'
+             else:
+                 unk = 'R1'
+             mea_file.write('# Standard: ' +  str(self.RButStatus) + '\n' + '# Unknown: ' + str(unk) + '\n' + \
+                            '# Start Time: ' + str(self.dat.startDate) + '\n' + '# End Time: ' + str(self.dat.endDate) + '\n' + \
+                            '# R1 Serial: ' + str(self.dat.R1SN) + '\n' + '# R1 PPM: ' + str(self.R1PPM) + '\n' + \
+                            '# R1 Value: ' + str(self.R1) + '\n' + '# R2 Serial: ' + str(self.dat.R2SN) + '\n' + \
+                            '# R2 PPM: ' + str(self.R2PPM) + '\n' + '# R2 Value: ' + str(self.R2) + '\n' + \
+                            '# R1 Current: ' + str(self.dat.I1) + '\n' + '# R2 Current: ' + str(self.dat.I2) + '\n' + \
+                            '# N1: ' + str(self.dat.N1) + '\n' + '# N2: ' + str(self.dat.N2) + '\n' + \
+                            '# Meas/Stats: ' + str(self.SHCLineEdit.text() + '/' + str(int(self.dat.SHC) - (int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text())))) + '\n' + '# Full Cycle Time: ' + str(self.FullCycLineEdit.text()) + '\n' + \
+                            '# Ramp Time: ' + str(self.RampLineEdit.text()) + '\n' + '# Measurement Time: ' + str(self.MeasLineEdit.text()) + '\n' + \
+                            '# Delay: ' + str(self.DelayLineEdit.text()) + '\n\n')
+
         with open(self.pathString + '_pyCCCRAW.mea', 'a') as mea_file:
-            for i, j, k in zip(self.bvdList, self.ratioMeanList, self.ratioMeanStdList):
-                mea_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\n')
+            for i, j, k, l in zip(self.bvdList, self.ratioMeanList, self.stdbvdList, self.ratioMeanStdList):
+                mea_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\t' + str(l) + '\n')
+        
+        with open(self.pathString + '_pyBV.mea', 'a') as mea_file:
+            for i, j in zip(self.AA, self.BB):
+                mea_file.write(str(i) + '\t' + str(j) + '\n')
+            mea_file.write('\n')
+            for i, j, k, l in zip(self.A, self.B, self.stdA, self.stdB):
+                mea_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\t' + str(l) + '\n')
 
         self.saveStatus = False
         self.MDSSButton.setStyleSheet(red_style)
@@ -2810,6 +2834,8 @@ class Ui_mainWindow(object):
         self.bvdCount       = []
         self.deletedR1      = []
         self.deletedR2      = []
+        
+        self.bvdList_chk        = []
 
         self.SampUsedCt     = 0
         self.changedDeltaI2R2Ct = 0
@@ -2883,12 +2909,13 @@ class Ui_mainWindow(object):
         """
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        self.cleanUp()
-        self.getBVD()
-        self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
-        self.setValidData()
-        self.plotBVD()
-        self.plotStatMeasures()
+        self.getData()
+        # self.cleanUp()
+        # self.getBVD()
+        # self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
+        # self.setValidData()
+        # self.plotBVD()
+        # self.plotStatMeasures()
 
 def dir_path(save_path):
     """

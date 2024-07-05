@@ -1,6 +1,4 @@
 import logging, inspect
-logger = logging.getLogger(__name__)
-
 from magnicon_ccc import magnicon_ccc
 from numpy import mean, std, array_split, sqrt
 from threading import Thread
@@ -9,10 +7,12 @@ from time import perf_counter
 # Class that does calculations on the raw data
 class bvd_stat:
     def __init__(self, text: str, ignored_first: int, ignored_last: int, mag, debug_mode: bool):
+        # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)s %(levelname)s:%(message)s')
+        self.logger = logging.getLogger(__name__)
         # print ('Debug mode: ', debug_mode)
         self.debug_mode = debug_mode
         if self.debug_mode:
-            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+            self.logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         self.mag = mag
         self.i              = 0
         self.points         = 0
@@ -56,7 +56,7 @@ class bvd_stat:
         and is much slower in execution
         """
         if self.debug_mode:
-            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+            self.logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         start_thread = perf_counter()
         # Runs through the raw data
         while (self.i < len(self.mag.rawData)):
@@ -77,7 +77,7 @@ class bvd_stat:
             elif self.start and (self.points == int((self.samples_used)/2)) and self.cur == 'A1':
                 # A1 = sum(temp)/len(temp)
                 A1     = mean(self.temp)
-                stdA1  = std(self.temp, ddof=1)
+                stdA1  = std(self.temp, ddof=1)/len(sqrt(self.temp))
                 self.temp   = []
                 self.points = 0
                 self.cur    = 'B'
@@ -94,9 +94,9 @@ class bvd_stat:
                 # B1 = sum(temp[0:int((self.samples_used)/2)])/len(temp[0:int((self.samples_used)/2)])
                 # B2 = sum(temp[int((self.samples_used/2):(self.samples_used)])/len(temp[int((self.samples_used)/2):(self.samples_used)])
                 B1     = mean(self.temp[0:int((self.samples_used)/2)])
-                stdB1  = std(self.temp[0:int((self.samples_used)/2)], ddof=1)
+                stdB1  = std(self.temp[0:int((self.samples_used)/2)], ddof=1)/sqrt(len(self.temp[0:int((self.samples_used)/2)]))
                 B2     = mean(self.temp[int((self.samples_used)/2):(self.samples_used)])
-                stdB2  = std(self.temp[int((self.samples_used)/2):(self.samples_used)], ddof=1)
+                stdB2  = std(self.temp[int((self.samples_used)/2):(self.samples_used)], ddof=1)/sqrt(len(self.temp[int((self.samples_used)/2):(self.samples_used)]))
                 self.temp   = []
                 self.points = 0
                 self.cur    = 'A2'
@@ -112,7 +112,7 @@ class bvd_stat:
             elif self.start and (self.points == int((self.samples_used)/2)) and self.cur == 'A2':
                 # A2 = sum(temp)/len(temp)
                 A2 = mean(self.temp)
-                stdA2 = std(self.temp, ddof=1)
+                stdA2 = std(self.temp, ddof=1)/sqrt(len(self.temp))
                 self.V1.append(B2-A1) # C1
                 self.stdV1.append(sqrt(stdB2**2 + stdA1**2))
                 self.V2.append(B1-A2) # C2
@@ -151,10 +151,10 @@ class bvd_stat:
         Returns
         -------
         None.
-
         """
+        self.clear_bvd_stats()
         if self.debug_mode:
-            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+            self.logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         start_thread = perf_counter()
         flag = False
         if int(self.ignored_last) == 0:
@@ -210,11 +210,11 @@ class bvd_stat:
         for i in self.A1A2:
             for ii in i:
                 self.A.append(mean(ii))
-                self.stdA.append(std(ii, ddof=1))
+                self.stdA.append(std(ii, ddof=1)/sqrt(len(ii)))
         for j in self.B1B2:
-            for jj in j:
+            for ct, jj in j:
                 self.B.append(mean(jj))
-                self.stdB.append(std(jj, ddof=1))
+                self.stdB.append(std(jj, ddof=1)/sqrt(len(jj)))
         for a2, b1, stda2, stdb1 in zip(self.A[1::2], self.B[1::2], self.stdA[1::2], self.stdB[1::2]):
             # print (ct, a2, b1)
             self.V1.append(b1 - a2) # C1
@@ -235,29 +235,38 @@ class bvd_stat:
         # print('V1', self.V1)
         # print('V2', self.V2)
         # print('BVD', self.bvdList)
-        print("Time taken to execute new thread: ", perf_counter()- start_thread)
+        print("Time taken to execute new thread: ", perf_counter() - start_thread)
 
     def send_bvd_stats(self):
         if self.debug_mode:
-            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+            self.logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         return (self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList)
     
     def clear_bvd_stats(self) -> None:
         if self.debug_mode:
-            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        self.V1         = []
-        self.stdV1      = []
-        self.V2         = []
-        self.stdV2      = []
-        self.A          = []
-        self.stdA       = []
-        self.B          = []
-        self.stdB       = []
-        self.AA         = []
-        self.BB         = []
-        self.bvdList    = []
-        self.stdbvdList = []
-        self.temp       = []
+            self.logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+        self.V1             = []
+        self.stdV1          = []
+        self.V2             = []
+        self.stdV2          = []
+        self.AA             = []
+        self.AA_2D          = []
+        self.A1A2           = []
+        self.B1B2           = []
+        self.BB             = []
+        self.A              = []
+        self.stdA           = []
+        self.B              = []
+        self.BB_2D          = []
+        self.stdB           = []
+        self.bvdList        = []
+        self.stdbvdList     = []
+        self.temp           = []
+        self.zero           = []
+        self.bottom         = []
+        self.top            = []
+        self.ramping_up     = []
+        self.ramping_down   = []
         
         
 if __name__ == '__main__':

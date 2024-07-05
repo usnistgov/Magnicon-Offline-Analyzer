@@ -35,4 +35,6 @@ __ChangeLog__   =       """
                         070124:     ENH: Add ignore first and ignore last line edits and remove Samples used line editrewrote new process thread to allow for correct 
                                          calculations when ignoring last x samples, fix timing diagram, added command line arguments to write debug log, 
                                          select database folder, update to 2.0
+                        070524:     ENH: On Save MDSS, the program writes a file '_pyBV.mea' which contains raw and average BV values for the current reversals, 
+                                         fix std to std/sqrt(N) for stdA and stdB, update to 2.0
                         """
