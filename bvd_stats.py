@@ -212,7 +212,7 @@ class bvd_stat:
                 self.A.append(mean(ii))
                 self.stdA.append(std(ii, ddof=1)/sqrt(len(ii)))
         for j in self.B1B2:
-            for ct, jj in j:
+            for jj in j:
                 self.B.append(mean(jj))
                 self.stdB.append(std(jj, ddof=1)/sqrt(len(jj)))
         for a2, b1, stda2, stdb1 in zip(self.A[1::2], self.B[1::2], self.stdA[1::2], self.stdB[1::2]):
