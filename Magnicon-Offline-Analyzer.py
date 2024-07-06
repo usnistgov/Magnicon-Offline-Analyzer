@@ -2784,7 +2784,9 @@ class Ui_mainWindow(object):
                            '# N1: ' + str(self.dat.N1) + '\n' + '# N2: ' + str(self.dat.N2) + '\n' + \
                            '# Meas/Stats: ' + str(self.SHCLineEdit.text() + '/' + str(int(self.dat.SHC) - (int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text())))) + '\n' + '# Full Cycle Time: ' + str(self.FullCycLineEdit.text()) + '\n' + \
                            '# Ramp Time: ' + str(self.RampLineEdit.text()) + '\n' + '# Measurement Time: ' + str(self.MeasLineEdit.text()) + '\n' + \
-                           '# Delay: ' + str(self.DelayLineEdit.text()) + '\n\n')
+                           '# Delay: ' + str(self.DelayLineEdit.text()) + '\n' + \
+                           '# Comment: ' + str(self.CommentsTextBrowser.toPlainText()) + '\n' + \
+                           '# BVD [V]' + '\t' + 'Ratio' + '\t' + 'StdrtN[BVD]' + '\t' + 'StdrtN[Ratio]' + '\n\n')
 
         with open(self.pathString + '_pyBV.mea', 'w') as mea_file:
              if self.RButStatus == 'R1':
@@ -2800,7 +2802,9 @@ class Ui_mainWindow(object):
                             '# N1: ' + str(self.dat.N1) + '\n' + '# N2: ' + str(self.dat.N2) + '\n' + \
                             '# Meas/Stats: ' + str(self.SHCLineEdit.text() + '/' + str(int(self.dat.SHC) - (int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text())))) + '\n' + '# Full Cycle Time: ' + str(self.FullCycLineEdit.text()) + '\n' + \
                             '# Ramp Time: ' + str(self.RampLineEdit.text()) + '\n' + '# Measurement Time: ' + str(self.MeasLineEdit.text()) + '\n' + \
-                            '# Delay: ' + str(self.DelayLineEdit.text()) + '\n\n')
+                            '# Delay: ' + str(self.DelayLineEdit.text()) + '\n' + \
+                            '# Comment: ' + str(self.CommentsTextBrowser.toPlainText()) + '\n' + \
+                            '# V(I-) [V]' + '\t' + 'V(I+) [V]' + '\n\n')
 
         with open(self.pathString + '_pyCCCRAW.mea', 'a') as mea_file:
             for i, j, k, l in zip(self.bvdList, self.ratioMeanList, self.stdbvdList, self.ratioMeanStdList):
@@ -2809,9 +2813,6 @@ class Ui_mainWindow(object):
         with open(self.pathString + '_pyBV.mea', 'a') as mea_file:
             for i, j in zip(self.AA, self.BB):
                 mea_file.write(str(i) + '\t' + str(j) + '\n')
-            mea_file.write('\n')
-            for i, j, k, l in zip(self.A, self.B, self.stdA, self.stdB):
-                mea_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\t' + str(l) + '\n')
 
         self.saveStatus = False
         self.MDSSButton.setStyleSheet(red_style)
