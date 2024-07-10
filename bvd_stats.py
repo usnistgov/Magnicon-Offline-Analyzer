@@ -155,7 +155,7 @@ class bvd_stat:
         self.clear_bvd_stats()
         if self.debug_mode:
             self.logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        start_thread = perf_counter()
+        # start_thread = perf_counter()
         flag = False
         if int(self.ignored_last) == 0:
             ignored_last = -1
@@ -235,7 +235,7 @@ class bvd_stat:
         # print('V1', self.V1)
         # print('V2', self.V2)
         # print('BVD', self.bvdList)
-        print("Time taken to execute new thread: ", perf_counter() - start_thread)
+        # print("Time taken to execute new thread: ", perf_counter() - start_thread)
 
     def send_bvd_stats(self):
         if self.debug_mode:

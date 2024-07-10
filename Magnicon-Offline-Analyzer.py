@@ -44,7 +44,7 @@ red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
 winSizeH    = 1000
-winSizeV    = 835
+winSizeV    = 845
 c           = 0.8465 # specific gravity of oil used
 g           = 9.81 # local acceleration due to gravity
 # I- == blue, I+ == Red
@@ -425,6 +425,8 @@ class Ui_mainWindow(object):
         self.MagElecLabel.setGeometry(QRect(self.col0x, 630, self.lbl_width, self.lbl_height))
         self.ProbeLabel = QLabel(parent=self.SetResTab)
         self.ProbeLabel.setGeometry(QRect(self.col0x, 690, self.lbl_width, self.lbl_height))
+        self.lbl_range_shunt = QLabel(parent=self.SetResTab)
+        self.lbl_range_shunt.setGeometry(QRect(self.col0x, 750, self.lbl_width, self.lbl_height))
         # col1
         self.R1PPMLabel = QLabel(parent=self.SetResTab)
         self.R1PPMLabel.setGeometry(QRect(self.col1x, 30, self.lbl_width, self.lbl_height))
@@ -446,6 +448,7 @@ class Ui_mainWindow(object):
         self.lbl_path_temperature1.setGeometry(QRect(self.col1x, 630, self.lbl_width, self.lbl_height))
         self.lbl_path_temperature2 = QLabel(parent=self.SetResTab)
         self.lbl_path_temperature2.setGeometry(QRect(self.col1x, 690, self.lbl_width, self.lbl_height))
+        
         # col2
         self.R1ValueLabel = QLabel(parent=self.SetResTab)
         self.R1ValueLabel.setGeometry(QRect(self.col2x, 30, self.lbl_width, self.lbl_height))
@@ -463,6 +466,8 @@ class Ui_mainWindow(object):
         self.R1OilPresLabel.setGeometry(QRect(self.col2x, 390, self.lbl_width, self.lbl_height))
         self.R2OilPresLabel = QLabel(parent=self.SetResTab)
         self.R2OilPresLabel.setGeometry(QRect(self.col2x, 450, self.lbl_width, self.lbl_height))
+        self.lbl_12bitdac = QLabel(parent=self.SetResTab)
+        self.lbl_12bitdac.setGeometry(QRect(self.col2x-40, 750, self.lbl_width+40, self.lbl_height))
         # col3
         self.kLabel = QLabel(parent=self.SetResTab)
         self.kLabel.setGeometry(QRect(self.col3x, 30, self.lbl_width, self.lbl_height))
@@ -545,13 +550,13 @@ class Ui_mainWindow(object):
         self.lbl_error = QLabel(parent=self.centralwidget)
         self.lbl_error.setGeometry(QRect(self.col7x, 690, self.lbl_width, self.lbl_height))
         self.ResultsLabel = QLabel(parent=self.SetResTab)
-        self.ResultsLabel.setGeometry(QRect(650, 10, self.lbl_width, self.lbl_height))
+        self.ResultsLabel.setGeometry(QRect(650, 12, self.lbl_width, self.lbl_height))
         self.ResultsLabel.setStyleSheet(
-                """QLabel {color: blue; font-weight: bold; font-size: 14pt }""")
+                """QLabel {color: blue; font-weight: bold; font-size: 10pt }""")
         self.SettingsLabel = QLabel(parent=self.SetResTab)
-        self.SettingsLabel.setGeometry(QRect(220, 10, self.lbl_width, self.lbl_height))
+        self.SettingsLabel.setGeometry(QRect(220, 12, self.lbl_width, self.lbl_height))
         self.SettingsLabel.setStyleSheet(
-                """QLabel {color: red; font-weight: bold; font-size: 14pt }""")
+                """QLabel {color: red; font-weight: bold; font-size: 10pt }""")
         self.lbl_ccceq = QLabel(parent=self.SetResTab)
         self.lbl_ccceq.setGeometry(QRect(640, 440, self.lbl_width+25, self.lbl_height))
         self.lbl_ccceq.setStyleSheet(
@@ -649,6 +654,12 @@ class Ui_mainWindow(object):
         self.le_path_temperature2 = QLineEdit(parent=self.SetResTab)
         self.le_path_temperature2.setGeometry(QRect(self.col1x, self.coly*12, self.lbl_width+80, self.lbl_height))
         self.le_path_temperature2.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
+       
+        self.le_range_shunt = QLineEdit(parent=self.SetResTab)
+        self.le_range_shunt.setGeometry(QRect(self.col1x-40, self.coly*12+30, self.lbl_width, self.lbl_height))
+        self.le_range_shunt.setReadOnly(True)
+        self.le_range_shunt.setStyleSheet(
+                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         # col2
         self.R1ValueLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1ValueLineEdit.setGeometry(QRect(self.col2x, self.coly, self.lbl_width, self.lbl_height))
@@ -739,6 +750,11 @@ class Ui_mainWindow(object):
         self.le_end_time.setReadOnly(True)
         self.le_end_time.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_12bitdac = QLineEdit(parent=self.SetResTab)
+        self.le_12bitdac.setGeometry(QRect(self.col3x, self.coly*12 + 30, self.lbl_width, self.lbl_height))
+        self.le_12bitdac.setReadOnly(True)
+        self.le_12bitdac.setStyleSheet(
+               """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         # col4
         self.VMeanLineEdit = QLineEdit(parent=self.SetResTab)
         self.VMeanLineEdit.setGeometry(QRect(self.col4x, self.coly, self.lbl_width, self.lbl_height))
@@ -1352,11 +1368,11 @@ class Ui_mainWindow(object):
         self.btn_temperature2.clicked.connect(self.get_temperature2)
 
         self.SquidFeedBut = QPushButton(parent=self.SetResTab)
-        self.SquidFeedBut.setGeometry(QRect(self.col3x, self.coly*11, self.lbl_width, int(self.lbl_height*1.2)))
+        self.SquidFeedBut.setGeometry(QRect(self.col3x, self.coly*11 - 5, self.lbl_width, int(self.lbl_height*1.2)))
         self.SquidFeedBut.setStyleSheet(blue_style)
         self.SquidFeedBut.clicked.connect(self.SquidButClicked)
         self.CurrentBut = QPushButton(parent=self.SetResTab)
-        self.CurrentBut.setGeometry(QRect(self.col3x, self.coly*12, self.lbl_width, int(self.lbl_height*1.2)))
+        self.CurrentBut.setGeometry(QRect(self.col3x, self.coly*12 - 5, self.lbl_width, int(self.lbl_height*1.2)))
         self.CurrentBut.setStyleSheet(blue_style)
         self.CurrentBut.clicked.connect(self.CurrentButClicked)
 
@@ -1492,6 +1508,8 @@ class Ui_mainWindow(object):
         self.CurrentButLabel.setText(_translate("mainWindow", "SQUID Feedin Arm"))
         self.lbl_start_time.setText(_translate("mainWindow", "Start time"))
         self.lbl_end_time.setText(_translate("mainWindow", "End time"))
+        self.lbl_range_shunt.setText(_translate("mainWindow", "Range shunt"))
+        self.lbl_12bitdac.setText(_translate("mainWindow", "12 bit DAC/16 Bit DAC"))
         self.CurrentBut.setText(_translate("mainWindow", self.CurrentButStatus))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.BVDTab), _translate("mainWindow", "BVD"))
@@ -2127,13 +2145,19 @@ class Ui_mainWindow(object):
             # getResults_end = perf_counter() - getData_start
             # print("Time taken to get Results: " + str(getResults_end))
             if self.validFile:
+                getBVD_start = perf_counter()
                 self.getBVD()
+                print("Time taken to get BVD data: ", perf_counter() - getBVD_start)
                 # getBVD_end = perf_counter() - getData_start
                 # print("Time taken to get BVD: " +  str(getBVD_end))
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
                 self.setValidData()
+                plotBVD_start = perf_counter()
                 self.plotBVD()
+                print("Time taken to plot BVD data: ", perf_counter() - plotBVD_start)
+                plotStat_start = perf_counter()
                 self.plotStatMeasures()
+                print("Time taken to plot allan and spectrum: ", perf_counter() - plotStat_start)
                 # getPlot_end = perf_counter() - getData_start
                 # print("Time taken to plot all data in GUI: ", str(getPlot_end))
                 getData_end = perf_counter() - getData_start
@@ -2437,6 +2461,8 @@ class Ui_mainWindow(object):
         # self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdppm*10**6)))
         self.NLineEdit.setText(str(self.N))
         self.MeasTimeLineEdit.setText(self.dat.measTimeStamp)
+        self.le_range_shunt.setText('10k/' + str(self.dat.rangeShunt))
+        self.le_12bitdac.setText(str(int(self.k*2048*int(self.dat.rangeShunt)))+ '/' + str(self.dat.low16))
         # self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setEnabled(True)
         self.plotCountCombo.clear()
@@ -2512,6 +2538,8 @@ class Ui_mainWindow(object):
         self.MeasTimeLineEdit.setText("")
         self.le_deltaI2R2.setText("")
         self.kLineEdit.setText("")
+        self.le_range_shunt.setText("")
+        self.le_12bitdac.setText("")
         self.MDSSButton.setStyleSheet("")
         self.MDSSButton.setText("No")
         self.MDSSButton.setEnabled(False)
