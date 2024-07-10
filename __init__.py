@@ -37,4 +37,5 @@ __ChangeLog__   =       """
                                          select database folder, update to 2.0
                         070524:     ENH: On Save MDSS, the program writes a file '_pyBV.mea' which contains raw and average BV values for the current reversals, 
                                          fix std to std/sqrt(N) for stdA and stdB, update to 2.0
+                        071024:     ENH: Add indicators for range shunt and 12 Bit/16 Bit DAC, upgrade to version 2.1
                         """
