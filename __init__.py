@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "2.1"
+__version__ 	=       "2.2"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -38,4 +38,5 @@ __ChangeLog__   =       """
                         070524:     ENH: On Save MDSS, the program writes a file '_pyBV.mea' which contains raw and average BV values for the current reversals, 
                                          fix std to std/sqrt(N) for stdA and stdB, update to 2.0
                         071024:     ENH: Add indicators for range shunt and 12 Bit/16 Bit DAC, upgrade to version 2.1
+                        071324:     ENH: Add tooltips, add indicator for calibrated mode, update readme, upgrade to version 2.2
                         """

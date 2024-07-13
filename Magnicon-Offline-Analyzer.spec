@@ -9,11 +9,6 @@ from os import environ
 PACKAGE_SITE= getusersitepackages()
 print ("Site packages", PACKAGE_SITE)
 
-options = [
-    ('v', None, 'OPTION'),
-    ('W ignore', None, 'OPTION'),
-]
-
 a = Analysis(
     ['Magnicon-Offline-Analyzer.py'],
     pathex=[''],
@@ -50,7 +45,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    options,
+   # options,
     splash,                   # <-- both, splash target
     splash.binaries,          # <-- and splash binaries
     name='Magnicon-Offline-Analyzer.exe',

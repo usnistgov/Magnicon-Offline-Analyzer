@@ -190,7 +190,7 @@ class magnicon_ccc:
     def load_cfg(self) -> None:
         if not self.validFile:
             return
-        self.low16 = self.ncor = self.rangeShunt = self.R1NomVal = self.R2NomVal = self.I1 = self.I2 = self.I1Feedin = self.I2Feedin = nan
+        self.calmode = self.dac12 = self.upper4 = self.lower8 = self.low16 = self.ncor = self.rangeShunt = self.R1NomVal = self.R2NomVal = self.I1 = self.I2 = self.I1Feedin = self.I2Feedin = nan
         feedinIndex = [-97, -94.5, -92.0, -89.5, -87.0, -84.5, -82.0, -79.5, -77.0, -74.5, -72.0, -69.5, -67.0, -64.5, -62.0,
                        -59.5, -57.0, -54.5, -52.0, -49.5, -47.0, -44.5, -42.0, -39.5, -37.0, -34.5, -32.0, -29.5, -27.0]
         rangeShuntList=[512, 64, 8, 1]
@@ -251,6 +251,20 @@ class magnicon_ccc:
                     self.ncor = int(line.split(" = ")[-1].strip())
                 elif line.startswith('cn_icdac 3'):
                     self.low16 = int(line.split(" = ")[-1].strip())
+                elif line.startswith('cn_smrdac 3'): # defines the lower 8 bits of the 12 bit DAC
+                    self.lower8 = int(line.split(" = ")[-1].strip())
+                elif line.startswith('cn_vhpdac 3'): # defines the upper 4 bits of the 12 bit DAC
+                    self.upper4 = int(line.split(" = ")[-1].strip())
+                    self.upper4 = self.upper4<<8
+                elif line.startswith('cn_calmode 3'): # compensation cal mode (TRUE or FALSE)
+                    calmode = str(line.split(" = ")[-1].strip())
+                    if calmode == 'TRUE':
+                        self.calmode = True
+                    else:
+                        self.calmode = False
+        if self.lower8 is not nan and self.upper4 is not nan:            
+            self.dac12 = self.lower8 + self.upper4
+                
 
     def check_shared_drive_exists(self, drive_path):
         try:

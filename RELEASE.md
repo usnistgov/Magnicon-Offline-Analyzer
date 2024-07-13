@@ -1,5 +1,11 @@
 # RELEASE
 
+## 07/13/2024   Version 2.2
+  * Fix tooltips
+  * Add calibrated mode indicator
+  * Fix location of range shunt and 12 bit DAC indicators in the ui
+  * Update README.md
+
 ## 07/10/2024   Version 2.1
   * Add indicators for range shunt and 12 Bit/16 Bit DAC
 

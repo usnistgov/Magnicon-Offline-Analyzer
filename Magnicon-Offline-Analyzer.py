@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__ = '2.1' # Program version string
+__version__ = '2.2' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -84,7 +84,6 @@ if getattr(sys, 'frozen', False):
     base_dir = sys._MEIPASS
     # base_dir = os.path.dirname(sys.executable)
     running_mode = 'Frozen/executable'
-    import pyi_splash
 else:
     try:
         base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -123,7 +122,7 @@ class timingDiagramWindow(QWidget):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         super(QWidget, self).__init__()
-        self.setFixedSize(1100, 550)
+        self.setFixedSize(1105, 555)
         self.setWindowIcon(QIcon(base_dir + r'\icons\main.png'))
         lbl_timing_diagram = QLabel(self)
         lbl_timing_diagram.setPixmap(QPixmap(base_dir + r"\icons\timing_diagram.PNG"))
@@ -398,6 +397,7 @@ class Ui_mainWindow(object):
 
     # Set up for the labels
     def setLabels(self) -> None:
+        global red_style
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         # col0
@@ -417,16 +417,17 @@ class Ui_mainWindow(object):
         self.R1PresLabel.setGeometry(QRect(self.col0x, 390, self.lbl_width, self.lbl_height))
         self.R2PresLabel = QLabel(parent=self.SetResTab)
         self.R2PresLabel.setGeometry(QRect(self.col0x, 450, self.lbl_width, self.lbl_height))
+        self.lbl_range_shunt = QLabel(parent=self.SetResTab)
+        self.lbl_range_shunt.setGeometry(QRect(self.col0x, 520, self.lbl_width, self.lbl_height))
         self.CommentsLabel = QLabel(parent=self.SetResTab)
-        self.CommentsLabel.setGeometry(QRect(self.col0x, 510, self.lbl_width, self.lbl_height))
+        self.CommentsLabel.setGeometry(QRect(self.col0x, 540, self.lbl_width, self.lbl_height))
         self.txtFileLabel = QLabel(parent=self.SetResTab)
         self.txtFileLabel.setGeometry(QRect(self.col0x, 600, self.lbl_width, self.lbl_height))
         self.MagElecLabel = QLabel(parent=self.SetResTab)
-        self.MagElecLabel.setGeometry(QRect(self.col0x, 630, self.lbl_width, self.lbl_height))
+        self.MagElecLabel.setGeometry(QRect(self.col0x, 660, self.lbl_width, self.lbl_height))
         self.ProbeLabel = QLabel(parent=self.SetResTab)
-        self.ProbeLabel.setGeometry(QRect(self.col0x, 690, self.lbl_width, self.lbl_height))
-        self.lbl_range_shunt = QLabel(parent=self.SetResTab)
-        self.lbl_range_shunt.setGeometry(QRect(self.col0x, 750, self.lbl_width, self.lbl_height))
+        self.ProbeLabel.setGeometry(QRect(self.col0x, 720, self.lbl_width, self.lbl_height))
+
         # col1
         self.R1PPMLabel = QLabel(parent=self.SetResTab)
         self.R1PPMLabel.setGeometry(QRect(self.col1x, 30, self.lbl_width, self.lbl_height))
@@ -445,9 +446,9 @@ class Ui_mainWindow(object):
         self.R2OilDepthLabel = QLabel(parent=self.SetResTab)
         self.R2OilDepthLabel.setGeometry(QRect(self.col1x, 450, self.lbl_width, self.lbl_height))
         self.lbl_path_temperature1 = QLabel(parent=self.SetResTab)
-        self.lbl_path_temperature1.setGeometry(QRect(self.col1x, 630, self.lbl_width, self.lbl_height))
+        self.lbl_path_temperature1.setGeometry(QRect(self.col1x, 660, self.lbl_width, self.lbl_height))
         self.lbl_path_temperature2 = QLabel(parent=self.SetResTab)
-        self.lbl_path_temperature2.setGeometry(QRect(self.col1x, 690, self.lbl_width, self.lbl_height))
+        self.lbl_path_temperature2.setGeometry(QRect(self.col1x, 720, self.lbl_width, self.lbl_height))
         
         # col2
         self.R1ValueLabel = QLabel(parent=self.SetResTab)
@@ -467,7 +468,7 @@ class Ui_mainWindow(object):
         self.R2OilPresLabel = QLabel(parent=self.SetResTab)
         self.R2OilPresLabel.setGeometry(QRect(self.col2x, 450, self.lbl_width, self.lbl_height))
         self.lbl_12bitdac = QLabel(parent=self.SetResTab)
-        self.lbl_12bitdac.setGeometry(QRect(self.col2x-40, 750, self.lbl_width+40, self.lbl_height))
+        self.lbl_12bitdac.setGeometry(QRect(self.col2x-100, 520, self.lbl_width+40, self.lbl_height))
         # col3
         self.kLabel = QLabel(parent=self.SetResTab)
         self.kLabel.setGeometry(QRect(self.col3x, 30, self.lbl_width, self.lbl_height))
@@ -486,13 +487,18 @@ class Ui_mainWindow(object):
         self.RelHumLabel = QLabel(parent=self.SetResTab)
         self.RelHumLabel.setGeometry(QRect(self.col3x, 450, self.lbl_width, self.lbl_height))
         self.lbl_start_time = QLabel(parent=self.SetResTab)
-        self.lbl_start_time.setGeometry(QRect(self.col3x,510, self.lbl_width, self.lbl_height))
+        self.lbl_start_time.setGeometry(QRect(self.col3x, 540, self.lbl_width, self.lbl_height))
         self.lbl_end_time = QLabel(parent=self.SetResTab)
-        self.lbl_end_time.setGeometry(QRect(self.col3x, 570, self.lbl_width, self.lbl_height))
+        self.lbl_end_time.setGeometry(QRect(self.col3x, 600, self.lbl_width, self.lbl_height))
         self.SquidFeedLabel = QLabel(parent=self.SetResTab)
-        self.SquidFeedLabel.setGeometry(QRect(self.col3x, 630, self.lbl_width, self.lbl_height))
+        self.SquidFeedLabel.setGeometry(QRect(self.col3x, 660, self.lbl_width, self.lbl_height))
         self.CurrentButLabel = QLabel(parent=self.SetResTab)
-        self.CurrentButLabel.setGeometry(QRect(self.col3x, 690, self.lbl_width, self.lbl_height))
+        self.CurrentButLabel.setGeometry(QRect(self.col3x, 720, self.lbl_width, self.lbl_height))
+        self.lbl_calmode = QLabel(parent=self.SetResTab)
+        self.lbl_calmode.setGeometry(QRect(self.col3x, 520, self.lbl_width, self.lbl_height))
+        self.lbl_calmode_rbv = QLabel(parent=self.SetResTab)
+        self.lbl_calmode_rbv.setGeometry(QRect(self.col3x+60, 520, self.lbl_width-60, self.lbl_height))
+        self.lbl_calmode_rbv.setStyleSheet(red_style)
         # col4
         self.VMeanLabel = QLabel(parent=self.SetResTab)
         self.VMeanLabel.setGeometry(QRect(self.col4x, 30, self.lbl_width, self.lbl_height))
@@ -614,7 +620,7 @@ class Ui_mainWindow(object):
         self.R2PresLineEdit.setValidator(QDoubleValidator())
         self.R2PresLineEdit.returnPressed.connect(self.R2PresChanged)
         self.txtFileLineEdit = QLineEdit(parent=self.SetResTab)
-        self.txtFileLineEdit.setGeometry(QRect(self.col0x, self.coly*10, int(self.lbl_width*2.8), self.lbl_height))
+        self.txtFileLineEdit.setGeometry(QRect(self.col0x, self.coly*10 + 30, int(self.lbl_width*2.8), self.lbl_height))
         self.txtFileLineEdit.returnPressed.connect(self.folderEdited)
         # col1
         self.R1PPMLineEdit = QLineEdit(parent=self.SetResTab)
@@ -648,15 +654,15 @@ class Ui_mainWindow(object):
         self.RampLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         self.le_path_temperature1 = QLineEdit(parent=self.SetResTab)
-        self.le_path_temperature1.setGeometry(QRect(self.col1x, self.coly*11, self.lbl_width+80, self.lbl_height))
+        self.le_path_temperature1.setGeometry(QRect(self.col1x, self.coly*11 + 30, self.lbl_width+80, self.lbl_height))
         self.le_path_temperature1.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
 
         self.le_path_temperature2 = QLineEdit(parent=self.SetResTab)
-        self.le_path_temperature2.setGeometry(QRect(self.col1x, self.coly*12, self.lbl_width+80, self.lbl_height))
+        self.le_path_temperature2.setGeometry(QRect(self.col1x, self.coly*12 + 30, self.lbl_width+80, self.lbl_height))
         self.le_path_temperature2.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
        
         self.le_range_shunt = QLineEdit(parent=self.SetResTab)
-        self.le_range_shunt.setGeometry(QRect(self.col1x-40, self.coly*12+30, self.lbl_width, self.lbl_height))
+        self.le_range_shunt.setGeometry(QRect(self.col1x-40, self.coly*8+40, self.lbl_width-60, self.lbl_height))
         self.le_range_shunt.setReadOnly(True)
         self.le_range_shunt.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
@@ -741,17 +747,17 @@ class Ui_mainWindow(object):
         self.RelHumLineEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         self.le_start_time = QLineEdit(parent=self.SetResTab)
-        self.le_start_time.setGeometry(QRect(self.col3x, self.coly*9, self.lbl_width, self.lbl_height))
+        self.le_start_time.setGeometry(QRect(self.col3x, self.coly*9 + 30, self.lbl_width, self.lbl_height))
         self.le_start_time.setReadOnly(True)
         self.le_start_time.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         self.le_end_time = QLineEdit(parent=self.SetResTab)
-        self.le_end_time.setGeometry(QRect(self.col3x, self.coly*10, self.lbl_width, self.lbl_height))
+        self.le_end_time.setGeometry(QRect(self.col3x, self.coly*10 + 30, self.lbl_width, self.lbl_height))
         self.le_end_time.setReadOnly(True)
         self.le_end_time.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
         self.le_12bitdac = QLineEdit(parent=self.SetResTab)
-        self.le_12bitdac.setGeometry(QRect(self.col3x, self.coly*12 + 30, self.lbl_width, self.lbl_height))
+        self.le_12bitdac.setGeometry(QRect(self.col3x - 100, self.coly*8 + 40, self.lbl_width-20, self.lbl_height))
         self.le_12bitdac.setReadOnly(True)
         self.le_12bitdac.setStyleSheet(
                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
@@ -927,6 +933,9 @@ class Ui_mainWindow(object):
         self.R1TempLineEdit.setToolTip('')
         self.R2TempLineEdit.setToolTip('')
         self.RelHumLineEdit.setToolTip('')
+        self.le_range_shunt.setToolTip('')
+        self.le_12bitdac.setToolTip('')
+        self.lbl_calmode_rbv.setToolTip('')
         self.le_start_time.setToolTip('')
         self.le_end_time.setToolTip('')
         self.VMeanLineEdit.setToolTip('')
@@ -964,6 +973,7 @@ class Ui_mainWindow(object):
         self.StandardRBut.setToolTip('')
         self.MDSSButton.setToolTip('')
         self.saveButton.setToolTip('')
+        self.C1C2LineEdit.setToolTip('')
 
     def show_tooltip(self) -> None:
         if debug_mode:
@@ -997,13 +1007,16 @@ class Ui_mainWindow(object):
         self.MeasTimeLineEdit.setToolTip('Total time taken for the measurement to complete')
         self.le_deltaI2R2.setToolTip('Peak-to-Peak voltage in the secondary ratio arm. This is a calculated value and should be checked regularly')
         self.R1TotalPresLineEdit.setToolTip('Total pressure experienced by the primary resistor')
-        self.R2TotalPresLineEdit.setToolTip('Total pressure experienced by the secondary resitor')
+        self.R2TotalPresLineEdit.setToolTip('Total pressure experienced by the secondary resistor')
         self.R1TempLineEdit.setToolTip('Temperature of the primary resistor')
         self.R2TempLineEdit.setToolTip('Temperature of the secondary resistor')
         self.RelHumLineEdit.setToolTip('Relative Humidity of the CCC Drive Electronics Chassis')
+        self.le_range_shunt.setToolTip('Range shunt setting of the compensation network')
+        self.le_12bitdac.setToolTip('12 bit DAC setting of the compensation network/16 bit correction setting (this should be 0 in normal operation)')
+        self.lbl_calmode_rbv.setToolTip('Calibrated Mode')
         self.le_start_time.setToolTip('Start date and time of the measurement')
         self.le_end_time.setToolTip('End date and time of the measurement')
-        self.VMeanLineEdit.setToolTip('Mean of the bridge voltage difference (C<sub>1</cub> + C<sub>2</sub>)/2 calculated from the raw .txt file')
+        self.VMeanLineEdit.setToolTip('Mean of the bridge voltage difference (C<sub>1</sub> + C<sub>2</sub>)/2 calculated from the raw .txt file')
         self.StdDevLineEdit.setToolTip('Standard deviation of the bridge voltage difference calculated from the raw .txt file')
         self.StdDevMeanLineEdit.setToolTip('Standard deviation of the mean of the bridge voltage difference calculated from the raw .txt file')
         self.C1LineEdit.setToolTip('Bridge voltage difference measured after t<sub>ramp</sub> + t<sub>settle</sub>  + t<sub>meas</sub>/2')
@@ -1011,8 +1024,9 @@ class Ui_mainWindow(object):
         self.VMeanChkLineEdit.setToolTip('Mean of the bridge voltage difference calculated from the _bvd.txt file')
         self.StdDevChkLineEdit.setToolTip('Standard deviation of the bridge voltage difference calculated from the _bvd.txt file')
         self.StdDevMeanChkLineEdit.setToolTip('Standard deviation of the mean of the bridge voltage difference calculated from the _bvd.txt file')
-        self.StdDevC1LineEdit.setToolTip('R Mean - R Mean Chk')
-        self.StdDevC2LineEdit.setToolTip('R Mean - R Mean Chk')
+        self.StdDevMeanPPMLineEdit.setToolTip('Standard deviation of the mean of the bridge voltage difference calculated from the raw .txt file')
+        self.StdDevC1LineEdit.setToolTip('Standard deviation of C<sub>1</sub>')
+        self.StdDevC2LineEdit.setToolTip('Standard deviation of C<sub>2</sub>')
         self.R1STPLineEdit.setToolTip('Value of the primary resistor at standard temperature and pressure')
         self.R2STPLineEdit.setToolTip('Value of the secondary resistor at standard temperature and pressure')
         self.NLineEdit.setToolTip('Total number of measurements or total number of full cycles')
@@ -1020,12 +1034,12 @@ class Ui_mainWindow(object):
         self.StdDevChkPPMLineEdit.setToolTip('Standard deviation of the resistance calculated from the _bvd.txt file')
         self.ppmMeanLineEdit.setToolTip('Mean resistance value calculated from the raw .txt file')
         self.RMeanChkPPMLineEdit.setToolTip('Mean resistance value calculated from the _bvd.txt file')
-        self.StdDevMeanPPMLineEdit.setToolTip('')
         self.RatioMeanLineEdit.setToolTip('Mean of the Ratio  R<sub>1</sub>/R<sub>2</sub>')
-        self.le_ratioStdMean.setToolTip('')
+        self.le_ratioStdMean.setToolTip('Standard deviation of the mean of the Ratio R<sub>1</sub>/R<sub>2</sub>')
         self.IgnoredFirstLineEdit.setToolTip('Set the number of ignored first mesurements in every half cycle')
         self.IgnoredLastLineEdit.setToolTip('Set the number of ignored last mesurements in every half cycle')
         self.le_error.setToolTip('R Mean - R Mean Chk')
+        self.C1C2LineEdit.setToolTip('Difference between C<sub>1</sub> and C<sub>2</sub>')
 
         self.MagElecComboBox.setToolTip('S/N of the CCCDrive')
         self.ProbeComboBox.setToolTip('Type or S/N of probe')
@@ -1350,29 +1364,30 @@ class Ui_mainWindow(object):
         grid.addWidget(self.le_alpha_bvb, 7, 3, 1, 1)
 
     def setButtons(self) -> None:
+        global red_style
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         self.folderToolButton = QToolButton(parent=self.SetResTab)
-        self.folderToolButton.setGeometry(QRect(self.col3x - 48, self.coly*10, 40, self.lbl_height))
+        self.folderToolButton.setGeometry(QRect(self.col3x - 48, self.coly*10 + 30, 40, self.lbl_height))
         self.folderToolButton.setIcon(QIcon(base_dir + r'\icons\folder.ico'))
         self.folderToolButton.clicked.connect(self.folderClicked)
 
         self.btn_temperature1 = QToolButton(parent=self.SetResTab)
-        self.btn_temperature1.setGeometry(QRect(self.col3x - 48, self.coly*11, 40, self.lbl_height))
+        self.btn_temperature1.setGeometry(QRect(self.col3x - 48, self.coly*11 + 30, 40, self.lbl_height))
         self.btn_temperature1.setIcon(QIcon(base_dir + r'\icons\folder.ico'))
         self.btn_temperature1.clicked.connect(self.get_temperature1)
 
         self.btn_temperature2 = QToolButton(parent=self.SetResTab)
-        self.btn_temperature2.setGeometry(QRect(self.col3x - 48, self.coly*12, 40, self.lbl_height))
+        self.btn_temperature2.setGeometry(QRect(self.col3x - 48, self.coly*12 + 30, 40, self.lbl_height))
         self.btn_temperature2.setIcon(QIcon(base_dir + r'\icons\folder.ico'))
         self.btn_temperature2.clicked.connect(self.get_temperature2)
 
         self.SquidFeedBut = QPushButton(parent=self.SetResTab)
-        self.SquidFeedBut.setGeometry(QRect(self.col3x, self.coly*11 - 5, self.lbl_width, int(self.lbl_height*1.2)))
+        self.SquidFeedBut.setGeometry(QRect(self.col3x, self.coly*11 + 25, self.lbl_width, int(self.lbl_height*1.2)))
         self.SquidFeedBut.setStyleSheet(blue_style)
         self.SquidFeedBut.clicked.connect(self.SquidButClicked)
         self.CurrentBut = QPushButton(parent=self.SetResTab)
-        self.CurrentBut.setGeometry(QRect(self.col3x, self.coly*12 - 5, self.lbl_width, int(self.lbl_height*1.2)))
+        self.CurrentBut.setGeometry(QRect(self.col3x, self.coly*12 + 25, self.lbl_width, int(self.lbl_height*1.2)))
         self.CurrentBut.setStyleSheet(blue_style)
         self.CurrentBut.clicked.connect(self.CurrentButClicked)
 
@@ -1407,13 +1422,13 @@ class Ui_mainWindow(object):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         self.MagElecComboBox = QComboBox(parent=self.SetResTab)
-        self.MagElecComboBox.setGeometry(QRect(self.col0x, self.coly*11, self.lbl_width, self.lbl_height))
+        self.MagElecComboBox.setGeometry(QRect(self.col0x, self.coly*11 + 30, self.lbl_width, self.lbl_height))
         self.MagElecComboBox.setEditable(False)
         self.MagElecComboBox.addItem('CCC2014-01')
         self.MagElecComboBox.addItem('CCC2019-01')
 
         self.ProbeComboBox = QComboBox(parent=self.SetResTab)
-        self.ProbeComboBox.setGeometry(QRect(self.col0x, self.coly*12, self.lbl_width, self.lbl_height))
+        self.ProbeComboBox.setGeometry(QRect(self.col0x, self.coly*12 + 30, self.lbl_width, self.lbl_height))
         self.ProbeComboBox.setEditable(False)
         self.ProbeComboBox.addItem('Magnicon1')
         self.ProbeComboBox.addItem('NIST1')
@@ -1427,7 +1442,7 @@ class Ui_mainWindow(object):
         self.SetResDivider.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.CommentsTextBrowser = QTextBrowser(parent=self.SetResTab)
-        self.CommentsTextBrowser.setGeometry(QRect(self.col0x, self.coly*9, int(self.lbl_width*3.2), self.lbl_height*2))
+        self.CommentsTextBrowser.setGeometry(QRect(self.col0x, self.coly*9 + 30, int(self.lbl_width*3.2), self.lbl_height*2))
         self.CommentsTextBrowser.setReadOnly(False)
 
         # self.progressBar = QProgressBar(parent=self.centralwidget)
@@ -1450,6 +1465,7 @@ class Ui_mainWindow(object):
         self.StandardRLabel.setText(_translate("mainWindow", "Standard R"))
         self.MeasTimeLabel.setText(_translate("mainWindow", "Measurement Time"))
         self.lbl_deltaI2R2.setText(_translate("mainWindow", f"{chr(916)}(I<sub>2</sub>R<sub>2</sub>) [V]"))
+        self.lbl_calmode.setText(_translate("mainWindow", "Cal. mode"))
         self.kLabel.setText(_translate("mainWindow", "k [Turns]"))
         self.SquidFeedLabel.setText(_translate("mainWindow", "SQUID Feedin Polarity"))
         self.StandardRBut.setText(_translate("mainWindow", self.RButStatus))
@@ -2046,6 +2062,8 @@ class Ui_mainWindow(object):
         self.clearSpecPlot()
 
     def RButClicked(self) -> None:
+        global red_style
+        global green_style
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.StandardRBut.pressed and self.RButStatus == 'R1':
@@ -2065,6 +2083,8 @@ class Ui_mainWindow(object):
         self.plotBVD()
 
     def SquidButClicked(self) -> None:
+        global red_style
+        global blue_style
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.SquidFeedBut.pressed and self.SquidFeedStatus == 'NEG':
@@ -2077,6 +2097,8 @@ class Ui_mainWindow(object):
             self.SquidFeedBut.setStyleSheet(blue_style)
 
     def CurrentButClicked(self) -> None:
+        global red_style
+        global blue_style
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.CurrentBut.pressed and self.CurrentButStatus == 'I1':
@@ -2403,12 +2425,18 @@ class Ui_mainWindow(object):
         -------
         None
         """
+        global red_style
+        global green_style
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         self.VMeanLineEdit.setText(str("{:.9e}".format(self.bvd_mean)))
         self.VMeanChkLineEdit.setText(str("{:.9e}".format(self.bvd_mean_chk)))
         self.Current1LineEdit.setText(str(self.dat.I1))
         self.FullCycLineEdit.setText(str(self.dat.fullCyc))
+        if self.dat.calmode == True:
+            self.lbl_calmode_rbv.setStyleSheet(green_style)
+        else:
+            self.lbl_calmode_rbv.setStyleSheet(red_style)
         if self.SampUsedCt != 0:
             delay = ((int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text()))/self.dat.SHC)*(self.dat.SHC*self.dat.intTime/self.dat.timeBase - self.dat.rampTime)
             meas = (self.dat.SHC*self.dat.intTime/self.dat.timeBase) - self.dat.rampTime - delay
@@ -2462,7 +2490,8 @@ class Ui_mainWindow(object):
         self.NLineEdit.setText(str(self.N))
         self.MeasTimeLineEdit.setText(self.dat.measTimeStamp)
         self.le_range_shunt.setText('10k/' + str(self.dat.rangeShunt))
-        self.le_12bitdac.setText(str(int(self.k*2048*int(self.dat.rangeShunt)))+ '/' + str(self.dat.low16))
+        # self.le_12bitdac.setText(str(int(self.k*2048*int(self.dat.rangeShunt)))+ '/' + str(self.dat.low16))
+        self.le_12bitdac.setText(str(self.dat.dac12) + '/' + str(self.dat.low16)) # grab the values from config file
         # self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setEnabled(True)
         self.plotCountCombo.clear()
@@ -2758,6 +2787,8 @@ class Ui_mainWindow(object):
 
 
     def MDSSClicked(self) -> None:
+        global red_style
+        global green_style
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.saveStatus:
@@ -2773,6 +2804,7 @@ class Ui_mainWindow(object):
             # self.progressBar.setProperty('value', 0)
 
     def saveMDSS(self) -> None:
+        global red_style
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         self.mdssdir = "C:" + os.sep + "Users" + os.sep + os.getlogin() + os.sep + "Desktop" + os.sep + r"Transfer Files"
@@ -2979,6 +3011,8 @@ if __name__ == "__main__":
         QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
     if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
         QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+    if getattr(sys, 'frozen', False):
+        import pyi_splash
     app = QApplication(sys.argv)
     mainWindow = QMainWindow()
     ui = Ui_mainWindow()
