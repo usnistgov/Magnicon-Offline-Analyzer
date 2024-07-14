@@ -23,8 +23,9 @@ else:
         running_mode = 'Interactive'
 # Class for parsing CCC files
 class magnicon_ccc:
-    def __init__(self, text: str, dbdir: str) -> None:
+    def __init__(self, text: str, dbdir: str, site: str) -> None:
         self.dbdir = dbdir
+        self.site = site
         self.text = text
         # Reads in file and checks that it is a .txt file
         if '_bvd.txt' in self.text:
@@ -291,16 +292,17 @@ class magnicon_ccc:
         if self.dbdir != '':
             # use the directory supplied by user...
             R = ResData(self.dbdir)
+        # user directory not supplied...
         else:
-            p = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'
-            print ("Looking for Elwood...")
-            if self.check_shared_drive_exists(r'\\elwood.nist.gov\68_PML'):
-                print("Found Elwood, using ResDatabase.dat located at: ", p)
-                R = ResData(p)
+            # if site is NIST...
+            if self.site == 'NIST':
+                p = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'
+                if self.check_shared_drive_exists(r'\\elwood.nist.gov\68_PML'):
+                    R = ResData(p)
             else:
                 # default to the local one supplied with this project
                 print("Elwood not found, using ResDatabase.dat located at: ", base_dir)
-                R = ResData(base_dir) 
+                R = ResData(base_dir)
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:
             self.R1NomVal  = R.ResDict[self.R1SN]['NomVal']
@@ -328,7 +330,6 @@ class magnicon_ccc:
             self.R2stdTemp = 0
             self.R2pcr     = 0
             self.R2Pred    = 0
-
         # Time calculations
         if self.validFile:
             if self.deltaI2R2 == '':

@@ -10,8 +10,9 @@ kiwisolver==1.4.4
 matplotlib==3.7.2
 numpy==1.25.2
 packaging==23.1
+pandas==2.2.1
 pefile==2023.2.7
-pillow==10.2.0
+pillow==10.4.0
 pyasn1==0.5.1
 pycparser==2.21
 pyinstaller==6.5.0
@@ -28,4 +29,5 @@ pywin32-ctypes==0.2.2
 scipy==1.11.1
 six==1.16.0
 sspilib==0.1.0
-tqdm==4.66.2
+tqdm==4.66.4
+tzdata==2024.1

@@ -9,7 +9,7 @@ from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainterPath, QPainter,\
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
                              QLabel, QPushButton, QComboBox, QTextBrowser, QTabWidget, \
                              QSpacerItem, QGridLayout, QLineEdit, QFrame, QSizePolicy, \
-                             QMenuBar, QSpinBox, QProgressBar, QToolButton, QStatusBar, \
+                             QMenuBar, QSpinBox, QToolButton, QStatusBar, \
                              QTextEdit, QFileDialog)
 
 import matplotlib as mpl
@@ -39,13 +39,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__ = '2.2' # Program version string
+__version__ = '2.2.1' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
 winSizeH    = 1000
 winSizeV    = 845
-c           = 0.8465 # specific gravity of oil used
+#c           = 0.8465 # specific gravity of oil used
 g           = 9.81 # local acceleration due to gravity
 # I- == blue, I+ == Red
 params = {
@@ -82,6 +82,7 @@ mplstyle.use('fast')
 if getattr(sys, 'frozen', False):
     # PyInstaller creates a temp folder and stores path in _MEIPASS
     base_dir = sys._MEIPASS
+    import pyi_splash
     # base_dir = os.path.dirname(sys.executable)
     running_mode = 'Frozen/executable'
 else:
@@ -97,6 +98,7 @@ class aboutWindow(QWidget):
         """QWidget class for showing the About window to display general program
            information
         """
+        global __version__
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         super().__init__()
@@ -107,9 +109,11 @@ class aboutWindow(QWidget):
         self.te_about.setReadOnly(True)
         self.te_about.setPlainText("Data Analysis software for the powerful Magnicon")
         self.te_about.append("CCC probe and electronics")
+        self.te_about.append("Version " + str(__version__))
         self.te_about.append("Developers: Andrew Geckle & Alireza Panna")
         self.te_about.append("Maintainers: Alireza Panna")
-        self.te_about.append("Email: alireza.panna@nist.gov")
+        self.te_about.append("For reporting bugs or feature request contact Alireza Panna @")
+        self.te_about.append("alireza.panna@nist.gov")
         layout = QVBoxLayout()
         layout.addWidget(self.te_about)
         self.setLayout(layout)
@@ -192,7 +196,7 @@ class Ui_mainWindow(object):
         self.tooltip_action.setStatusTip("Show/hide tooltip")
         self.tooltip_action.setCheckable(True)
         self.tooltip_action.triggered.connect(self._showToolTip)
-        
+
         self.about_action = QAction("&About")
         self.about_action.setStatusTip("Program information & license")
         self.about_action.triggered.connect(self._about)
@@ -205,23 +209,26 @@ class Ui_mainWindow(object):
 
         self.dialog = QFileDialog(parent=mainWindow, )
         # self.dialog.setViewMode(QFileDialog.Detail)
-        if os.path.exists(r"\\elwood.nist.gov\68internal\Calibrations\MDSS Data\resist"):
-            self.dialog.setDirectory(r"\\elwood.nist.gov\68internal\Calibrations\MDSS Data\resist\MagniconData\CCCViewerData")
+        if site == 'NIST':
+            if os.path.exists(r"\\elwood.nist.gov\68internal\Calibrations\MDSS Data\resist"):
+                self.dialog.setDirectory(r"\\elwood.nist.gov\68internal\Calibrations\MDSS Data\resist\MagniconData\CCCViewerData")
+            else:
+                self.dialog.setDirectory(r"C:")
         else:
             self.dialog.setDirectory(r"C:")
         self.dialog.setNameFilters(["Text files (*_bvd.txt)"])
         self.dialog.selectNameFilter("Text files (*_bvd.txt)")
-
         self.temperature1_dialog = QFileDialog(parent=mainWindow)
-        if os.path.exists(r"C:\Environment"):
-            self.temperature1_dialog.setDirectory(r"C:\Environment")
+        self.temperature2_dialog = QFileDialog(parent=mainWindow)
+        if site == 'NIST':
+            if os.path.exists(r"D:\Environment"):
+                self.temperature1_dialog.setDirectory(r"D:\Environment")
+                self.temperature2_dialog.setDirectory(r"D:\Environment")
+            else:
+                self.temperature1_dialog.setDirectory(r"C:")
+                self.temperature2_dialog.setDirectory(r"C:")
         else:
             self.temperature1_dialog.setDirectory(r"C:")
-
-        self.temperature2_dialog = QFileDialog(parent=mainWindow)
-        if os.path.exists(r"C:\Environment"):
-            self.temperature2_dialog.setDirectory(r"C:\Environment")
-        else:
             self.temperature2_dialog.setDirectory(r"C:")
 
         self.statusbar = QStatusBar(parent=mainWindow)
@@ -245,7 +252,8 @@ class Ui_mainWindow(object):
         self.path.lineTo(self.shift_col4x + 350, 350)
 
     def _paintPath(self, event):
-        ramp_max = 100 # 100 pixels  corresponds to 10s of ramp time which is max
+        # TODO: lines where ramps are need to be shorter...
+        ramp_max = 100 # 100 pixels corresponds to 10s of ramp time which is max
         y_start = 400
         y_end = 350
         painter = QPainter(self.SetResTab)
@@ -273,7 +281,7 @@ class Ui_mainWindow(object):
                 else:
                     painter.drawPoint(int(i), 350)
                 # draw green line for samples used
-                if ct >= (int(self.IgnoredFirstLineEdit.text())): 
+                if ct >= (int(self.IgnoredFirstLineEdit.text())):
                     if ct < (int(self.dat.SHC) - int(self.IgnoredLastLineEdit.text())):
                         painter.setPen(self.green_pen)
                         painter.drawLine(int(i), 355, int(i), 400)
@@ -338,7 +346,6 @@ class Ui_mainWindow(object):
     def initializations(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        global c
         global g
         self.txtFilePath  = ''
         # flags
@@ -449,7 +456,7 @@ class Ui_mainWindow(object):
         self.lbl_path_temperature1.setGeometry(QRect(self.col1x, 660, self.lbl_width, self.lbl_height))
         self.lbl_path_temperature2 = QLabel(parent=self.SetResTab)
         self.lbl_path_temperature2.setGeometry(QRect(self.col1x, 720, self.lbl_width, self.lbl_height))
-        
+
         # col2
         self.R1ValueLabel = QLabel(parent=self.SetResTab)
         self.R1ValueLabel.setGeometry(QRect(self.col2x, 30, self.lbl_width, self.lbl_height))
@@ -660,7 +667,7 @@ class Ui_mainWindow(object):
         self.le_path_temperature2 = QLineEdit(parent=self.SetResTab)
         self.le_path_temperature2.setGeometry(QRect(self.col1x, self.coly*12 + 30, self.lbl_width+80, self.lbl_height))
         self.le_path_temperature2.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
-       
+
         self.le_range_shunt = QLineEdit(parent=self.SetResTab)
         self.le_range_shunt.setGeometry(QRect(self.col1x-40, self.coly*8+40, self.lbl_width-60, self.lbl_height))
         self.le_range_shunt.setReadOnly(True)
@@ -880,12 +887,12 @@ class Ui_mainWindow(object):
         # self.SampUsedLineEdit.setGeometry(QRect(self.col7x, self.coly*11, self.lbl_width, self.lbl_height))
         # self.SampUsedLineEdit.setReadOnly(False)
         # self.SampUsedLineEdit.returnPressed.connect(self.changedSamplesUsed)
-        
+
         self.IgnoredFirstLineEdit = QLineEdit(parent=self.centralwidget)
         self.IgnoredFirstLineEdit.setGeometry(QRect(self.col7x, self.coly*10, self.lbl_width, self.lbl_height))
         self.IgnoredFirstLineEdit.setReadOnly(False)
         self.IgnoredFirstLineEdit.returnPressed.connect(self.changedIgnoredFirst)
-        
+
         self.IgnoredLastLineEdit = QLineEdit(parent=self.centralwidget)
         self.IgnoredLastLineEdit.setGeometry(QRect(self.col7x, self.coly*11, self.lbl_width, self.lbl_height))
         self.IgnoredLastLineEdit.setReadOnly(False)
@@ -1596,7 +1603,6 @@ class Ui_mainWindow(object):
                     self.BVDax2.set_ylabel(r'$R_{2}$' + f' [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
                 else:
                     self.BVDax2.set_ylabel(r'$R_{1}$' + f' [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
-
                 self.BVDax1.relim()
                 self.BVDax1.autoscale(tight=None, axis='both', enable=True)
                 self.BVDax1.autoscale_view(tight=None, scalex=True, scaley=True)
@@ -1661,7 +1667,7 @@ class Ui_mainWindow(object):
     #         self.setValidData()
     #         self.plotBVD()
     #         self.plotStatMeasures()
-    
+
     def changedIgnoredFirst(self, ):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
@@ -1869,42 +1875,50 @@ class Ui_mainWindow(object):
     def plotSpec(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        samp_freq = 1./(self.dat.fullCyc)
-        # sig_freq = 1./(self.dat.fullCyc)
-        # print("BVD Sampling frequency: ", samp_freq)
-        # print("Measurement time: ", self.dat.measTime)
-        # print("BV Sampling frequency: ", self.dat.dt)
-        # Create the window function
-        freq_bvd, mypsd_bvd = signal.welch(array(self.bvdList), fs=samp_freq, window='hann', \
-                                         nperseg=len(self.bvdList), scaling='density', \
-                                         axis=-1, average='mean', return_onesided=True)
-        freqA, mypsdA = signal.welch(array(self.A), fs=self.dat.dt, window='hann', \
-                                         nperseg=len(self.A),  scaling='density', \
-                                         axis=-1, average='mean', return_onesided=True)
-        freqB, mypsdB = signal.welch(array(self.B), fs=self.dat.dt, window='hann', \
-                                         nperseg=len(self.B),  scaling='density', \
-                                         axis=-1, average='mean', return_onesided=True)
-        self.h0 = mean(mypsd_bvd[1:])
-        # print("Noise power BVD: ", mean(mypsd_bvd[1:]))
-        # print("Noise power BVA: ", mean(mypsdA[1:]))
-        # print("Noise power BVB: ", mean(mypsdB[1:]))
-
-        # Ali's custom PSD calculation...[works but slower than scipy welch]
-        # mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvdList)*float(samp_freq)))
-        # freq_bvd, mypsa_bvd = mystat.calc_fft(1./(float(samp_freq)), array(self.bvdList), array(mywindow_mystat))
-        lag_bvd, acf_bvd, pci_bvd, nci_bvd, cutoff_lag_bvd = mystat.autoCorrelation(array(self.bvdList))
-        lag_bva, acf_bva, pci_bva, nci_bva, cutoff_lag_bva = mystat.autoCorrelation(array(self.A))
-        lag_bvb, acf_bvb, pci_bvb, nci_bvb, cutoff_lag_bvb = mystat.autoCorrelation(array(self.B))
         try:
-            (pow_bvd, noise_bvd) = mystat.noise1D(array(self.bvdList))
-            (pow_bva, noise_bva) = mystat.noise1D(array(self.A))
-            (pow_bvb, noise_bvb) = mystat.noise1D(array(self.B))
+            samp_freq = 1./(self.dat.fullCyc)
+            # sig_freq = 1./(self.dat.fullCyc)
+            # print("BVD Sampling frequency: ", samp_freq)
+            # print("Measurement time: ", self.dat.measTime)
+            # print("BV Sampling frequency: ", self.dat.dt)
+            # Create the window function
+            freq_bvd, mypsd_bvd = signal.welch(array(self.bvdList), fs=samp_freq, window='hann', \
+                                             nperseg=len(self.bvdList), scaling='density', \
+                                             axis=-1, average='mean', return_onesided=True)
+            freqA, mypsdA = signal.welch(array(self.A), fs=self.dat.dt, window='hann', \
+                                             nperseg=len(self.A),  scaling='density', \
+                                             axis=-1, average='mean', return_onesided=True)
+            freqB, mypsdB = signal.welch(array(self.B), fs=self.dat.dt, window='hann', \
+                                             nperseg=len(self.B),  scaling='density', \
+                                             axis=-1, average='mean', return_onesided=True)
+            self.h0 = mean(mypsd_bvd[1:])
+            # print("Noise power BVD: ", mean(mypsd_bvd[1:]))
+            # print("Noise power BVA: ", mean(mypsdA[1:]))
+            # print("Noise power BVB: ", mean(mypsdB[1:]))
+
+            # Ali's custom PSD calculation...[works but slower than scipy welch]
+            # mywindow_mystat = mystat.hann(float(samp_freq), (len(self.bvdList)*float(samp_freq)))
+            # freq_bvd, mypsa_bvd = mystat.calc_fft(1./(float(samp_freq)), array(self.bvdList), array(mywindow_mystat))
+            lag_bvd, acf_bvd, pci_bvd, nci_bvd, cutoff_lag_bvd = mystat.autoCorrelation(array(self.bvdList))
+            lag_bva, acf_bva, pci_bva, nci_bva, cutoff_lag_bva = mystat.autoCorrelation(array(self.A))
+            lag_bvb, acf_bvb, pci_bvb, nci_bvb, cutoff_lag_bvb = mystat.autoCorrelation(array(self.B))
+            try:
+                (pow_bvd, noise_bvd) = mystat.noise1D(array(self.bvdList))
+                (pow_bva, noise_bva) = mystat.noise1D(array(self.A))
+                (pow_bvb, noise_bvb) = mystat.noise1D(array(self.B))
+            except Exception as e:
+                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                               ' Error: ' + str(e))
+                (pow_bvd, noise_bvd) = (nan, '')
+                (pow_bva, noise_bva) = (nan, '')
+                (pow_bvb, noise_bvb) = (nan, '')
+                pass
         except Exception as e:
-            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
-                           ' Error: ' + str(e))
-            (pow_bvd, noise_bvd) = (nan, '')
-            (pow_bva, noise_bva) = (nan, '')
-            (pow_bvb, noise_bvb) = (nan, '')
+            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + ' Error: ' + str(e))
+            freq_bvd, mypsd_bvd, freqA, mypsdA, freqB, mypsdB, \
+            lag_bvd, acf_bvd, pci_bvd, nci_bvd, \
+            lag_bva, acf_bva, pci_bva, nci_bva, \
+            lag_bvb, acf_bvb, pci_bvb, nci_bvb = ([] for _ in range(18))
             pass
 
         if self.plottedSpec:
@@ -2126,7 +2140,7 @@ class Ui_mainWindow(object):
         if self.txtFilePath.endswith('_bvd.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('_bvd.txt')[0][-1].isnumeric():
             self.txtFile = self.txtFilePath.split('/')[-1]
             self.pathString = self.txtFilePath.split('_bvd.txt')[0]
-            self.dat = magnicon_ccc(self.txtFilePath, dbdir)
+            self.dat = magnicon_ccc(self.txtFilePath, dbdir, site)
             getFile_end = perf_counter() - getData_start
             print("Time taken to read files: " +  str(getFile_end))
             if len(self.dat.bvd) > 0:
@@ -2159,7 +2173,6 @@ class Ui_mainWindow(object):
                 self.R1pres = 101325
                 self.R2pres = 101325
                 pass
-
             # self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
             self.IgnoredFirstLineEdit.setText(str(self.dat.ignored_first))
             self.IgnoredLastLineEdit.setText(str(self.dat.ignored_last))
@@ -2394,7 +2407,6 @@ class Ui_mainWindow(object):
             self.stdR2Chk     = std(self.R2MeanChkList, ddof=1)
             self.stdMeanR2Chk = self.stdR2Chk/sqrt(len(self.R2MeanChkList))
             self.R1MeanChkOhm = (self.R2MeanChk/1000000 + 1) * mag.R1NomVal
-
         else:
             self.ratioMeanChk   = nan
             self.stdppm         = nan
@@ -2696,7 +2708,6 @@ class Ui_mainWindow(object):
 
     def updateOilDepth(self, R: str) -> None:
         global g
-        global c
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if R == 'R1' or R == 'both':
@@ -2785,7 +2796,6 @@ class Ui_mainWindow(object):
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         self.temperature2_folder = self.le_path_temperature2.text()
 
-
     def MDSSClicked(self) -> None:
         global red_style
         global green_style
@@ -2805,12 +2815,18 @@ class Ui_mainWindow(object):
 
     def saveMDSS(self) -> None:
         global red_style
+        self.mdssdir = ""
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        self.mdssdir = "C:" + os.sep + "Users" + os.sep + os.getlogin() + os.sep + "Desktop" + os.sep + r"Transfer Files"
-        if not os.path.isdir(self.mdssdir):
-            os.mkdir(self.mdssdir)
-        self.statusbar.showMessage('Saving...', 2000)
+        if site == 'NIST':
+            self.mdssdir = "C:" + os.sep + "Users" + os.sep + os.getlogin() + os.sep + "Desktop" + os.sep + r"Transfer Files"
+            if not os.path.isdir(self.mdssdir):
+                os.mkdir(self.mdssdir)
+        else:
+            tempdir = self.txtFilePath.split('/')
+            tempdir.pop(-1)
+            for i in tempdir:
+                self.mdssdir = self.mdssdir + i + os.sep
         # self.progressBar.setProperty('value', 25)
 
         self.dat.comments = self.CommentsTextBrowser.toPlainText()
@@ -2829,7 +2845,6 @@ class Ui_mainWindow(object):
                       meas=float(self.MeasLineEdit.text()), delay=float(self.DelayLineEdit.text()), \
                       R1PredictionSTP=float(self.R1STPLineEdit.text()), R2PredictionSTP=float(self.R2STPLineEdit.text()), \
                       comments = str(self.dat.comments))
-
         with open(self.pathString + '_pyCCCRAW.mea', 'w') as mea_file:
             if self.RButStatus == 'R1':
                 unk = 'R2'
@@ -2869,7 +2884,7 @@ class Ui_mainWindow(object):
         with open(self.pathString + '_pyCCCRAW.mea', 'a') as mea_file:
             for i, j, k, l in zip(self.bvdList, self.ratioMeanList, self.stdbvdList, self.ratioMeanStdList):
                 mea_file.write(str(i) + '\t' + str(j) + '\t' + str(k) + '\t' + str(l) + '\n')
-        
+
         with open(self.pathString + '_pyBV.mea', 'a') as mea_file:
             for i, j in zip(self.AA, self.BB):
                 mea_file.write(str(i) + '\t' + str(j) + '\n')
@@ -2878,8 +2893,7 @@ class Ui_mainWindow(object):
         self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setText('No')
         self.saveButton.setEnabled(False)
-        # self.progressBar.setProperty('value', 100)
-        self.statusbar.showMessage('Done', 2000)
+        self.statusbar.showMessage('Saved to ' + str(self.mdssdir), 5000)
 
     def cleanUp(self) -> None:
         if debug_mode:
@@ -2895,7 +2909,7 @@ class Ui_mainWindow(object):
         self.bvdCount       = []
         self.deletedR1      = []
         self.deletedR2      = []
-        
+
         self.bvdList_chk        = []
 
         self.SampUsedCt     = 0
@@ -2993,6 +3007,8 @@ if __name__ == "__main__":
     parser.add_argument('-db', '--db_path', help='Specify resistor database directory', default="", type=str)
     parser.add_argument('-l', '--log_path', help='Specify log directory', default="C:" + os.sep + "_logcache_", type=dir_path)
     parser.add_argument('-d', '--debug', help='Debugging mode', action='store_true')
+    parser.add_argument('-s', '--site', help='Site where this program is used', default="", type=str)
+    parser.add_argument('-c', '--specific_gravity', help='Specific gravity of oil for oil type resistors', default=0.8465, type=float)
     args, unk = parser.parse_known_args()
     if unk:
         logger.debug("Warning: Ignoring unknown arguments: {:}".format(unk))
@@ -3000,6 +3016,8 @@ if __name__ == "__main__":
     dbdir = args.db_path
     logdir = args.log_path
     debug_mode = args.debug
+    site = args.site
+    c = args.specific_gravity
     # define the file handler and formatting
     lfname = logdir + os.sep + 'debug_magnicon-offline-analyzer' + '.log'
     file_handler = TimedRotatingFileHandler(lfname, when='midnight')
@@ -3011,8 +3029,6 @@ if __name__ == "__main__":
         QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
     if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
         QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-    if getattr(sys, 'frozen', False):
-        import pyi_splash
     app = QApplication(sys.argv)
     mainWindow = QMainWindow()
     ui = Ui_mainWindow()

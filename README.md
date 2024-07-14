@@ -9,17 +9,24 @@ Installation
 Dependencies can be installed using pip:
 ``pip -r requirements.txt``
 Optionally, a spec file is provided to build using pyinstaller::
-Tested on windows 10, 11.
+Tested on windows 10 and 11. This is a windows only program as of now.
+
 
 Usage
 -----
-If you have python installed on your system then you can call:\
-```pip -r requirements.txt
+If you have python installed on your system then you can call:
+```
+pip -r requirements.txt
 python Magnicon-Offline-Analyzer.py
 ```
+Optionally to show the help menu:
+``python Magnicon-Offline-Analyzer.py -h``
 
-Magnicon-Offline-Analyzer.exe -h | more
-
+If you are running the exe and want to see the help menu\
+Enter this in the cmd window
+``Magnicon-Offline-Analyzer.exe -h | more``
+This will launch the splash screen and show the help menu once the program is finished \ loading. For now there is no way to not show the splash screen but I am trying to fix \
+this for future releases. Supported options are shown below
 ```
 Configure Magnicon-Offline-Analyzer
 
@@ -30,6 +37,9 @@ options:
   -l LOG_PATH, --log_path LOG_PATH
                         Specify log directory
   -d, --debug           Debugging mode
+  -s SITE, --site SITE  Site where this program is used
+  -c SPECIFIC_GRAVITY, --specific_gravity SPECIFIC_GRAVITY
+                        Specific gravity of oil for oil type resistors
 
 A utility to interact with the analysis software for Magnicon CCC systems
 

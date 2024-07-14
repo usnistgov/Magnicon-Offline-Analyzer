@@ -1,5 +1,11 @@
 # RELEASE
 
+## 07/14/2024   Version 2.2.1
+  * Added command line options to enter custom value for specific gravity of oil
+  * Added command line option for future site specific configuration
+  * Update About window
+  * Update external dependencies
+
 ## 07/13/2024   Version 2.2
   * Fix tooltips
   * Add calibrated mode indicator
