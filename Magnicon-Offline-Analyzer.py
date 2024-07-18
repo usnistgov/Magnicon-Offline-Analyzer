@@ -31,6 +31,8 @@ from argparse import ArgumentParser
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
+
+from threading import Thread
 # base directory of the project
 base_dir = os.path.dirname(os.path.abspath(__file__))
 # Create the logger
@@ -39,7 +41,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__ = '2.2.1' # Program version string
+__version__ = '2.2.2' # Program version string
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -325,6 +327,11 @@ class Ui_mainWindow(object):
     def closeEvent(self, event):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+        if self.stats_thread is not None:
+            self.stats_thread.join()
+        if self.plot_bvd_thread is not None:
+            self.plot_bvd_thread.join()
+        file_handler.close()
         mainWindow.close()
         self.quit()
         event.accept()
@@ -356,6 +363,8 @@ class Ui_mainWindow(object):
         self.changedDeltaI2R2Ct = 0
         self.changedR1STPBool = False
         self.changedR2STPBool = False
+        self.stats_thread = None
+        self.plot_bvd_thread = None
 
         self.R1Temp     = 23
         self.R2Temp     = 23
@@ -574,10 +583,10 @@ class Ui_mainWindow(object):
         self.lbl_ccceq.setGeometry(QRect(640, 440, self.lbl_width+25, self.lbl_height))
         self.lbl_ccceq.setStyleSheet(
                 """QLabel {color: green; font-weight: bold; font-size: 14pt }""")
-        self.LogoLabel = QLabel(parent=self.SetResTab)
-        self.LogoPixmap = QPixmap(base_dir + r'\icons\nist_logo.png')
-        self.LogoLabel.setPixmap(self.LogoPixmap)
-        self.LogoLabel.setGeometry(QRect(550, 700, 300, 76))
+        # self.LogoLabel = QLabel(parent=self.SetResTab)
+        # self.LogoPixmap = QPixmap(base_dir + r'\icons\nist_logo.png')
+        # self.LogoLabel.setPixmap(self.LogoPixmap)
+        # self.LogoLabel.setGeometry(QRect(550, 700, 300, 76))
 
         self.lbl_equation = QLabel(parent=self.SetResTab)
         self.pixmap_equation = QPixmap(base_dir + r'\icons\ccc_equation.PNG')
@@ -1142,9 +1151,9 @@ class Ui_mainWindow(object):
         self.KurtosisEdit.setReadOnly(True)
         self.KurtosisEdit.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
-        self.LogoLabelBVD = QLabel(parent=gridWidget)
-        self.LogoLabelBVD.setPixmap(self.LogoPixmap)
-        self.LogoLabelBVD.setGeometry(QRect(550, 700, 300, 76))
+        # self.LogoLabelBVD = QLabel(parent=gridWidget)
+        # self.LogoLabelBVD.setPixmap(self.LogoPixmap)
+        # self.LogoLabelBVD.setGeometry(QRect(550, 700, 300, 76))
         Spacer1 = QSpacerItem(20, 1, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         Spacer2 = QSpacerItem(600, 1, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         grid.addWidget(self.deletePlotBut, 1, 1, 2, 1)
@@ -1155,7 +1164,7 @@ class Ui_mainWindow(object):
         grid.addWidget(self.RePlotBut, 3, 3, 2, 1)
         grid.addItem(Spacer2, 1, 4)
         grid.addItem(Spacer2, 3, 4)
-        grid.addWidget(self.LogoLabelBVD, 2, 5, 3, 2)
+        # grid.addWidget(self.LogoLabelBVD, 2, 5, 3, 2)
         grid.addWidget(SkewnessLabel, 1, 7)
         grid.addWidget(self.SkewnessEdit, 2, 7)
         grid.addWidget(KurtosisLabel, 3, 7)
@@ -1241,14 +1250,14 @@ class Ui_mainWindow(object):
         self.OverlappingComboBox.currentIndexChanged.connect(self.plotAdev)
         self.AllanHorizontalSpacer = QSpacerItem(600, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
-        self.LogoLabelAllan = QLabel(parent=self.AllanTab)
-        self.LogoLabelAllan.setPixmap(self.LogoPixmap)
-        self.LogoLabelAllan.setGeometry(QRect(550, 700, 300, 76))
+        # self.LogoLabelAllan = QLabel(parent=self.AllanTab)
+        # self.LogoLabelAllan.setPixmap(self.LogoPixmap)
+        # self.LogoLabelAllan.setGeometry(QRect(550, 700, 300, 76))
 
         self.AllanHorizontalLayout.addWidget(self.VarianceTypeComboBox)
         self.AllanHorizontalLayout.addWidget(self.AllanTypeComboBox)
         self.AllanHorizontalLayout.addItem(self.AllanHorizontalSpacer)
-        self.AllanHorizontalLayout.addWidget(self.LogoLabelAllan)
+        # self.AllanHorizontalLayout.addWidget(self.LogoLabelAllan)
         self.AllanHorizontalLayout.addWidget(self.OverlappingComboBox)
         self.AllanVerticalLayout.addLayout(self.AllanHorizontalLayout)
 
@@ -1925,6 +1934,7 @@ class Ui_mainWindow(object):
             self.clearSpecPlot()
             self.SpecAx_ref[0].set_data(array(freq_bvd), array(mypsd_bvd))
             self.SpecAx_ref1[0].set_data(array(freq_bvd), mean(mypsd_bvd[1:])*ones(len(freq_bvd)))
+            self.SpecAx_ref1[0].set_label(r'$h_0 = $' + str("{:2.2e}".format(self.h0)))
             self.specA_ref[0].set_data(array(freqA), array(mypsdA))
             self.specB_ref[0].set_data(array(freqB), array(mypsdB))
             self.acf_bvd_ref[0].set_data(array(lag_bvd[0:]), array(acf_bvd[0:]))
@@ -2188,10 +2198,15 @@ class Ui_mainWindow(object):
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
                 self.setValidData()
                 plotBVD_start = perf_counter()
-                self.plotBVD()
+                self.plot_bvd_thread = Thread(target = self.plotBVD, daemon=True)
+                self.plot_bvd_thread.start()
+                self.plot_bvd_thread.join() # wait for the thread to finish
+                # self.plotBVD()
                 print("Time taken to plot BVD data: ", perf_counter() - plotBVD_start)
                 plotStat_start = perf_counter()
-                self.plotStatMeasures()
+                self.stats_thread = Thread(target=self.plotStatMeasures, daemon=True)
+                self.stats_thread.start()
+                self.stats_thread.join() # wait for the thread to finish
                 print("Time taken to plot allan and spectrum: ", perf_counter() - plotStat_start)
                 # getPlot_end = perf_counter() - getData_start
                 # print("Time taken to plot all data in GUI: ", str(getPlot_end))
@@ -2199,8 +2214,12 @@ class Ui_mainWindow(object):
                 # print("Time taken to get and analyze data: " +  str(getData_end))
                 self.statusbar.showMessage('Time taken to process and display data ' + str("{:2.2f}".format(getData_end)) + ' s', 5000)
             else:
+                if self.stats_thread is not None:
+                    self.stats_thread.join()
+                if self.plot_bvd_thread is not None:
+                    self.plot_bvd_thread.join()
                 self.setInvalidData()
-                self.statusbar.showMessage('Invalid file selected...', 5000)
+                self.statusbar.showMessage('Invalid file selected...', 2000)
                 # self.clearPlots()
         else:
             # self.clearPlots()
@@ -2208,6 +2227,7 @@ class Ui_mainWindow(object):
             self.statusbar.showMessage('Invalid file! Filename should end in _bvd.txt', 5000)
 
     def plotStatMeasures(self,) -> None:
+        # TODO: this needs to be in a QThread in a future release...
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         self.plotSpec()

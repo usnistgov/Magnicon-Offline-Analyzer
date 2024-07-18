@@ -1,5 +1,9 @@
 # RELEASE
 
+## 07/17/2024   Version 2.2.2
+  * Remove logo
+  * Fix issue where h_o label value in PSD of BVD plot was not updating 
+
 ## 07/14/2024   Version 2.2.1
   * Added command line options to enter custom value for specific gravity of oil
   * Added command line option for future site specific configuration
