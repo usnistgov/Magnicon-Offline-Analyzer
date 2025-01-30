@@ -204,6 +204,8 @@ class magnicon_ccc:
                         self.R1NomVal = 25812.8074593045
                     elif ('8604.2' in line) or ('8.6042' in line):
                         self.R1NomVal = 25812.8074593045/3.0
+                    elif ('992.8' in line) or ('9.928' in line):
+                            self.R1NomVal = 25812.8074593045/26.0
                     else:
                         self.R1NomVal = float(line.split('=')[-1].strip())
                 elif line.startswith('r2 '):
@@ -213,6 +215,8 @@ class magnicon_ccc:
                         self.R2NomVal = 25812.8074593045
                     elif ('8604.2' in line) or ('8.6042' in line):
                         self.R2NomVal = 25812.8074593045/3.0
+                    elif ('992.8' in line) or ('9.928' in line):
+                        self.R1NomVal = 25812.8074593045/26.0
                     else:
                         self.R2NomVal = float(line.split('=')[-1].strip())
                 elif line.startswith('cs_amplitude 3'):
@@ -301,8 +305,8 @@ class magnicon_ccc:
                     R = ResData(p)
             else:
                 # default to the local one supplied with this project
-                print("Elwood not found, using ResDatabase.dat located at: ", base_dir)
-                R = ResData(base_dir)
+                print("Using ResDatabase.dat located at: ", base_dir + r'\data')
+                R = ResData(base_dir + r'\data')
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:
             self.R1NomVal  = R.ResDict[self.R1SN]['NomVal']

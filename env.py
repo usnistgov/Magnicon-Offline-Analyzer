@@ -10,14 +10,18 @@ class env:
         self.filepath = filepath
         self.start_datetime = start_datetime
         self.end_datetime = end_datetime
+        # print('1. ', self.start_datetime, self.end_datetime)
         self.start_time = datetime.strptime(self.start_datetime, '%m/%d/%Y %I:%M:%S %p')
         self.end_time = datetime.strptime(self.end_datetime, '%m/%d/%Y %I:%M:%S %p')
-        self.start_date = start_datetime.split(' ')[0].replace('/', '')
-        self.start_date = datetime.strptime(self.start_date, '%m%d%Y')
-        self.start_date = self.start_date.strftime('%Y%m%d')
-        self.end_date = end_datetime.split(' ')[0].replace('/', '')
-        self.end_date = datetime.strptime(self.end_date, '%m%d%Y')
-        self.end_date = self.end_date.strftime('%Y%m%d')
+        # print('2. ', self.start_time, self.end_time)
+        self.start_date = start_datetime.split(' ')[0]
+        self.start_date = datetime.strptime(self.start_date, '%m/%d/%Y')
+        # print('2.5 ', self.start_date)
+        self.start_date_fin = self.start_date.strftime('%Y%m%d')
+        self.end_date = end_datetime.split(' ')[0]
+        self.end_date = datetime.strptime(self.end_date, '%m/%d/%Y')
+        self.end_date_fin = self.end_date.strftime('%Y%m%d')
+        # print('3. ', self.start_date_fin, self.end_date_fin)
         x = datetime.timestamp(self.start_time)
         y = datetime.timestamp(self.end_time)
         # to convert from unix (posix) timestamp to labview timestamp...
@@ -52,9 +56,10 @@ class env:
         try:
             for filename in scandir(self.filepath):
                 self.filename = filename.name
-                # print ((filename.name.split('_')[-1]).split('.')[0])
-                if filename.name != '' and ((filename.name.split('_')[-1]).split('.')[0] == self.start_date \
-                   or (filename.name.split('_')[-1]).split('.')[0] == self.end_date):
+                # print(self.filename)
+                # print ((filename.name.split('_')[-1]).split('.')[0], self.start_date_fin, self.end_date_fin)
+                if filename.name != '' and ((filename.name.split('_')[-1]).split('.')[0] == self.start_date_fin \
+                   or (filename.name.split('_')[-1]).split('.')[0] == self.end_date_fin):
                     self.mydata.append(self._read_helper(self.filepath + sep + filename.name))  
             for i in self.mydata:
                 self.df = concat(i,ignore_index = True )

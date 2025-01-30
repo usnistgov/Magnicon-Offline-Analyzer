@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "2.2.2"
+__version__ 	=       "2.3"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -41,4 +41,5 @@ __ChangeLog__   =       """
                         071324:     ENH: Add tooltips, add indicator for calibrated mode, update readme, upgrade to version 2.2
                         071424:     ENH: Add more command line options, update readme, add site specific checks, update dependencies, upgrade to version 2.2.1
                         071724:     FIX: h_0 label value now updates when another file is loaded, remove logo
+                        020125:     FIX: Fix date search bug for getting environment data, add CCC diagram, add remove outlier checkbox, upgrade to version 2.3
                         """

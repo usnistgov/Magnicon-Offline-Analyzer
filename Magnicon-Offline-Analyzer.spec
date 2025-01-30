@@ -17,12 +17,13 @@ options = [
 a = Analysis(
     ['Magnicon-Offline-Analyzer.py'],
     pathex=[''],
-    binaries=[],
+    binaries=[('C:\\texlive', 'texlive')],
     datas=[('.\\bvd_stats.py', '.'), ('.\\create_mag_ccc_datafile.py', '.'), \
            ('.\\magnicon_ccc.py', '.'),  ('.\\ResDataBase.py', '.'),  ('.\\mystat.py', '.'), ('.\\icons', 'icons'), 
-           ('..\\Lib\\site-packages\\allantools\\allantools_info.json', 'allantools'), ('.\\env.py', '.')],
-    hiddenimports = ['pyi_splash', 'allantools'],
-    #hiddenimports=['pyi_splash','pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt6', 'pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt6', 'pyqtgraph.imageview.ImageViewTemplate_pyqt6'],
+           ('..\\Lib\\site-packages\\allantools\\allantools_info.json', 'allantools'), \
+           ('.\\env.py', '.'), ('.\\data\\ccc_diagram_default.png', 'data'), ('.\\data\\ResDataBase.dat', 'data'), \
+           ],
+    hiddenimports = ['pyi_splash', 'allantools', 'lcapy'],
     hookspath=[f'{PACKAGE_SITE}/pyupdater/hooks'],
     hooksconfig={},
     runtime_hooks=[],

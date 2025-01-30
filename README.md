@@ -5,7 +5,6 @@ Data analysis software for the powerful Magnicon CCC system.
 
 Installation
 ------------
-
 Dependencies can be installed using pip:
 ``pip -r requirements.txt``
 Optionally, a spec file is provided to build using pyinstaller::
@@ -52,3 +51,9 @@ Contact
 -------
 To report bugs or request features, please contact:\
 alireza.panna@nist.gov
+
+Acknowledgements
+----------------
+This package benefits greatly from a number of packages but specially the two of them listed here:\
+1. [allantools](https://github.com/aewallin/allantools)
+2. [lcapy](https://github.com/mph-/lcapy)

@@ -1,5 +1,10 @@
 # RELEASE
 
+## 02/01/2024 Version 2.3
+  * Fix date search bug for getting environment data
+  * Add CCC diagram, requires pdftex to run
+  * Add remove outlier checkbox. When selected, removes BVDs that are > +/-3 sigma from the mean
+  
 ## 07/17/2024   Version 2.2.2
   * Remove logo
   * Fix issue where h_o label value in PSD of BVD plot was not updating 
