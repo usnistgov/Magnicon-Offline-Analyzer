@@ -142,7 +142,7 @@ class bvd_stat:
         # print('V1', self.V1)
         # print('V2', self.V2)
         # print('BVD', self.bvdList)
-        print("Time taken to execute old thread: ", perf_counter() - start_thread)
+        # print("Time taken to execute old thread: ", perf_counter() - start_thread)
 
     def _process_thread_new(self,):
         """
@@ -185,8 +185,8 @@ class bvd_stat:
             if i == 4:
                 flag = True
                 self.ramping_down.append(j)
-        self.AA_used = [self.bottom[i * int(self.mag.SHC):(i + 1) * int(self.mag.SHC)] for i in range((len(self.bottom) + int(self.mag.SHC)) // int(self.mag.SHC))] 
-        self.BB_used = [self.top[i * int(self.mag.SHC):(i + 1) * int(self.mag.SHC)] for i in range((len(self.top) + int(self.mag.SHC)) // int(self.mag.SHC))]
+        self.AA_used = [self.bottom[i * int(self.mag.SHC):(i + 1) * int(self.mag.SHC)] for i in range((len(self.bottom) + int(self.mag.SHC)) // int(self.mag.SHC))] # blue
+        self.BB_used = [self.top[i * int(self.mag.SHC):(i + 1) * int(self.mag.SHC)] for i in range((len(self.top) + int(self.mag.SHC)) // int(self.mag.SHC))] # red
         for i in self.AA_used:
             # print('AA used length', len(i))
             if len(i) > ((int(self.ignored_first) + int(self.ignored_last))):
@@ -230,8 +230,8 @@ class bvd_stat:
         # print('B', self.B)
         # print('A1A2', self.A1A2)
         # print('B1B2', self.B1B2)
-        # print('AA', self.AA)
-        # print('BB', self.BB)
+        # print('AA_2D', self.AA_2D)
+        # print('BB_2D', self.BB_2D)
         # print('V1', self.V1)
         # print('V2', self.V2)
         # print('BVD', self.bvdList)
@@ -240,7 +240,7 @@ class bvd_stat:
     def send_bvd_stats(self):
         if self.debug_mode:
             self.logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        return (self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList)
+        return (self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList, self.AA_used, self.BB_used)
     
     def clear_bvd_stats(self) -> None:
         if self.debug_mode:
@@ -250,10 +250,12 @@ class bvd_stat:
         self.V2             = []
         self.stdV2          = []
         self.AA             = []
+        self.AA_used        = []
         self.AA_2D          = []
         self.A1A2           = []
         self.B1B2           = []
         self.BB             = []
+        self.BB_used        = []
         self.A              = []
         self.stdA           = []
         self.B              = []

@@ -36,13 +36,13 @@ class magnicon_ccc:
             self.cfgFile = self.text.rstrip('_bvd.txt') + '_cccdrive.cfg'
             # print (self.rawFile, self.bvdFile, self.cfgFile)
             self.load_raw()
-            print("Raw loaded...")
+            # print("Raw loaded...")
             self.load_bvd()
-            print("BVD loaded...")
+            # print("BVD loaded...")
             self.load_cfg()
-            print("Config loaded...")
+            # print("Config loaded...")
             self.calculations()
-            print("Calculations done...")
+            # print("Calculations done...")
         else:
             self.validFile = False
 
@@ -197,22 +197,38 @@ class magnicon_ccc:
         rangeShuntList=[512, 64, 8, 1]
         with open (self.cfgFile, "r") as file:
             for line in file.readlines():
-                if line.startswith('r1 '):
+                if line.startswith('r1 ='):
                     if ('12906.4' in line) or ('12.9064' in line):
                         self.R1NomVal = 25812.8074593045/2.0
                     elif ('25812.8' in line) or ('25.8128' in line):
                         self.R1NomVal = 25812.8074593045
+                    elif ('992.8' in line) or ('9.928' in line):
+                        self.R1NomVal = 25812.8074593045/26.0
                     elif ('8604.2' in line) or ('8.6042' in line):
                         self.R1NomVal = 25812.8074593045/3.0
+                    elif ('4302.1' in line) or ('4.3021' in line):
+                        self.R1NomVal = 25812.8074593045/6.0
+                    elif ('109.3' in line) or ('1.093' in line):
+                        self.R1NomVal = 25812.8074593045/236.0
+                    elif ('218.7' in line) or ('2.817' in line):
+                        self.R1NomVal = 25812.8074593045/118.0
                     else:
                         self.R1NomVal = float(line.split('=')[-1].strip())
-                elif line.startswith('r2 '):
+                elif line.startswith('r2 ='):
                     if ('12906.4' in line) or ('12.9064' in line):
                         self.R2NomVal = 25812.8074593045/2.0
                     elif ('25812.8' in line) or ('25.8128' in line):
                         self.R2NomVal = 25812.8074593045
+                    elif ('992.8' in line) or ('9.928' in line):
+                        self.R2NomVal = 25812.8074593045/26.0
                     elif ('8604.2' in line) or ('8.6042' in line):
                         self.R2NomVal = 25812.8074593045/3.0
+                    elif ('4302.1' in line) or ('4.3021' in line):
+                        self.R2NomVal = 25812.8074593045/6.0
+                    elif ('109.3' in line) or ('1.093' in line):
+                        self.R2NomVal = 25812.8074593045/236.0
+                    elif ('218.7' in line) or ('2.817' in line):
+                        self.R2NomVal = 25812.8074593045/118.0
                     else:
                         self.R2NomVal = float(line.split('=')[-1].strip())
                 elif line.startswith('cs_amplitude 3'):
@@ -246,6 +262,12 @@ class magnicon_ccc:
                     self.rStepCount = int(line.split(' = ')[-1].strip())
                 elif line.startswith('daq_numcycles_stop'):
                     self.numCycStop = int(line.split(' = ')[-1].strip())
+                elif line.startswith('cn_short 3'):
+                    self.cnOutput = str(line.split(" = ")[-1].strip())
+                    if self.cnOutput == 'TRUE':
+                        self.cnOutput = False
+                    else:
+                        self.cnOutput = True
                 elif line.startswith('cn_rangeshunt 3'):
                     self.rangeShunt = rangeShuntList[int(line.split('=')[-1].strip())]
                 elif line.startswith('cn_ncor 3'):
@@ -301,8 +323,8 @@ class magnicon_ccc:
                     R = ResData(p)
             else:
                 # default to the local one supplied with this project
-                print("Elwood not found, using ResDatabase.dat located at: ", base_dir)
-                R = ResData(base_dir)
+                # print("Using ResDatabase.dat located at: ", base_dir + r'\data')
+                R = ResData(base_dir + r'\data')
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:
             self.R1NomVal  = R.ResDict[self.R1SN]['NomVal']

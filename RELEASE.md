@@ -1,5 +1,23 @@
 # RELEASE
 
+## 06/13/2025 Version 2.4
+  * Add warning displays if CN output is off or cal mode is off or 16 bit daq correction is not 0
+  * Add readback to display if compensation (CN) output is on or off
+  * Seperate bridge voltage (BV) and bridge voltage difference (BVD) tabs. Show raw bridge voltages as well
+  * Re-orient count combo box in BVD tab so it goes in descending order making it easier to delete points incase of SQUID unlock
+  * Fix plotCountComboBox issue when deleting points from BVD plot
+  * Moved Remove Outliers checkbox to BVD tab
+  * Update ResDataBase.dat to latest
+
+## 02/14/2025 Version 2.3.1
+  * Fix issue with R2NomVal for RK/3 value
+  * Fix gui style to be compatible with windows 11
+
+## 02/01/2025 Version 2.3
+  * Fix date search bug for getting environment data
+  * Add CCC diagram, requires pdftex to run
+  * Add remove outlier checkbox. When selected, removes BVDs that are > +/-3 sigma from the mean
+  
 ## 07/17/2024   Version 2.2.2
   * Remove logo
   * Fix issue where h_o label value in PSD of BVD plot was not updating 
