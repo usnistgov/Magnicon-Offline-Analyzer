@@ -54,6 +54,10 @@ alireza.panna@nist.gov
 
 Acknowledgements
 ----------------
+<<<<<<< HEAD
 This package benefits greatly from a number of packages but specially the two of them listed here:\
+=======
+This package benefits greatly from a number of packages but specially the two of them listed here:
+>>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
 1. [allantools](https://github.com/aewallin/allantools)
 2. [lcapy](https://github.com/mph-/lcapy)

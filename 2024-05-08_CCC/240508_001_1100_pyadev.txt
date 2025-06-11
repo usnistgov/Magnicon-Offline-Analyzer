@@ -1,0 +1,10 @@
+tau (s)	adev [BVD]	adev err [BVD]
+
+tau (s)	adev [BV <I->]	adev err [BV <I->]
+
+tau (s)	adev [BV <I+>]	adev err [BV <I+>]
+
+tau (s)	adev [BV I-]	adev err [BV I-]
+
+tau (s)	adev [BV I+]	adev err [BV I+]
+

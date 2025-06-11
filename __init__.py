@@ -7,7 +7,11 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
+<<<<<<< HEAD
 __version__ 	=       "2.3.1"
+=======
+__version__ 	=       "2.3"
+>>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -42,7 +46,10 @@ __ChangeLog__   =       """
                         071424:     ENH: Add more command line options, update readme, add site specific checks, update dependencies, upgrade to version 2.2.1
                         071724:     FIX: h_0 label value now updates when another file is loaded, remove logo
                         020125:     FIX: Fix date search bug for getting environment data, add CCC diagram, add remove outlier checkbox, upgrade to version 2.3
+<<<<<<< HEAD
                         021425:     FIX: Fix gui style to be compatible with windows 11, fix issue with R2NomVal for RK/3
                         061325:     ENH: Add warning displays, readback to display if CN is off, fix delete and restore point method for BVD, seperate BV and BVD
                                          tabs, Update ResDataBase.dat, move removed outliers checkbox to bvd tab, upgrade to version 2.4
+=======
+>>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
                         """
