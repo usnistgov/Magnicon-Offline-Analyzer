@@ -10,11 +10,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QV
                              QLabel, QPushButton, QComboBox, QTextBrowser, QTabWidget, \
                              QSpacerItem, QGridLayout, QLineEdit, QFrame, QSizePolicy, \
                              QMenuBar, QSpinBox, QToolButton, QStatusBar, \
-<<<<<<< HEAD
                              QTextEdit, QFileDialog, QCheckBox, QMessageBox)
-=======
-                             QTextEdit, QFileDialog, QCheckBox)
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -46,11 +42,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-<<<<<<< HEAD
 __version__ = '2.4' # Program version string
-=======
-__version__ = '2.3' # Program version string
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
 red_style   = "color: white; background-color: red"
 blue_style  = "color: white; background-color: blue"
 green_style = "color: white; background-color: green"
@@ -414,13 +406,10 @@ class Ui_mainWindow(object):
         self.plot_bvd_thread = None
         self.draw_thread = None
         self.draw_flag = False
-<<<<<<< HEAD
         self.user_warn_msg = ""
         self.deletePressed = False
         self.restorePressed = False
         self.outlierPressed = False
-=======
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
 
         self.R1Temp     = 23
         self.R2Temp     = 23
@@ -982,15 +971,6 @@ class Ui_mainWindow(object):
         self.IgnoredLastLineEdit.setReadOnly(False)
         self.IgnoredLastLineEdit.returnPressed.connect(self.changedIgnoredLast)
         
-<<<<<<< HEAD
-=======
-        self.chb_outlier = QCheckBox("Remove Outliers", parent=self.centralwidget)
-        self.chb_outlier.setGeometry(QRect(self.col7x, int(self.coly*11.5), self.lbl_width, self.lbl_height))
-        self.chb_outlier.setTristate(False)
-        self.chb_outlier.setCheckState(Qt.CheckState.Unchecked)
-        self.chb_outlier.stateChanged.connect(self.changedOutlier)
-        
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
         self.le_error = QLineEdit(parent=self.centralwidget)
         self.le_error.setGeometry(QRect(self.col7x, int(self.coly*12.5), self.lbl_width, self.lbl_height))
         self.le_error.setReadOnly(True)
@@ -1156,7 +1136,6 @@ class Ui_mainWindow(object):
         self.MDSSButton.setToolTip('Click to save pipe seperated results file')
         self.saveButton.setToolTip('Save a pipe seperated results file')
         self.chb_outlier.setToolTip('Check to remove BVD values that are more than 3 sigma from the mean')
-<<<<<<< HEAD
         self.lbl_cnOutput_rbv.setToolTip('Compensation output')
     
     def show_warning_dialog(self):
@@ -1175,9 +1154,6 @@ class Ui_mainWindow(object):
         response = self.msgBox.exec()
         return response
         
-=======
-    
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
     def CCCDiagramTabSetUp(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
@@ -1236,10 +1212,6 @@ class Ui_mainWindow(object):
             self.lbl_cccdiagram.setScaledContents(True)
             self.lbl_cccdiagram.show()
         except Exception as e:
-<<<<<<< HEAD
-=======
-            print(e)
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             self.pixmap_cccdiagram = QPixmap(base_dir + r'\data\ccc_diagram_default.png')
             # Set the pixmap to the label
             scaled_pixmap = self.pixmap_cccdiagram.scaled(self.lbl_cccdiagram.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -1247,7 +1219,6 @@ class Ui_mainWindow(object):
             # Resize the label to fit the image
             self.lbl_cccdiagram.setScaledContents(True)
             self.lbl_cccdiagram.show()
-<<<<<<< HEAD
         
     def voltageTabSetUp(self) -> None:
         if debug_mode:
@@ -1283,8 +1254,6 @@ class Ui_mainWindow(object):
         self.voltageVerticalLayout.addWidget(NavigationToolbar(self.raw_canvas))
         self.voltageVerticalLayout.addWidget(self.raw_canvas)
 
-=======
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
 
     def BVDTabSetUp(self) -> None:
         if debug_mode:
@@ -1861,17 +1830,10 @@ class Ui_mainWindow(object):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.bvd_stat_obj is not None:
-<<<<<<< HEAD
             # count_a = linspace(0, len(self.A)-1, num=len(self.A))
             # count_b = linspace(0, len(self.B)-1, num=len(self.B))
             # count_aa = linspace(0, len(self.AA)-1, num=len(self.AA))
             # count_bb = linspace(0, len(self.BB)-1, num=len(self.BB))
-=======
-            count_a = linspace(0, len(self.A)-1, num=len(self.A))
-            count_b = linspace(0, len(self.B)-1, num=len(self.B))
-            count_aa = linspace(0, len(self.AA)-1, num=len(self.AA))
-            count_bb = linspace(0, len(self.BB)-1, num=len(self.BB))
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             if self.corr_bvdList:
                 BVDmean = mean(self.corr_bvdList)
                 BVDstd  = std(self.corr_bvdList, ddof=1)
@@ -1986,10 +1948,7 @@ class Ui_mainWindow(object):
     #         self.plotStatMeasures()
     
     def changedOutlier(self, state):
-<<<<<<< HEAD
         self.outlierPressed = True
-=======
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if state == 2:
@@ -2541,7 +2500,6 @@ class Ui_mainWindow(object):
                 # print("Time taken to get BVD: " +  str(getBVD_end))
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
                 self.setValidData()
-<<<<<<< HEAD
                 self.plotRaw()
                 self.plotBVD()
                 self.plotStatMeasures()
@@ -2555,18 +2513,6 @@ class Ui_mainWindow(object):
                 # self.stats_thread = Thread(target=self.plotStatMeasures, daemon=True)
                 # self.stats_thread.start()
                 # self.stats_thread.join() # wait for the thread to finish
-=======
-                # plotBVD_start = perf_counter()
-                self.plot_bvd_thread = Thread(target = self.plotBVD, daemon=True)
-                self.plot_bvd_thread.start()
-                self.plot_bvd_thread.join() # wait for the thread to finish
-                # self.plotBVD()
-                # print("Time taken to plot BVD data: ", perf_counter() - plotBVD_start)
-                # plotStat_start = perf_counter()
-                self.stats_thread = Thread(target=self.plotStatMeasures, daemon=True)
-                self.stats_thread.start()
-                self.stats_thread.join() # wait for the thread to finish
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
                 if self.tabWidget.currentIndex() == 0:
                     try:
                         self.draw_thread = Thread(target = self.CCCDiagram, args=(round(self.dat.R1NomVal, 2), round(self.dat.R2NomVal, 2), \
@@ -2629,11 +2575,7 @@ class Ui_mainWindow(object):
             self.removed = []
             self.bvd_stat_obj = bvd_stat(self.txtFilePath, int(self.IgnoredFirstLineEdit.text()), \
                                          int(self.IgnoredLastLineEdit.text()), self.dat, debug_mode)
-<<<<<<< HEAD
             self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList, self.AA_used, self.BB_used = self.bvd_stat_obj.send_bvd_stats()
-=======
-            self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList = self.bvd_stat_obj.send_bvd_stats()
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             if self.outliers:
                 BVDmean = mean(self.bvdList)
                 BVDstd  = std(self.bvdList, ddof=1)
@@ -2650,11 +2592,7 @@ class Ui_mainWindow(object):
         except Exception as e:
             logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
                            ' Error: ' + str(e))
-<<<<<<< HEAD
             self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList, self.AA_used, self.BB_used = [], [], [], [], [], [], [], [], [], [], [], []
-=======
-            self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList = [], [], [], [], [], [], [], [], []
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             self.corr_bvdList = self.bvdList
             pass
         
@@ -2666,7 +2604,6 @@ class Ui_mainWindow(object):
             upper_chk   =  3*self.bvd_std_chk + self.bvd_mean_chk
             lower_chk   = -3*self.bvd_std_chk + self.bvd_mean_chk
             if self.outliers:
-<<<<<<< HEAD
                 for ct, i in enumerate(self.dat.bvd):
                     if i > lower_chk and i < upper_chk:
                         self.bvdList_chk.append(i)
@@ -2680,13 +2617,6 @@ class Ui_mainWindow(object):
                 if self.removed != []:
                     for i in self.removed:
                         self.plotCountCombo.addItem(f'ct {len(self.dat.bvd) - i}')
-=======
-                for i in self.dat.bvd:
-                    if i > lower_chk and i < upper_chk:
-                        self.bvdList_chk.append(i)
-            else:
-                self.bvdList_chk    = self.dat.bvd
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
         else:
             self.bvdList_chk = []
         # print(len(self.A), len(self.B))
@@ -2962,7 +2892,6 @@ class Ui_mainWindow(object):
         # self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setEnabled(True)
 
-<<<<<<< HEAD
         if not (self.deletePressed or self.restorePressed):
             self.plotCountCombo.clear()
             for i in range(len(self.corr_bvdList)):
@@ -2973,12 +2902,6 @@ class Ui_mainWindow(object):
             self.restorePressed = False
 
         if len(self.corr_bvdList) > 625:
-=======
-        for i in range(len(self.corr_bvdList)):
-            self.plotCountCombo.addItem(f'ct {i}')
-
-        if len(self.corr_bvdList) > 400:
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             self.bins = int(sqrt(len(self.corr_bvdList)))
         else:
             self.bins = 25
@@ -3233,20 +3156,13 @@ class Ui_mainWindow(object):
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.dialog.exec():
             self.txtFilePath = self.dialog.selectedFiles()[0]
-<<<<<<< HEAD
             # print('Loading datafile: ', self.txtFilePath)
-=======
-            print('Loading datafile: ', self.txtFilePath)
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             self.txtFileLineEdit.setText(self.txtFilePath)
             self.validFile = False
             self.chb_outlier.setCheckState(Qt.CheckState.Unchecked)
             self.outliers=False
             self.draw_flag = False
-<<<<<<< HEAD
             self.user_warn_msg = ""
-=======
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             self.getData()
         else:
             self.txtFilePath = ''
@@ -3413,11 +3329,8 @@ class Ui_mainWindow(object):
 
             self.deletedIndex.append(curIndex)
             self.deletedCount.append(int(self.plotCountCombo.currentText().replace('ct ', '')))
-<<<<<<< HEAD
             if int(curIndex) >= 0:
                 self.plotCountCombo.removeItem(int(self.plotCountCombo.count() - curIndex - 1))
-=======
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             self.deletedBVD.append(self.corr_bvdList[curIndex])
             self.deletedBVDChk.append(self.bvdList_chk[curIndex])
             self.deletedV1.append(self.V1[curIndex])
@@ -3451,12 +3364,8 @@ class Ui_mainWindow(object):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.deletedCount != []:
-<<<<<<< HEAD
             print(self.deletedIndex)
             self.plotCountCombo.insertItem(int(self.N - self.deletedIndex[-1]), f'ct {int(self.deletedIndex[-1])}')
-=======
-            self.plotCountCombo.insertItem(self.deletedIndex[-1], f'ct {self.deletedCount[-1]}')
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
             self.V1.insert(self.deletedIndex[-1], self.deletedV1[-1])
             self.V2.insert(self.deletedIndex[-1], self.deletedV2[-1])
             self.bvdCount.insert(self.deletedIndex[-1], self.deletedCount[-1])

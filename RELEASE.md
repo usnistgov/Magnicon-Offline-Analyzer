@@ -1,6 +1,5 @@
 # RELEASE
 
-<<<<<<< HEAD
 ## 06/13/2025 Version 2.4
   * Add warning displays if CN output is off or cal mode is off or 16 bit daq correction is not 0
   * Add readback to display if compensation (CN) output is on or off
@@ -15,9 +14,6 @@
   * Fix gui style to be compatible with windows 11
 
 ## 02/01/2025 Version 2.3
-=======
-## 02/01/2024 Version 2.3
->>>>>>> d0c9b029c8fe3c268d685ba5d71039651f73f51f
   * Fix date search bug for getting environment data
   * Add CCC diagram, requires pdftex to run
   * Add remove outlier checkbox. When selected, removes BVDs that are > +/-3 sigma from the mean
