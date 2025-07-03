@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "2.4"
+__version__ 	=       "2.4.1"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -45,4 +45,6 @@ __ChangeLog__   =       """
                         021425:     FIX: Fix gui style to be compatible with windows 11, fix issue with R2NomVal for RK/3
                         061325:     ENH: Add warning displays, readback to display if CN is off, fix delete and restore point method for BVD, seperate BV and BVD
                                          tabs, Update ResDataBase.dat, move removed outliers checkbox to bvd tab, upgrade to version 2.4
+                        061525:     ENH: If screen voltage is off, shows a warning and writes screen voltage as 0 in pymdss file
+                        062025:     ENH: Seperated BVD and R plots so its easy to view, Added QHR Char checkbox to save QHR Process in pymdss file update to version 2.4.1
                         """

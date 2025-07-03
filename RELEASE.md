@@ -1,5 +1,11 @@
 # RELEASE
 
+## 06/20/2025 Version 2.4.1
+  * If screen voltage is off, then the program shows a warning. Guard voltage is set to 0 in pymdss.txt file if screen 
+    voltage is off
+  * Seperated BVD and R plots so its easy to view
+  * Added QHR Char checkbox to save QHR Process in pymdss file
+
 ## 06/13/2025 Version 2.4
   * Add warning displays if CN output is off or cal mode is off or 16 bit daq correction is not 0
   * Add readback to display if compensation (CN) output is on or off

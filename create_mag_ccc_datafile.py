@@ -12,7 +12,7 @@ class writeDataFile():
                  stdC1R1: float, stdC2R1: float, C1R2: float, C2R2: float, \
                  stdC1R2: float, stdC2R2: float, R1PPM: float, R2PPM: float, \
                  bvd_mean: float, N: int, samplesUsed: int, meas: float, delay: float, \
-                 R1PredictionSTP: float, R2PredictionSTP: float, comments: str) -> None:
+                 R1PredictionSTP: float, R2PredictionSTP: float, comments: str, bfield: str, sampleTemp: str, contact: str, qhr_system: str,  qhrchar: bool) -> None:
         # Creates the MDSS file name according to the input .txt file's name
         self.savepath = savepath
         dataFileName = (text.split('/')[-1]).replace('_bvd.txt', "")
@@ -106,7 +106,23 @@ class writeDataFile():
                 f.write(f'|{dat_obj.R2ID}')
             else:
                 f.write(f'|{dat_obj.R1ID}')
-            f.write('|Magnicon CCC Process|StandRes')
+            if qhrchar:
+                if bfield !='':
+                    bfield = float(bfield)
+                else:
+                    bfield = 0
+                if sampleTemp != '':
+                    sampleTemp = float(sampleTemp)
+                else:
+                    sampleTemp = 0
+                f.write('|QHR Process')
+                f.write(f'|{"{:.2f}".format(bfield)}')
+                f.write(f'|{"{:.2f}".format(sampleTemp)}')
+                f.write('|' + contact)
+                f.write('|' + qhr_system)
+                f.write('|StandRes')
+            else:
+                f.write('|Magnicon CCC Process|StandRes')
 
 if __name__ == '__main__':
     print("I am main")

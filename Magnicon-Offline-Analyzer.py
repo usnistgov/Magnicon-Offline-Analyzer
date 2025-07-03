@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun 24 11:08:20 2025
+
+@author: ohm
+"""
+
 import sys, os
 from time import perf_counter
 import inspect
@@ -15,7 +22,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QV
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
-from matplotlib.ticker import MaxNLocator, ScalarFormatter, MultipleLocator
+from matplotlib.ticker import MaxNLocator, ScalarFormatter, MultipleLocator, NullLocator
 import matplotlib.style as mplstyle
 from numpy import sqrt, std, mean, ones, linspace, array, nan
 from scipy import signal
@@ -42,10 +49,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__ = '2.4' # Program version string
-red_style   = "color: white; background-color: red"
-blue_style  = "color: white; background-color: blue"
-green_style = "color: white; background-color: green"
+__version__             = '2.4.1' # Program version string
+red_style               = "color: white; background-color: red; border: 0.5px solid black"
+blue_style              = "color: white; background-color: blue; border: 0.5px solid black"
+green_style             = "color: white; background-color: green; border:0.5px solid black"
+le_style                = """QLineEdit { border: 0.5px solid black; background-color: rgb(255, 255, 255); color: black }"""
+le_readonly_style       = """QLineEdit { border: 0.5px solid black; background-color: rgb(215, 214, 213); color: black }"""
+le_readonly_bold_style  = """QLineEdit { border: 0.5px solid black; background-color: rgb(215, 214, 213); color: black; font-weight: bold }"""
 winSizeH    = 1000
 winSizeV    = 845
 #c           = 0.8465 # specific gravity of oil used
@@ -261,7 +271,7 @@ class Ui_mainWindow(object):
         # self.drawTimingDiagram()
         if getattr(sys, 'frozen', False):
             pyi_splash.close()
-    
+
     def onTabChanged(self, index: int):
         if index == 0 and self.dat != None and self.draw_flag == False:
             try:
@@ -395,6 +405,7 @@ class Ui_mainWindow(object):
         # flags
         self.validFile    = False
         self.outliers     = False
+        self.qhrCharFlag  = False
         self.plottedBVD   = False
         self.plottedRaw   = False
         self.plottedAllan = False
@@ -587,7 +598,10 @@ class Ui_mainWindow(object):
         self.StdDevC1Label.setGeometry(QRect(self.col5x, 210, self.lbl_width, self.lbl_height))
         self.StdDevC2Label = QLabel(parent=self.SetResTab)
         self.StdDevC2Label.setGeometry(QRect(self.col5x, 270, self.lbl_width, self.lbl_height))
-        # col6
+        self.lbl_Bfield = QLabel(parent=self.SetResTab)
+        self.lbl_Bfield.setGeometry(QRect(self.col4x, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_Bfield.setHidden(True)
+       # col6
         self.R1STPLabel = QLabel(parent=self.SetResTab)
         self.R1STPLabel.setGeometry(QRect(self.col6x, 30, self.lbl_width, self.lbl_height))
         self.R2STPLabel = QLabel(parent=self.SetResTab)
@@ -598,6 +612,15 @@ class Ui_mainWindow(object):
         self.StdDevPPMLabel.setGeometry(QRect(self.col6x, 210, self.lbl_width, self.lbl_height))
         self.StdDevChkPPMLabel = QLabel(parent=self.SetResTab)
         self.StdDevChkPPMLabel.setGeometry(QRect(self.col6x, 270, self.lbl_width, self.lbl_height))
+        self.lbl_sampleTemp = QLabel(parent=self.SetResTab)
+        self.lbl_sampleTemp.setGeometry(QRect(self.col4x+70, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_sampleTemp.setHidden(True)
+        self.lbl_contact = QLabel(parent=self.SetResTab)
+        self.lbl_contact.setGeometry(QRect(self.col4x+150, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_contact.setHidden(True)
+        self.lbl_qhr_system = QLabel(parent=self.SetResTab)
+        self.lbl_qhr_system.setGeometry(QRect(self.col4x+240, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_qhr_system.setHidden(True)
         # col7
         self.StandardRLabel = QLabel(parent=self.centralwidget)
         self.StandardRLabel.setGeometry(QRect(self.col7x, 30, self.lbl_width, self.lbl_height))
@@ -643,13 +666,14 @@ class Ui_mainWindow(object):
         self.pixmap_equation = QPixmap(base_dir + r'\icons\ccc_equation.PNG')
         self.lbl_equation.setPixmap(self.pixmap_equation)
         self.lbl_equation.setGeometry(QRect(550, 475, 314, 222))
-        
+
         # Create and show the warning dialog
         self.msgBox = QMessageBox()
         self.msgBox.setIcon(QMessageBox.Icon.Critical)
         self.msgBox.setWindowTitle("Warning!")
         self.msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
         self.msgBox.setStyleSheet("color: red;")
+
 
     def setLineEdits(self) -> None:
         if debug_mode:
@@ -658,40 +682,36 @@ class Ui_mainWindow(object):
         self.R1SNLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1SNLineEdit.setGeometry(QRect(self.col0x, self.coly, self.lbl_width, self.lbl_height))
         self.R1SNLineEdit.setReadOnly(True)
-        self.R1SNLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R1SNLineEdit.setStyleSheet(le_readonly_style)
         self.R2SNLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2SNLineEdit.setGeometry(QRect(self.col0x, self.coly*2 , self.lbl_width, self.lbl_height))
         self.R2SNLineEdit.setReadOnly(True)
-        self.R2SNLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R2SNLineEdit.setStyleSheet(le_readonly_style)
         self.AppVoltLineEdit = QLineEdit(parent=self.SetResTab)
         self.AppVoltLineEdit.setGeometry(QRect(self.col0x, self.coly*3, self.lbl_width, self.lbl_height))
         self.AppVoltLineEdit.setReadOnly(True)
-        self.AppVoltLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.AppVoltLineEdit.setStyleSheet(le_readonly_style)
         self.N1LineEdit = QLineEdit(parent=self.SetResTab)
         self.N1LineEdit.setGeometry(QRect(self.col0x, self.coly*4, self.lbl_width, self.lbl_height))
         self.N1LineEdit.setReadOnly(True)
-        self.N1LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.N1LineEdit.setStyleSheet(le_readonly_style)
         self.MeasCycLineEdit = QLineEdit(parent=self.SetResTab)
         self.MeasCycLineEdit.setGeometry(QRect(self.col0x, self.coly*5, self.lbl_width, self.lbl_height))
         self.MeasCycLineEdit.setReadOnly(True)
-        self.MeasCycLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.MeasCycLineEdit.setStyleSheet(le_readonly_style)
         self.FullCycLineEdit = QLineEdit(parent=self.SetResTab)
         self.FullCycLineEdit.setGeometry(QRect(self.col0x, self.coly*6, self.lbl_width, self.lbl_height))
         self.FullCycLineEdit.setReadOnly(True)
-        self.FullCycLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.FullCycLineEdit.setStyleSheet(le_readonly_style)
         self.R1PresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1PresLineEdit.setGeometry(QRect(self.col0x, self.coly*7, self.lbl_width, self.lbl_height))
         self.R1PresLineEdit.setValidator(QDoubleValidator())
+        self.R1PresLineEdit.setStyleSheet(le_style)
         self.R1PresLineEdit.returnPressed.connect(self.R1PresChanged)
         self.R2PresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2PresLineEdit.setGeometry(QRect(self.col0x, self.coly*8, self.lbl_width, self.lbl_height))
         self.R2PresLineEdit.setValidator(QDoubleValidator())
+        self.R2PresLineEdit.setStyleSheet(le_style)
         self.R2PresLineEdit.returnPressed.connect(self.R2PresChanged)
         self.txtFileLineEdit = QLineEdit(parent=self.SetResTab)
         self.txtFileLineEdit.setGeometry(QRect(self.col0x, self.coly*10 + 30, int(self.lbl_width*2.8), self.lbl_height))
@@ -700,263 +720,218 @@ class Ui_mainWindow(object):
         self.R1PPMLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1PPMLineEdit.setGeometry(QRect(self.col1x, self.coly, self.lbl_width, self.lbl_height))
         self.R1PPMLineEdit.setReadOnly(True)
-        self.R1PPMLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R1PPMLineEdit.setStyleSheet(le_readonly_style)
         self.R2PPMLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2PPMLineEdit.setGeometry(QRect(self.col1x, self.coly*2, self.lbl_width, self.lbl_height))
         self.R2PPMLineEdit.setReadOnly(True)
-        self.R2PPMLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R2PPMLineEdit.setStyleSheet(le_readonly_style)
         self.Current1LineEdit = QLineEdit(parent=self.SetResTab)
         self.Current1LineEdit.setGeometry(QRect(self.col1x, self.coly*3, self.lbl_width, self.lbl_height))
         self.Current1LineEdit.setReadOnly(True)
-        self.Current1LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.Current1LineEdit.setStyleSheet(le_readonly_style)
         self.N2LineEdit = QLineEdit(parent=self.SetResTab)
         self.N2LineEdit.setGeometry(QRect(self.col1x, self.coly*4, self.lbl_width, self.lbl_height))
         self.N2LineEdit.setReadOnly(True)
-        self.N2LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.N2LineEdit.setStyleSheet(le_readonly_style)
         self.SHCLineEdit = QLineEdit(parent=self.SetResTab)
         self.SHCLineEdit.setGeometry(QRect(self.col1x, self.coly*5, self.lbl_width, self.lbl_height))
         self.SHCLineEdit.setReadOnly(True)
-        self.SHCLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.SHCLineEdit.setStyleSheet(le_readonly_style)
         self.RampLineEdit = QLineEdit(parent=self.SetResTab)
         self.RampLineEdit.setGeometry(QRect(self.col1x, self.coly*6, self.lbl_width, self.lbl_height))
         self.RampLineEdit.setReadOnly(True)
-        self.RampLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.RampLineEdit.setStyleSheet(le_readonly_style)
         self.le_path_temperature1 = QLineEdit(parent=self.SetResTab)
         self.le_path_temperature1.setGeometry(QRect(self.col1x, self.coly*11 + 30, self.lbl_width+80, self.lbl_height))
-        self.le_path_temperature1.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
+        self.le_path_temperature1.setStyleSheet(le_style)
 
         self.le_path_temperature2 = QLineEdit(parent=self.SetResTab)
         self.le_path_temperature2.setGeometry(QRect(self.col1x, self.coly*12 + 30, self.lbl_width+80, self.lbl_height))
-        self.le_path_temperature2.setStyleSheet("""QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
+        self.le_path_temperature2.setStyleSheet(le_style)
 
         self.le_range_shunt = QLineEdit(parent=self.SetResTab)
         self.le_range_shunt.setGeometry(QRect(self.col1x-40, self.coly*8+40, self.lbl_width-60, self.lbl_height))
         self.le_range_shunt.setReadOnly(True)
-        self.le_range_shunt.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_range_shunt.setStyleSheet(le_readonly_style)
         # col2
         self.R1ValueLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1ValueLineEdit.setGeometry(QRect(self.col2x, self.coly, self.lbl_width, self.lbl_height))
         self.R1ValueLineEdit.setReadOnly(True)
-        self.R1ValueLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R1ValueLineEdit.setStyleSheet(le_readonly_style)
         self.R2ValueLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2ValueLineEdit.setGeometry(QRect(self.col2x, self.coly*2, self.lbl_width, self.lbl_height))
         self.R2ValueLineEdit.setReadOnly(True)
-        self.R2ValueLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R2ValueLineEdit.setStyleSheet(le_readonly_style)
         self.Current2LineEdit = QLineEdit(parent=self.SetResTab)
         self.Current2LineEdit.setGeometry(QRect(self.col2x, self.coly*3, self.lbl_width, self.lbl_height))
         self.Current2LineEdit.setReadOnly(True)
-        self.Current2LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.Current2LineEdit.setStyleSheet(le_readonly_style)
         self.NAuxLineEdit = QLineEdit(parent=self.SetResTab)
         self.NAuxLineEdit.setGeometry(QRect(self.col2x, self.coly*4, self.lbl_width, self.lbl_height))
         self.NAuxLineEdit.setReadOnly(True)
-        self.NAuxLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.NAuxLineEdit.setStyleSheet(le_readonly_style)
         self.DelayLineEdit = QLineEdit(parent=self.SetResTab)
         self.DelayLineEdit.setGeometry(QRect(self.col2x, self.coly*5, self.lbl_width, self.lbl_height))
         self.DelayLineEdit.setReadOnly(True)
-        self.DelayLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.DelayLineEdit.setStyleSheet(le_readonly_style)
         self.MeasLineEdit = QLineEdit(parent=self.SetResTab)
         self.MeasLineEdit.setGeometry(QRect(self.col2x, self.coly*6, self.lbl_width, self.lbl_height))
         self.MeasLineEdit.setReadOnly(True)
-        self.MeasLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.MeasLineEdit.setStyleSheet(le_readonly_style)
         self.R1OilPresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1OilPresLineEdit.setGeometry(QRect(self.col2x, self.coly*7, self.lbl_width, self.lbl_height))
         self.R1OilPresLineEdit.setReadOnly(True)
-        self.R1OilPresLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R1OilPresLineEdit.setStyleSheet(le_readonly_style)
         self.R2OilPresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2OilPresLineEdit.setGeometry(QRect(self.col2x, self.coly*8, self.lbl_width, self.lbl_height))
         self.R2OilPresLineEdit.setReadOnly(True)
-        self.R2OilPresLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R2OilPresLineEdit.setStyleSheet(le_readonly_style)
         # col3
         self.kLineEdit = QLineEdit(parent=self.SetResTab)
         self.kLineEdit.setGeometry(QRect(self.col3x, self.coly, self.lbl_width, self.lbl_height))
         self.kLineEdit.setReadOnly(True)
-        self.kLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.kLineEdit.setStyleSheet(le_readonly_style)
         self.MeasTimeLineEdit = QLineEdit(parent=self.SetResTab)
         self.MeasTimeLineEdit.setGeometry(QRect(self.col3x, self.coly*2, self.lbl_width, self.lbl_height))
         self.MeasTimeLineEdit.setReadOnly(True)
-        self.MeasTimeLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.MeasTimeLineEdit.setStyleSheet(le_readonly_style)
         self.le_deltaI2R2 = QLineEdit(parent=self.SetResTab)
         self.le_deltaI2R2.setGeometry(QRect(self.col3x, self.coly*3, self.lbl_width, self.lbl_height))
-        self.le_deltaI2R2.setStyleSheet(
-                """QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
+        self.le_deltaI2R2.setStyleSheet(le_style)
         self.le_deltaI2R2.returnPressed.connect(self.changedDeltaI2R2)
         self.R1TotalPresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1TotalPresLineEdit.setGeometry(QRect(self.col3x, self.coly*4, self.lbl_width, self.lbl_height))
         self.R1TotalPresLineEdit.setReadOnly(True)
-        self.R1TotalPresLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R1TotalPresLineEdit.setStyleSheet(le_readonly_style)
         self.R2TotalPresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2TotalPresLineEdit.setGeometry(QRect(self.col3x, self.coly*5, self.lbl_width, self.lbl_height))
         self.R2TotalPresLineEdit.setReadOnly(True)
-        self.R2TotalPresLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.R2TotalPresLineEdit.setStyleSheet(le_readonly_style)
         self.R1TempLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1TempLineEdit.setGeometry(QRect(self.col3x, self.coly*6, self.lbl_width, self.lbl_height))
         self.R1TempLineEdit.setValidator(QDoubleValidator())
+        self.R1TempLineEdit.setStyleSheet(le_style)
         self.R1TempLineEdit.returnPressed.connect(self.temp1Changed)
         self.R2TempLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2TempLineEdit.setGeometry(QRect(self.col3x, self.coly*7, self.lbl_width, self.lbl_height))
         self.R2TempLineEdit.setValidator(QDoubleValidator())
+        self.R2TempLineEdit.setStyleSheet(le_style)
         self.R2TempLineEdit.returnPressed.connect(self.temp2Changed)
         self.RelHumLineEdit = QLineEdit(parent=self.SetResTab)
         self.RelHumLineEdit.setGeometry(QRect(self.col3x, self.coly*8, self.lbl_width, self.lbl_height))
         self.RelHumLineEdit.setReadOnly(True)
-        self.RelHumLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.RelHumLineEdit.setStyleSheet(le_readonly_style)
         self.le_start_time = QLineEdit(parent=self.SetResTab)
         self.le_start_time.setGeometry(QRect(self.col3x, self.coly*9 + 30, self.lbl_width, self.lbl_height))
         self.le_start_time.setReadOnly(True)
-        self.le_start_time.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_start_time.setStyleSheet(le_readonly_style)
         self.le_end_time = QLineEdit(parent=self.SetResTab)
         self.le_end_time.setGeometry(QRect(self.col3x, self.coly*10 + 30, self.lbl_width, self.lbl_height))
         self.le_end_time.setReadOnly(True)
-        self.le_end_time.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_end_time.setStyleSheet(le_readonly_style)
         self.le_12bitdac = QLineEdit(parent=self.SetResTab)
         self.le_12bitdac.setGeometry(QRect(self.col3x - 100, self.coly*8 + 40, self.lbl_width-20, self.lbl_height))
         self.le_12bitdac.setReadOnly(True)
-        self.le_12bitdac.setStyleSheet(
-               """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.le_12bitdac.setStyleSheet(le_readonly_style)
         # col4
         self.VMeanLineEdit = QLineEdit(parent=self.SetResTab)
         self.VMeanLineEdit.setGeometry(QRect(self.col4x, self.coly, self.lbl_width, self.lbl_height))
         self.VMeanLineEdit.setReadOnly(True)
-        self.VMeanLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.VMeanLineEdit.setStyleSheet(le_readonly_style)
         self.StdDevLineEdit = QLineEdit(parent=self.SetResTab)
         self.StdDevLineEdit.setGeometry(QRect(self.col4x, self.coly*2, self.lbl_width, self.lbl_height))
         self.StdDevLineEdit.setReadOnly(True)
-        self.StdDevLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.StdDevLineEdit.setStyleSheet(le_readonly_style)
         self.StdDevMeanLineEdit = QLineEdit(parent=self.SetResTab)
         self.StdDevMeanLineEdit.setGeometry(QRect(self.col4x, self.coly*3, self.lbl_width, self.lbl_height))
         self.StdDevMeanLineEdit.setReadOnly(True)
-        self.StdDevMeanLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.StdDevMeanLineEdit.setStyleSheet(le_readonly_style)
         self.C1LineEdit = QLineEdit(parent=self.SetResTab)
         self.C1LineEdit.setGeometry(QRect(self.col4x, self.coly*4, self.lbl_width, self.lbl_height))
         self.C1LineEdit.setStyleSheet("")
         self.C1LineEdit.setReadOnly(True)
-        self.C1LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.C1LineEdit.setStyleSheet(le_readonly_style)
         self.C2LineEdit = QLineEdit(parent=self.SetResTab)
         self.C2LineEdit.setGeometry(QRect(self.col4x, self.coly*5, self.lbl_width, self.lbl_height))
         self.C2LineEdit.setStyleSheet("")
         self.C2LineEdit.setReadOnly(True)
-        self.C2LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.C2LineEdit.setStyleSheet(le_readonly_style)
         # col5
         self.VMeanChkLineEdit = QLineEdit(parent=self.SetResTab)
         self.VMeanChkLineEdit.setGeometry(QRect(self.col5x, self.coly, self.lbl_width, self.lbl_height))
         self.VMeanChkLineEdit.setReadOnly(True)
-        self.VMeanChkLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.VMeanChkLineEdit.setStyleSheet(le_readonly_style)
         self.StdDevChkLineEdit = QLineEdit(parent=self.SetResTab)
         self.StdDevChkLineEdit.setGeometry(QRect(self.col5x, self.coly*2, self.lbl_width, self.lbl_height))
         self.StdDevChkLineEdit.setReadOnly(True)
-        self.StdDevChkLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.StdDevChkLineEdit.setStyleSheet(le_readonly_style)
         self.StdDevMeanChkLineEdit = QLineEdit(parent=self.SetResTab)
         self.StdDevMeanChkLineEdit.setGeometry(QRect(self.col5x, self.coly*3, self.lbl_width, self.lbl_height))
         self.StdDevMeanChkLineEdit.setReadOnly(True)
-        self.StdDevMeanChkLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.StdDevMeanChkLineEdit.setStyleSheet(le_readonly_style)
         self.StdDevC1LineEdit = QLineEdit(parent=self.SetResTab)
         self.StdDevC1LineEdit.setGeometry(QRect(self.col5x, self.coly*4, self.lbl_width, self.lbl_height))
         self.StdDevC1LineEdit.setReadOnly(True)
-        self.StdDevC1LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.StdDevC1LineEdit.setStyleSheet(le_readonly_style)
         self.StdDevC2LineEdit = QLineEdit(parent=self.SetResTab)
         self.StdDevC2LineEdit.setGeometry(QRect(self.col5x, self.coly*5, self.lbl_width, self.lbl_height))
         self.StdDevC2LineEdit.setReadOnly(True)
-        self.StdDevC2LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.StdDevC2LineEdit.setStyleSheet(le_readonly_style)
         # col6
         self.R1STPLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1STPLineEdit.setGeometry(QRect(self.col6x, self.coly, self.lbl_width - 5, self.lbl_height))
         self.R1STPLineEdit.setReadOnly(False)
         self.R1STPLineEdit.setValidator(QDoubleValidator())
         self.R1STPLineEdit.returnPressed.connect(self.changedR1STPPred)
-        self.R1STPLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
+        self.R1STPLineEdit.setStyleSheet(le_style)
         self.R2STPLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2STPLineEdit.setGeometry(QRect(self.col6x, self.coly*2, self.lbl_width - 5, self.lbl_height))
         self.R2STPLineEdit.setReadOnly(False)
         self.R2STPLineEdit.setValidator(QDoubleValidator())
         self.R2STPLineEdit.returnPressed.connect(self.changedR2STPPred)
-        self.R2STPLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(255, 255, 255); color: black }""")
+        self.R2STPLineEdit.setStyleSheet(le_style)
         self.NLineEdit = QLineEdit(parent=self.SetResTab)
         self.NLineEdit.setGeometry(QRect(self.col6x, self.coly*3, self.lbl_width- 5, self.lbl_height))
         self.NLineEdit.setReadOnly(True)
-        self.NLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.NLineEdit.setStyleSheet(le_readonly_style)
         self.StdDevPPMLineEdit = QLineEdit(parent=self.SetResTab)
         self.StdDevPPMLineEdit.setGeometry(QRect(self.col6x, self.coly*4, self.lbl_width - 5, self.lbl_height))
         self.StdDevPPMLineEdit.setReadOnly(True)
-        self.StdDevPPMLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.StdDevPPMLineEdit.setStyleSheet(le_readonly_style)
         self.StdDevChkPPMLineEdit = QLineEdit(parent=self.SetResTab)
         self.StdDevChkPPMLineEdit.setGeometry(QRect(self.col6x, self.coly*5, self.lbl_width - 5, self.lbl_height))
         self.StdDevChkPPMLineEdit.setReadOnly(True)
-        self.StdDevChkPPMLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black }""")
+        self.StdDevChkPPMLineEdit.setStyleSheet(le_readonly_style)
         # col7
         self.ppmMeanLineEdit = QLineEdit(parent=self.centralwidget)
         self.ppmMeanLineEdit.setGeometry(QRect(self.col7x, self.coly*4, self.lbl_width, self.lbl_height))
         self.ppmMeanLineEdit.setReadOnly(True)
-        self.ppmMeanLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
+        self.ppmMeanLineEdit.setStyleSheet(le_readonly_bold_style)
         self.RMeanChkPPMLineEdit = QLineEdit(parent=self.centralwidget)
         self.RMeanChkPPMLineEdit.setGeometry(QRect(self.col7x, self.coly*5, self.lbl_width, self.lbl_height))
         self.RMeanChkPPMLineEdit.setReadOnly(True)
-        self.RMeanChkPPMLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
-        
+        self.RMeanChkPPMLineEdit.setStyleSheet(le_readonly_bold_style)
         self.StdDevPPM2LineEdit = QLineEdit(parent=self.centralwidget)
         self.StdDevPPM2LineEdit.setGeometry(QRect(self.col7x, self.coly*6, self.lbl_width, self.lbl_height))
         self.StdDevPPM2LineEdit.setReadOnly(True)
-        self.StdDevPPM2LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
+        self.StdDevPPM2LineEdit.setStyleSheet(le_readonly_bold_style)
 
         self.StdDevMeanPPMLineEdit = QLineEdit(parent=self.centralwidget)
         self.StdDevMeanPPMLineEdit.setGeometry(QRect(self.col7x, self.coly*7, self.lbl_width, self.lbl_height))
         self.StdDevMeanPPMLineEdit.setReadOnly(True)
-        self.StdDevMeanPPMLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
+        self.StdDevMeanPPMLineEdit.setStyleSheet(le_readonly_bold_style)
         self.C1C2LineEdit = QLineEdit(parent=self.centralwidget)
         self.C1C2LineEdit.setGeometry(QRect(self.col7x, self.coly*8, self.lbl_width, self.lbl_height))
         self.C1C2LineEdit.setReadOnly(True)
-        self.C1C2LineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
+        self.C1C2LineEdit.setStyleSheet(le_readonly_bold_style)
         self.RatioMeanLineEdit = QLineEdit(parent=self.centralwidget)
         self.RatioMeanLineEdit.setGeometry(QRect(self.col7x, self.coly*9, self.lbl_width, self.lbl_height))
         self.RatioMeanLineEdit.setReadOnly(True)
-        self.RatioMeanLineEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
+        self.RatioMeanLineEdit.setStyleSheet(le_readonly_bold_style)
         self.le_ratioStdMean = QLineEdit(parent=self.centralwidget)
         self.le_ratioStdMean.setGeometry(QRect(self.col7x, self.coly*10, self.lbl_width, self.lbl_height))
         self.le_ratioStdMean.setReadOnly(True)
-        self.le_ratioStdMean.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black; font-weight: bold }""")
+        self.le_ratioStdMean.setStyleSheet(le_readonly_bold_style)
         # self.SampUsedLineEdit = QLineEdit(parent=self.centralwidget)
         # self.SampUsedLineEdit.setGeometry(QRect(self.col7x, self.coly*11, self.lbl_width, self.lbl_height))
         # self.SampUsedLineEdit.setReadOnly(False)
@@ -964,18 +939,40 @@ class Ui_mainWindow(object):
         self.IgnoredFirstLineEdit = QLineEdit(parent=self.centralwidget)
         self.IgnoredFirstLineEdit.setGeometry(QRect(self.col7x, self.coly*11, self.lbl_width, self.lbl_height))
         self.IgnoredFirstLineEdit.setReadOnly(False)
+        self.IgnoredFirstLineEdit.setStyleSheet(le_style)
         self.IgnoredFirstLineEdit.returnPressed.connect(self.changedIgnoredFirst)
 
         self.IgnoredLastLineEdit = QLineEdit(parent=self.centralwidget)
         self.IgnoredLastLineEdit.setGeometry(QRect(self.col7x, self.coly*12, self.lbl_width, self.lbl_height))
         self.IgnoredLastLineEdit.setReadOnly(False)
+        self.IgnoredLastLineEdit.setStyleSheet(le_style)
         self.IgnoredLastLineEdit.returnPressed.connect(self.changedIgnoredLast)
-        
+
         self.le_error = QLineEdit(parent=self.centralwidget)
         self.le_error.setGeometry(QRect(self.col7x, int(self.coly*12.5), self.lbl_width, self.lbl_height))
         self.le_error.setReadOnly(True)
         self.le_error.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: red; font-weight: bold }""")
+
+        self.le_Bfield = QLineEdit(parent=self.SetResTab)
+        self.le_Bfield.setGeometry(QRect(self.col4x, 730, self.lbl_width - 50, self.lbl_height))
+        self.le_Bfield.setReadOnly(False)
+        self.le_Bfield.setHidden(True)
+        self.le_Bfield.setValidator(QDoubleValidator())
+        self.le_Bfield.setStyleSheet(le_style)
+
+        self.le_sampleTemp = QLineEdit(parent=self.SetResTab)
+        self.le_sampleTemp.setGeometry(QRect(self.col4x+70, 730, self.lbl_width - 50, self.lbl_height))
+        self.le_sampleTemp.setReadOnly(False)
+        self.le_sampleTemp.setHidden(True)
+        self.le_sampleTemp.setValidator(QDoubleValidator())
+        self.le_sampleTemp.setStyleSheet(le_style)
+
+        self.le_contact = QLineEdit(parent=self.SetResTab)
+        self.le_contact.setGeometry(QRect(self.col4x+140, 730, self.lbl_width - 25, self.lbl_height))
+        self.le_contact.setReadOnly(False)
+        self.le_contact.setHidden(True)
+        self.le_contact.setStyleSheet(le_style)
 
     def hide_tooltip(self) -> None:
         if debug_mode:
@@ -1056,6 +1053,7 @@ class Ui_mainWindow(object):
         self.saveButton.setToolTip('')
         self.C1C2LineEdit.setToolTip('')
         self.chb_outlier.setToolTip('')
+        self.chb_qhr.setTootlTip('')
 
     def show_tooltip(self) -> None:
         if debug_mode:
@@ -1137,7 +1135,8 @@ class Ui_mainWindow(object):
         self.saveButton.setToolTip('Save a pipe seperated results file')
         self.chb_outlier.setToolTip('Check to remove BVD values that are more than 3 sigma from the mean')
         self.lbl_cnOutput_rbv.setToolTip('Compensation output')
-    
+        self.chb_qhr.setToolTip('Check if characterizing a quantum Hall standard')
+
     def show_warning_dialog(self):
         # Calculate center of main window
         self.msgBox.setText(self.user_warn_msg)
@@ -1153,7 +1152,7 @@ class Ui_mainWindow(object):
         self.msgBox.move(x, y)
         response = self.msgBox.exec()
         return response
-        
+
     def CCCDiagramTabSetUp(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
@@ -1168,7 +1167,7 @@ class Ui_mainWindow(object):
         mysp = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.lbl_cccdiagram.setSizePolicy(mysp)
         self.CCCDiagram()
-    
+
     def CCCDiagram(self, R1="0", R2="0", N1="0", N2="0", I1="", I2="", BVD="", Na="1", RH="", RL="", Ia="") -> None:
         # Draw the circuit diagram
         # E 15 0 opamp 16 17 V; up, scale=0.3, size=0.4, color=red
@@ -1219,7 +1218,7 @@ class Ui_mainWindow(object):
             # Resize the label to fit the image
             self.lbl_cccdiagram.setScaledContents(True)
             self.lbl_cccdiagram.show()
-        
+
     def voltageTabSetUp(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
@@ -1234,26 +1233,25 @@ class Ui_mainWindow(object):
         self.raw_ax2 = self.raw_fig.add_subplot(2, 2, 3)
         self.raw_ax3 = self.raw_fig.add_subplot(2, 2, 4)
         self.raw_fig.set_tight_layout(True)
-        
+
         self.raw_ax1.tick_params(which='both', direction='in')
         self.raw_ax1.set_xlabel('Count')
         self.raw_ax1.set_ylabel('All Bridge Voltages [V]')
         self.raw_ax1.grid(axis='both')
-        
+
         self.raw_ax2.tick_params(which='both', direction='in')
         self.raw_ax2.set_xlabel('Count')
         self.raw_ax2.set_ylabel('Average Bridge Voltages [V]')
         self.raw_ax2.grid(axis='both')
-        
+
         self.raw_ax3.tick_params(which='both', direction='in')
         self.raw_ax3.set_xlabel('Count')
         self.raw_ax3.set_ylabel('Used Bridge Voltages [V]')
         self.raw_ax3.grid(axis='both')
-        
+
         self.raw_canvas = FigureCanvas(self.raw_fig)
         self.voltageVerticalLayout.addWidget(NavigationToolbar(self.raw_canvas))
         self.voltageVerticalLayout.addWidget(self.raw_canvas)
-
 
     def BVDTabSetUp(self) -> None:
         if debug_mode:
@@ -1265,44 +1263,43 @@ class Ui_mainWindow(object):
         self.BVDVerticalLayoutWidget.setGeometry(QRect(0, 0, winSizeH-125, 691))
         self.BVDVerticalLayout = QVBoxLayout(self.BVDVerticalLayoutWidget)
         self.BVDfig = plt.figure()
-        # self.BVDax1 = self.BVDfig.add_subplot(2, 6, (4, 6))
-        # self.BVDax4 = self.BVDfig.add_subplot(2, 6, (1, 3))
-        self.BVDax2 = self.BVDfig.add_subplot(1, 8, (1, 6))
-        self.BVDax3 = self.BVDfig.add_subplot(1, 8, (7, 8))
+        self.BVDax2 = self.BVDfig.add_subplot(2, 8, (1, 8)) # resistance
+        self.BVDax3 = self.BVDfig.add_subplot(2, 8, (15, 16))  # histogram
+        self.BVDax4 = self.BVDfig.add_subplot(2, 8, (9, 14) ) # bvd
         self.BVDfig.set_tight_layout(True)
 
-        # self.BVDax1.tick_params(which='both', direction='in')
-        # self.BVDax1.set_xlabel('Count')
-        # self.BVDax1.set_ylabel('Average Bridge Voltages [V]')
-        # self.BVDax1.grid(axis='both')
-
-        # self.BVDax4.tick_params(which='both', direction='in')
-        # self.BVDax4.set_xlabel('Count')
-        # self.BVDax4.set_ylabel('Bridge Voltages [V]')
-        # self.BVDax4.grid(axis='both')
-
         self.BVDax2.tick_params(which='both', direction='in')
-        self.BVDax2.set_xlabel('Count')
         self.BVDax2.tick_params(axis='y', colors='b')
         self.BVDax2.set_axisbelow(True)
         self.BVDax2.grid(axis='both', zorder=2, which='both')
         self.BVDax2.xaxis.set_major_locator(MaxNLocator(integer=True))
-        self.BVDax2.xaxis.set_minor_locator(MultipleLocator(2))
-        box = self.BVDax2.get_position()
-        self.BVDax2.set_position([box.x0, box.y0 + box.height * 0.1,
-                 box.width, box.height * 0.9])
+        # self.BVDax2.xaxis.set_minor_locator(MultipleLocator(2))
+        
+        self.BVDax2twiny = self.BVDax2.twiny()
+        self.BVDax2twiny.tick_params(which='both', direction='in')
+        self.BVDax2twiny.tick_params(axis='y', colors='b')
+        self.BVDax2twiny.set_axisbelow(True)
+        self.BVDax2twiny.grid(axis='both', zorder=2, which='both')
+        self.BVDax2twiny.xaxis.set_major_locator(MaxNLocator(integer=True))
+        self.BVDax2twiny.set_xlabel('Time [s]')
+        # self.BVDax2twiny.xaxis.set_minor_locator(MultipleLocator(2))
+        # box = self.BVDax2.get_position()
+        # self.BVDax2.set_position([box.x0, box.y0 + box.height * 0.1,
+        #          box.width, box.height * 0.9])
 
-        self.BVDtwin2 = self.BVDax2.twinx()
-        self.BVDtwin2.tick_params(axis='y', direction='in', colors='r')
-        self.BVDtwin2.set_yticklabels([])
-        self.BVDtwin2.set_axisbelow(True)
-        self.BVDtwin2.grid(axis='x', zorder=2, which='both')
+        self.BVDax4.tick_params(which='both', direction='in')
+        self.BVDax4.tick_params(axis='y', colors='r')
+        self.BVDax4.set_ylabel('BVD [V]', color='r')
+        self.BVDax4.set_axisbelow(True)
+        self.BVDax4.set_xlabel('Count')
+        self.BVDax4.grid(axis='x', zorder=2, which='both')
+        self.BVDax4.xaxis.set_major_locator(MaxNLocator(integer=True))
+        self.BVDax4.xaxis.set_minor_locator(MultipleLocator(2))
 
         self.BVDax3.tick_params(which='both', direction='in')
         self.BVDax3.tick_params(axis='y', colors='r')
         self.BVDax3.yaxis.tick_right()
-        self.BVDax3.set_ylabel('BVD [V]', color='r')
-        self.BVDax3.yaxis.set_label_position('right')
+        self.BVDax3.set_yticklabels([])
         self.BVDax3.xaxis.set_major_locator(MaxNLocator(integer=True))
 
         self.BVDcanvas = FigureCanvas(self.BVDfig)
@@ -1331,12 +1328,14 @@ class Ui_mainWindow(object):
         KurtosisLabel = QLabel('Kurtosis', parent=gridWidget)
         self.SkewnessEdit = QLineEdit(gridWidget)
         self.SkewnessEdit.setReadOnly(True)
-        self.SkewnessEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        self.SkewnessEdit.setFixedWidth(50)
+        self.SkewnessEdit.setFixedHeight(20)
+        self.SkewnessEdit.setStyleSheet(le_readonly_style)
         self.KurtosisEdit = QLineEdit(gridWidget)
         self.KurtosisEdit.setReadOnly(True)
-        self.KurtosisEdit.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        self.KurtosisEdit.setFixedWidth(50)
+        self.KurtosisEdit.setFixedHeight(20)
+        self.KurtosisEdit.setStyleSheet(le_readonly_style)
         self.chb_outlier = QCheckBox("Remove Outliers", parent=gridWidget)
         self.chb_outlier.setGeometry(QRect(self.col7x, int(self.coly*11.5), self.lbl_width, self.lbl_height))
         self.chb_outlier.setTristate(False)
@@ -1361,7 +1360,7 @@ class Ui_mainWindow(object):
         grid.addWidget(self.SkewnessEdit, 2, 7)
         grid.addWidget(KurtosisLabel, 3, 7)
         grid.addWidget(self.KurtosisEdit, 4, 7)
-        
+
 
     def AllanTabSetUp(self) -> None:
         """Set up the tab widget for showing allan deviation plots
@@ -1428,6 +1427,7 @@ class Ui_mainWindow(object):
         self.AllanTypeComboBox.setEditable(False)
         self.AllanTypeComboBox.addItem('all')
         self.AllanTypeComboBox.addItem('2^n (octave)')
+        self.AllanTypeComboBox.setCurrentText('all')
         self.AllanTypeComboBox.currentIndexChanged.connect(self.plotAdev)
 
         self.VarianceTypeComboBox = QComboBox(parent=self.AllanTab)
@@ -1440,6 +1440,7 @@ class Ui_mainWindow(object):
         self.OverlappingComboBox.setEditable(False)
         self.OverlappingComboBox.addItem('non-overlapping')
         self.OverlappingComboBox.addItem('overlapping')
+        self.OverlappingComboBox.setCurrentText('overlapping')
         self.OverlappingComboBox.currentIndexChanged.connect(self.plotAdev)
         self.AllanHorizontalSpacer = QSpacerItem(600, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
@@ -1501,57 +1502,51 @@ class Ui_mainWindow(object):
 
         gridWidget = QWidget(self.SpecTab)
         gridWidget.setGeometry(QRect(0, 675, winSizeH-125, 90))
-        QRect()
+        # QRect()
         grid = QGridLayout(gridWidget)
-        grid.setSpacing(5)
+        grid.setSpacing(0)
 
         lbl_lag_bvd = QLabel('Lag of BVD', parent=gridWidget)
         self.le_lag_bvd = QLineEdit(gridWidget)
         self.le_lag_bvd.setReadOnly(True)
-        self.le_lag_bvd.setFixedWidth(100)
-        self.le_lag_bvd.setFixedHeight(18)
-        self.le_lag_bvd.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        self.le_lag_bvd.setFixedWidth(90)
+        self.le_lag_bvd.setFixedHeight(20)
+        self.le_lag_bvd.setStyleSheet(le_readonly_style)
 
         lbl_alpha_bvd = QLabel('Alpha [BVD]', parent=gridWidget)
         self.le_alpha_bvd= QLineEdit(gridWidget)
         self.le_alpha_bvd.setReadOnly(True)
-        self.le_alpha_bvd.setFixedWidth(130)
-        self.le_alpha_bvd.setFixedHeight(18)
-        self.le_alpha_bvd.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        self.le_alpha_bvd.setFixedWidth(90)
+        self.le_alpha_bvd.setFixedHeight(20)
+        self.le_alpha_bvd.setStyleSheet(le_readonly_style)
 
         lbl_lag_bva = QLabel('Lag of I-', parent=gridWidget)
         self.le_lag_bva = QLineEdit(gridWidget)
         self.le_lag_bva.setReadOnly(True)
-        self.le_lag_bva.setFixedWidth(100)
-        self.le_lag_bva.setFixedHeight(18)
-        self.le_lag_bva.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        self.le_lag_bva.setFixedWidth(90)
+        self.le_lag_bva.setFixedHeight(20)
+        self.le_lag_bva.setStyleSheet(le_readonly_style)
 
         lbl_alpha_bva = QLabel('Alpha [I-]', parent=gridWidget)
         self.le_alpha_bva= QLineEdit(gridWidget)
         self.le_alpha_bva.setReadOnly(True)
-        self.le_alpha_bva.setFixedWidth(130)
-        self.le_alpha_bva.setFixedHeight(18)
-        self.le_alpha_bva.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        self.le_alpha_bva.setFixedWidth(90)
+        self.le_alpha_bva.setFixedHeight(20)
+        self.le_alpha_bva.setStyleSheet(le_readonly_style)
 
         lbl_lag_bvb = QLabel('Lag of I+', parent=gridWidget)
         self.le_lag_bvb = QLineEdit(gridWidget)
         self.le_lag_bvb.setReadOnly(True)
-        self.le_lag_bvb.setFixedWidth(100)
-        self.le_lag_bvb.setFixedHeight(18)
-        self.le_lag_bvb.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        self.le_lag_bvb.setFixedWidth(90)
+        self.le_lag_bvb.setFixedHeight(20)
+        self.le_lag_bvb.setStyleSheet(le_readonly_style)
 
         lbl_alpha_bvb = QLabel('Alpha [I+]', parent=gridWidget)
         self.le_alpha_bvb= QLineEdit(gridWidget)
         self.le_alpha_bvb.setReadOnly(True)
-        self.le_alpha_bvb.setFixedWidth(130)
-        self.le_alpha_bvb.setFixedHeight(18)
-        self.le_alpha_bvb.setStyleSheet(
-                """QLineEdit { background-color: rgb(215, 214, 213); color: black}""")
+        self.le_alpha_bvb.setFixedWidth(90)
+        self.le_alpha_bvb.setFixedHeight(20)
+        self.le_alpha_bvb.setStyleSheet(le_readonly_style)
         # Spacer1 = QSpacerItem(20, 1, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         # Spacer2 = QSpacerItem(600, 1, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         grid.addWidget(lbl_lag_bvd, 1, 1, 1, 1)
@@ -1610,10 +1605,38 @@ class Ui_mainWindow(object):
         self.MDSSButton.setEnabled(False)
         self.MDSSButton.clicked.connect(self.MDSSClicked)
 
+        self.chb_qhr = QCheckBox("QHR Char", parent=self.centralwidget)
+        self.chb_qhr.setGeometry(QRect(self.col7x, int(self.coly*2.5), self.lbl_width - 10, int(self.lbl_height*1.2)))
+        self.chb_qhr.setTristate(False)
+        self.chb_qhr.setCheckState(Qt.CheckState.Unchecked)
+        self.chb_qhr.stateChanged.connect(self.qhrChar)
+
         self.saveButton = QPushButton(parent=self.centralwidget)
         self.saveButton.setGeometry(QRect(self.col7x, self.coly*3, self.lbl_width - 10, int(self.lbl_height*1.2)))
         self.saveButton.setEnabled(False)
         self.saveButton.clicked.connect(self.saveMDSS)
+
+    def qhrChar(self, state) -> None:
+        if state == 2:
+            self.qhrCharFlag = True
+            self.lbl_Bfield.setHidden(False)
+            self.le_Bfield.setHidden(False)
+            self.lbl_sampleTemp.setHidden(False)
+            self.le_sampleTemp.setHidden(False)
+            self.lbl_contact.setHidden(False)
+            self.le_contact.setHidden(False)
+            self.lbl_qhr_system.setHidden(False)
+            self.cb_qhr_system.setHidden(False)
+        else:
+            self.qhrCharFlag = False
+            self.lbl_Bfield.setHidden(True)
+            self.le_Bfield.setHidden(True)
+            self.lbl_sampleTemp.setHidden(True)
+            self.le_sampleTemp.setHidden(True)
+            self.lbl_contact.setHidden(True)
+            self.le_contact.setHidden(True)
+            self.lbl_qhr_system.setHidden(True)
+            self.cb_qhr_system.setHidden(True)
 
     def setSpinBoxes(self) -> None:
         if debug_mode:
@@ -1642,6 +1665,17 @@ class Ui_mainWindow(object):
         self.ProbeComboBox.addItem('Magnicon1')
         self.ProbeComboBox.addItem('NIST1')
 
+        self.cb_qhr_system = QComboBox(parent=self.SetResTab)
+        self.cb_qhr_system.setGeometry(QRect(self.col4x+240, 730, self.lbl_width-15, self.lbl_height))
+        self.cb_qhr_system.setEditable(False)
+        self.cb_qhr_system.setHidden(True)
+        self.cb_qhr_system.addItem('Cryomag-5T')
+        self.cb_qhr_system.addItem('CMag-9T')
+        self.cb_qhr_system.addItem('CMag-9T-N4')
+        self.cb_qhr_system.addItem('Janis-SVT-9T')
+        self.cb_qhr_system.addItem('BF-LD400')
+        self.cb_qhr_system.addItem('Cryogenics-3He')
+
     def setMisc(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
@@ -1653,6 +1687,7 @@ class Ui_mainWindow(object):
         self.CommentsTextBrowser = QTextBrowser(parent=self.SetResTab)
         self.CommentsTextBrowser.setGeometry(QRect(self.col0x, self.coly*9 + 30, int(self.lbl_width*3.2), self.lbl_height*2))
         self.CommentsTextBrowser.setReadOnly(False)
+        # self.CommentsTextBrowser.setStyleSheet()
 
         # self.progressBar = QProgressBar(parent=self.centralwidget)
         # self.progressBar.setGeometry(QRect(self.col7x, self.coly*4, self.lbl_width, self.lbl_height))
@@ -1751,8 +1786,11 @@ class Ui_mainWindow(object):
         self.MDSSButton.setText(_translate("mainWindow", "No"))
         self.MDSSLabel.setText(_translate("mainWindow", "Save MDSS"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
-    
-    
+        self.lbl_Bfield.setText(_translate("mainWindow", "B [T]"))
+        self.lbl_sampleTemp.setText(_translate("mainWindow", "Sample T [K]"))
+        self.lbl_contact.setText(_translate("mainWindow", "[I+, I-, V+, V-]"))
+        self.lbl_qhr_system.setText(_translate("mainWindow", "QHR System"))
+
     def plotRaw(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
@@ -1774,33 +1812,29 @@ class Ui_mainWindow(object):
                     self.BB_used_2d.append(i)
             aa_2d = array(self.AA_used_2d).flatten().tolist()
             bb_2d = array(self.BB_used_2d).flatten().tolist()
-            
+
             count_aa_2D = linspace(0, len(aa_2d)-1, num=len(aa_2d))
             count_bb_2D = linspace(0, len(bb_2d)-1, num=len(bb_2d))
             count_a = linspace(0, len(self.A)-1, num=len(self.A))
             count_b = linspace(0, len(self.B)-1, num=len(self.B))
             count_aa = linspace(0, len(self.AA)-1, num=len(self.AA))
             count_bb = linspace(0, len(self.BB)-1, num=len(self.BB))
-            
-            # print(len(count_aa_2D), len(count_bb_2D))
-            # print(len(aa_2d), len(bb_2d))
+
             if self.plottedRaw:
                 self.clearRawPlot()
-                # print(len(count_a), len(self.A))
-                # print(len(count_b), len(self.B))
                 self.raw_ax1_ref[0].set_data(count_aa_2D, aa_2d)
                 self.raw_ax12_ref[0].set_data(count_bb_2D, bb_2d)
-                
+
                 self.raw_ax2_ref[0].set_data(count_a, self.A)
                 self.raw_ax22_ref[0].set_data(count_b, self.B)
-                
+
                 self.raw_ax3_ref[0].set_data(count_aa, self.AA)
                 self.raw_ax32_ref[0].set_data(count_bb, self.BB)
             else:
                 self.raw_ax1_ref = self.raw_ax1.errorbar(count_aa_2D, aa_2d, marker='o', ms=3, mfc='blue', mec='blue', ls='--', lw=1.0, alpha=self.alpha, label=r'All $I-$')
                 self.raw_ax12_ref = self.raw_ax1.errorbar(count_bb_2D, bb_2d, marker='o', ms=3, mfc='red', mec='red', ls='--', lw=1.0,  alpha=self.alpha, label=r'All $I+$')
                 self.raw_ax1.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower right', frameon=True, shadow=True, ncols=2, columnspacing=0)
-                
+
                 self.raw_ax2_ref = self.raw_ax2.errorbar(count_a, self.A, marker='o', ms=3, mfc='blue', mec='blue', ls='', alpha=self.alpha, label=r'$\overline{I-}$')
                 self.raw_ax22_ref = self.raw_ax2.errorbar(count_b, self.B, marker='o', ms=3, mfc='red', mec='red', ls='', alpha=self.alpha, label=r'$\overline{I+}$')
                 self.raw_ax2.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower right', frameon=True, shadow=True, ncols=2, columnspacing=0)
@@ -1812,11 +1846,11 @@ class Ui_mainWindow(object):
             self.raw_ax1.relim()
             self.raw_ax1.autoscale(tight=None, axis='both', enable=True)
             self.raw_ax1.autoscale_view(tight=None, scalex=True, scaley=True)
-            
+
             self.raw_ax2.relim()
             self.raw_ax2.autoscale(tight=None, axis='both', enable=True)
             self.raw_ax2.autoscale_view(tight=None, scalex=True, scaley=True)
-            
+
             self.raw_ax3.relim()
             self.raw_ax3.autoscale(tight=None, axis='both', enable=True)
             self.raw_ax3.autoscale_view(tight=None, scalex=True, scaley=True)
@@ -1830,10 +1864,6 @@ class Ui_mainWindow(object):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.bvd_stat_obj is not None:
-            # count_a = linspace(0, len(self.A)-1, num=len(self.A))
-            # count_b = linspace(0, len(self.B)-1, num=len(self.B))
-            # count_aa = linspace(0, len(self.AA)-1, num=len(self.AA))
-            # count_bb = linspace(0, len(self.BB)-1, num=len(self.BB))
             if self.corr_bvdList:
                 BVDmean = mean(self.corr_bvdList)
                 BVDstd  = std(self.corr_bvdList, ddof=1)
@@ -1841,66 +1871,65 @@ class Ui_mainWindow(object):
                 lower   = -3*BVDstd + BVDmean
                 if self.plottedBVD:
                     self.clearBVDPlot()
-                    # self.BVDax1_ref[0].set_data(count_a, self.A)
-                    # self.BVDax12_ref[0].set_data(count_b, self.B)
-                    # self.BVDax41_ref[0].set_data(count_aa, self.AA)
-                    # self.BVDax42_ref[0].set_data(count_bb, self.BB)
                     if self.RButStatus == 'R1':
                         self.BVDax21_ref[0].set_data(self.bvdCount, self.R1List)
+                        self.BVDax21twiny_ref[0].set_data(array(self.bvdCount)*float(self.dat.fullCyc), self.R1List)
                     else:
                         self.BVDax21_ref[0].set_data(self.bvdCount, self.R2List)
-                    self.BVDtwin21_ref[0].set_data(self.bvdCount, self.corr_bvdList)
-                    self.BVDtwin22_ref[0].set_data(self.bvdCount, upper*ones(len(self.corr_bvdList), dtype=int))
-                    self.BVDtwin23_ref[0].set_data(self.bvdCount, lower*ones(len(self.corr_bvdList), dtype=int))
+                    self.BVDax41_ref[0].set_data(self.bvdCount, self.corr_bvdList)
+                    self.BVDax42_ref[0].set_data(self.bvdCount, upper*ones(len(self.corr_bvdList), dtype=int))
+                    self.BVDax43_ref[0].set_data(self.bvdCount, lower*ones(len(self.corr_bvdList), dtype=int))
                     self.BVDax3.hist(self.corr_bvdList, bins=self.bins, orientation='horizontal', color='r', edgecolor='k')
-                    self.BVDax3.set_ylim([self.BVDtwin2.get_ylim()[0], self.BVDtwin2.get_ylim()[1]])
+                    self.BVDax3.set_ylim([self.BVDax4.get_ylim()[0], self.BVDax4.get_ylim()[1]])
                 else:
-                    # plot the individual bridge voltages
-                    # self.BVDax1_ref = self.BVDax1.errorbar(count_a, self.A, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label=r'$\overline{I-}$')
-                    # self.BVDax12_ref = self.BVDax1.errorbar(count_b, self.B, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label=r'$\overline{I+}$')
-                    # self.BVDax1.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower right', frameon=True, shadow=True, ncols=2, columnspacing=0)
-
-                    # self.BVDax41_ref = self.BVDax4.errorbar(count_aa, self.AA, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label=r'$I-$')
-                    # self.BVDax42_ref = self.BVDax4.errorbar(count_bb, self.BB, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label=r'$I+$')
-                    # self.BVDax4.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower right', frameon=True, shadow=True, ncols=2, columnspacing=0)
                     if self.RButStatus == 'R1':
-                        self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R1List, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
+                        self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R1List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
+                        self.BVDax21twiny_ref = self.BVDax2twiny.plot(array(self.bvdCount)*float(self.dat.fullCyc), self.R1List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
                     else:
-                        self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R2List, marker='o', ms=6, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
-                    self.BVDtwin21_ref = self.BVDtwin2.plot(self.bvdCount, self.corr_bvdList, marker='o', ms=6, mfc='red', mec='red', ls='', alpha=self.alpha, label= 'BVD [V]')
-                    self.BVDtwin22_ref = self.BVDtwin2.plot(self.bvdCount, upper*ones(len(self.corr_bvdList), dtype=int), marker='', color='red', ms=0, ls='--', alpha=self.alpha)
-                    self.BVDtwin23_ref = self.BVDtwin2.plot(self.bvdCount, lower*ones(len(self.corr_bvdList), dtype=int), marker='', color='red', ms=0, ls='--', alpha=self.alpha)
+                        self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R2List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
+                        self.BVDax21twiny_ref = self.BVDax2twiny.plot(array(self.bvdCount)*float(self.dat.fullCyc), self.R2List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
+                    self.BVDax41_ref = self.BVDax4.plot(self.bvdCount, self.corr_bvdList, marker='o', ms=4, mfc='red', mec='red', ls='', alpha=self.alpha, label= 'BVD [V]')
+                    self.BVDax42_ref = self.BVDax4.plot(self.bvdCount, upper*ones(len(self.corr_bvdList), dtype=int), marker='', color='red', ms=0, ls='--', alpha=self.alpha)
+                    self.BVDax43_ref = self.BVDax4.plot(self.bvdCount, lower*ones(len(self.corr_bvdList), dtype=int), marker='', color='red', ms=0, ls='--', alpha=self.alpha)
 
                     self.BVDax3.hist(self.corr_bvdList, bins=self.bins, orientation='horizontal', color='r', edgecolor='k')
-                    self.BVDax3.set_ylim([self.BVDtwin2.get_ylim()[0], self.BVDtwin2.get_ylim()[1]])
+                    self.BVDax3.set_ylim([self.BVDax4.get_ylim()[0], self.BVDax4.get_ylim()[1]])
                 # Put a legend below current axis
                 lines, labels   = self.BVDax2.get_legend_handles_labels()
-                lines2, labels2 = self.BVDtwin2.get_legend_handles_labels()
+                lines2, labels2 = self.BVDax4.get_legend_handles_labels()
                 self.BVDax2.legend(lines + lines2, labels + labels2, loc='upper center', bbox_to_anchor=(0.5, -0.2),
                                    fancybox=True, shadow=True, ncols=2, columnspacing=0)
                 if self.RButStatus == 'R1':
                     self.BVDax2.set_ylabel(r'$R_{2}$' + f' [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
                 else:
                     self.BVDax2.set_ylabel(r'$R_{1}$' + f' [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
-                # self.BVDax1.relim()
-                # self.BVDax1.autoscale(tight=None, axis='both', enable=True)
-                # self.BVDax1.autoscale_view(tight=None, scalex=True, scaley=True)
-                # self.BVDax4.relim()
-                # self.BVDax4.autoscale(tight=None, axis='both', enable=True)
-                # self.BVDax4.autoscale_view(tight=None, scalex=True, scaley=True)
+                # self.BVDax21 = self.BVDax2.secondary_xaxis('top', functions = (lambda x: x*float(self.dat.fullCyc) , lambda x: x/float(self.dat.fullCyc)))
+                # self.BVDax21.set_xlabel('Time [s]')
+                # self.BVDax21.tick_params(which='both', direction='in')
+                # self.BVDax21.xaxis.set_major_locator(MaxNLocator(integer=True))
+                
                 self.BVDax2.relim()
                 self.BVDax2.autoscale(tight=None, axis='both', enable=True)
                 self.BVDax2.autoscale_view(tight=None, scalex=True, scaley=True)
-                self.BVDtwin2.relim()
-                self.BVDtwin2.autoscale(tight=None, axis='both', enable=True)
-                self.BVDtwin2.autoscale_view(tight=None, scalex=True, scaley=True)
-                self.BVDax3.set_ylim([self.BVDtwin2.get_ylim()[0], self.BVDtwin2.get_ylim()[1]])
+                self.BVDax2twiny.relim()
+                self.BVDax2twiny.autoscale(tight=None, axis='both', enable=True)
+                self.BVDax2twiny.autoscale_view(tight=None, scalex=True, scaley=True)
+                # self.BVDax21.set_xlim(array(self.BVDax2.get_xlim())*float(self.dat.fullCyc))
+                # self.BVDax21.set_xticks(array(self.BVDax2.get_xticks())*float(self.dat.fullCyc))
+                # self.BVDax21.relim()
+                # self.BVDax21.autoscale(tight=None, axis='both', enable=True)
+                # self.BVDax21.autoscale_view(tight=None, scalex=True, scaley=True)
+                self.BVDax4.relim()
+                self.BVDax4.autoscale(tight=None, axis='both', enable=True)
+                self.BVDax4.autoscale_view(tight=None, scalex=True, scaley=True)
+                self.BVDax3.set_ylim([self.BVDax4.get_ylim()[0], self.BVDax4.get_ylim()[1]])
                 self.BVDax3.relim()
                 self.BVDax3.autoscale(tight=None, axis='both', enable=True)
                 self.BVDax3.autoscale_view(tight=None, scalex=True, scaley=True)
                 self.BVDcanvas.draw()
                 self.BVDcanvas.flush_events()
                 self.BVDfig.set_tight_layout(True)
+    
                 self.SkewnessEdit.setText(str("{:.3f}".format(mystat.skewness(self.corr_bvdList))))
                 self.KurtosisEdit.setText(str("{:.3f}".format(mystat.kurtosis(self.corr_bvdList))))
                 self.plottedBVD = True
@@ -1946,7 +1975,7 @@ class Ui_mainWindow(object):
     #         self.setValidData()
     #         self.plotBVD()
     #         self.plotStatMeasures()
-    
+
     def changedOutlier(self, state):
         self.outlierPressed = True
         if debug_mode:
@@ -2299,23 +2328,19 @@ class Ui_mainWindow(object):
             try:
                 # self.BVDax1_ref[0].set_data(array([]), array([]))
                 # self.BVDax12_ref[0].set_data(array([]), array([]))
+                self.BVDax41_ref[0].set_data(array([]), array([]))
+                self.BVDax42_ref[0].set_data(array([]), array([]))
+                self.BVDax43_ref[0].set_data(array([]), array([]))
                 self.BVDax21_ref[0].set_data(array([]), array([]))
-                self.BVDtwin21_ref[0].set_data(array([]), array([]))
-                self.BVDtwin22_ref[0].set_data(array([]), array([]))
-                self.BVDtwin23_ref[0].set_data(array([]), array([]))
+                self.BVDax21twiny_ref[0].set_data(array([]), array([]))
                 
                 for container in self.BVDax3.containers:
                     container.remove()
-                # self.BVDax1.clear()
-                # self.BVDax2.clear()
-                # self.BVDtwin2.clear()
-                # self.BVDax3.clear()
-            
             except Exception as e:
                 logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
                                ' Error: ' + str(e))
                 pass
-    
+
     def clearRawPlot(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
@@ -2329,7 +2354,7 @@ class Ui_mainWindow(object):
                 self.raw_ax32_ref[0].set_data(array([]), array([]))
                 # for container in self.raw_ax1.containers:
                 #     container.remove()
-            
+
             except Exception as e:
                 logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
                                ' Error: ' + str(e))
@@ -2454,7 +2479,7 @@ class Ui_mainWindow(object):
             self.txtFile = self.txtFilePath.split('/')[-1]
             self.pathString = self.txtFilePath.split('_bvd.txt')[0]
             self.dat = magnicon_ccc(self.txtFilePath, dbdir, site)
-            
+
             # getFile_end = perf_counter() - getData_start
             # print("Time taken to read files: " +  str(getFile_end))
             if len(self.dat.bvd) > 0:
@@ -2528,7 +2553,7 @@ class Ui_mainWindow(object):
                         if self.draw_thread is not None:
                             self.draw_thread.join()
                         pass
-                        
+
                 # print("Time taken to plot allan and spectrum: ", perf_counter() - plotStat_start)
                 # getPlot_end = perf_counter() - getData_start
                 # print("Time taken to plot all data in GUI: ", str(getPlot_end))
@@ -2595,7 +2620,7 @@ class Ui_mainWindow(object):
             self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList, self.AA_used, self.BB_used = [], [], [], [], [], [], [], [], [], [], [], []
             self.corr_bvdList = self.bvdList
             pass
-        
+
         if self.dat.bvd != []:
             # this comes from _bvd.txt files
             self.bvd_mean_chk       = mean(self.dat.bvd)
@@ -2834,6 +2859,8 @@ class Ui_mainWindow(object):
             self.user_warn_msg += "Compensation is OFF!\n"
         if str(self.dat.low16) != '0':
             self.user_warn_msg += "16 Bit DAC is non-zero!\n"
+        if str(self.dat.screenVolt) == '0':
+            self.user_warn_msg += "Screen voltage is off!\n"
         if self.SampUsedCt != 0:
             delay = ((int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text()))/self.dat.SHC)*(self.dat.SHC*self.dat.intTime/self.dat.timeBase - self.dat.rampTime)
             meas = (self.dat.SHC*self.dat.intTime/self.dat.timeBase) - self.dat.rampTime - delay
@@ -2859,9 +2886,9 @@ class Ui_mainWindow(object):
         self.RelHumLineEdit.setText(str(self.dat.relHum))
         self.kLineEdit.setText(str("{:.12f}".format(self.k)))
         if self.k == 0:
-            self.kLineEdit.setStyleSheet("color: red")
+            self.kLineEdit.setStyleSheet(red_style)
         else:
-            self.kLineEdit.setStyleSheet("color: black")
+            self.kLineEdit.setStyleSheet(le_readonly_style)
         self.le_start_time.setText(str(self.dat.startDate))
         self.le_end_time.setText(str(self.dat.endDate))
         self.R1TempLineEdit.setText(str("{:.7f}".format(self.R1Temp)))
@@ -3156,12 +3183,13 @@ class Ui_mainWindow(object):
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.dialog.exec():
             self.txtFilePath = self.dialog.selectedFiles()[0]
-            # print('Loading datafile: ', self.txtFilePath)
             self.txtFileLineEdit.setText(self.txtFilePath)
             self.validFile = False
             self.chb_outlier.setCheckState(Qt.CheckState.Unchecked)
+            self.chb_qhr.setCheckState(Qt.CheckState.Unchecked)
             self.outliers=False
             self.draw_flag = False
+            self.qhrCharFlag = False
             self.user_warn_msg = ""
             self.getData()
         else:
@@ -3227,6 +3255,7 @@ class Ui_mainWindow(object):
             tempdir.pop(-1)
             for i in tempdir:
                 self.mdssdir = self.mdssdir + i + os.sep
+            # print(self.mdssdir)
         # self.progressBar.setProperty('value', 25)
 
         self.dat.comments = self.CommentsTextBrowser.toPlainText()
@@ -3244,7 +3273,7 @@ class Ui_mainWindow(object):
                       N=self.N, samplesUsed= int(self.dat.SHC) - (int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text())), \
                       meas=float(self.MeasLineEdit.text()), delay=float(self.DelayLineEdit.text()), \
                       R1PredictionSTP=float(self.R1STPLineEdit.text()), R2PredictionSTP=float(self.R2STPLineEdit.text()), \
-                      comments = str(self.dat.comments))
+                      comments = self.CommentsTextBrowser.toPlainText(), bfield=self.le_Bfield.text(), sampleTemp=self.le_sampleTemp.text(), contact=self.le_contact.text(), qhr_system=self.cb_qhr_system.currentText(), qhrchar=self.qhrCharFlag)
         with open(self.pathString + '_pyCCCRAW.mea', 'w') as mea_file:
             if self.RButStatus == 'R1':
                 unk = 'R2'
@@ -3348,7 +3377,7 @@ class Ui_mainWindow(object):
             self.setValidData()
             self.plotBVD()
             self.plotAllan()
-            
+
 
     def restoreDeleted(self) -> None:
         """Restore last deleted data point
@@ -3364,7 +3393,7 @@ class Ui_mainWindow(object):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.deletedCount != []:
-            print(self.deletedIndex)
+            # print(self.deletedIndex)
             self.plotCountCombo.insertItem(int(self.N - self.deletedIndex[-1]), f'ct {int(self.deletedIndex[-1])}')
             self.V1.insert(self.deletedIndex[-1], self.deletedV1[-1])
             self.V2.insert(self.deletedIndex[-1], self.deletedV2[-1])
