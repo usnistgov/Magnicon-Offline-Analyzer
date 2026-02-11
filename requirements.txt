@@ -23,7 +23,7 @@ packaging==23.1
 pandas==2.2.1
 parso==0.8.4
 pefile==2023.2.7
-pillow==10.4.0
+pillow==12.1.1
 prompt_toolkit==3.0.48
 property-cached==1.6.4
 pure_eval==0.2.3
