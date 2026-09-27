@@ -1,11 +1,12 @@
-from datetime import timedelta, datetime as dt
-from dateutil.relativedelta import relativedelta
+from datetime import datetime as dt
 from pytz import utc
+
+EPOCH = 2082844800 # seconds from the LabVIEW epoch (1/1/1904) to the Unix epoch (1/1/1970)
 
 class ResData():
     def __init__(self, bp):
         try:
-            self.datFile = f'{bp}\ResDataBase.dat'
+            self.datFile = f'{bp}\\ResDataBase.dat'
             # Empty arrays to store data from ResDataBase.dat
             self.ResDict = {}
             # Open .dat file for reading and close it when done
@@ -16,10 +17,8 @@ class ResData():
                     if line.startswith('CalDate'):
                         # Creates a temporary variable to store the current Cal Val
                         CalDate = float(line.split('=')[-1].rstrip(' \n'))
-                        # Subtract 66 years to get to Unix based date objects
-                        UnixDateObj = dt.fromtimestamp(CalDate, tz=utc) - relativedelta(years=66)
-                        # Convert datetime into corrected Unix-based timestamp
-                        CorrCalDate = (UnixDateObj - dt(1970,1,1,0,0,tzinfo=utc)) / timedelta(seconds=1)
+                        # Convert to a Unix-based timestamp (subtracting 66 calendar years is off by up to a day due to leap years)
+                        CorrCalDate = CalDate - EPOCH
                     elif line.startswith('SN'):
                         temp = line.split('=')[-1].rstrip(' "\n')
                         SN   = temp.lstrip(' "')

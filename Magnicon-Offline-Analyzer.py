@@ -8,9 +8,10 @@ Created on Tue Jun 24 11:08:20 2025
 import sys, os
 from time import perf_counter
 import inspect
+import traceback
 
 from PyQt6 import QtCore, QtGui
-from PyQt6.QtCore import Qt, QRect, QMetaObject, QCoreApplication
+from PyQt6.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QLocale
 from PyQt6.QtGui import QIcon, QAction, QPixmap, QPainterPath, QPainter,\
                         QKeySequence, QDoubleValidator
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
@@ -22,9 +23,10 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QV
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator, ScalarFormatter, MultipleLocator, NullLocator
 import matplotlib.style as mplstyle
-from numpy import sqrt, std, mean, ones, linspace, array, nan
+from numpy import sqrt, std, mean, ones, linspace, array, nan, polyfit
 from scipy import signal
 import allantools
 
@@ -34,12 +36,11 @@ from magnicon_ccc import magnicon_ccc
 from create_mag_ccc_datafile import writeDataFile
 import mystat
 from env import env
+from ccc_diagram import draw_ccc_diagram
 from argparse import ArgumentParser
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
-
-from threading import Thread
 
 # base directory of the project
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -49,7 +50,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__             = '2.4.1' # Program version string
+__version__             = '3.0.0' # Program version string
 red_style               = "color: white; background-color: red; border: 0.5px solid black"
 blue_style              = "color: white; background-color: blue; border: 0.5px solid black"
 green_style             = "color: white; background-color: green; border:0.5px solid black"
@@ -107,16 +108,16 @@ else:
         running_mode = 'Interactive'
 
 os.chdir(base_dir)
-current_path = os.environ["PATH"]
-new_path = current_path + os.pathsep + base_dir + r'\texlive\2024\bin\windows' + \
-           os.pathsep + base_dir + r'\data' + os.pathsep + base_dir + r'\tex\latex\circuitikz' + \
-           os.pathsep + base_dir + r'\texlive\texmf-local'
-os.environ['PATH'] = new_path
-os.environ['TEXMFHOME'] = base_dir + r'\texlive\texmf-local'
-os.environ['TEXMFLOCAL'] = base_dir + r'\texlive\texmf-local'
 
-from lcapy import Circuit
-# import lcapy.scripts.schtex as schtex
+def float_validator() -> QDoubleValidator:
+    """Validator for numeric line edits that only accepts text python's float() can parse,
+       i.e. '.' as the decimal point and no group separators like '101,325'
+    """
+    validator = QDoubleValidator()
+    locale = QLocale(QLocale.Language.C)
+    locale.setNumberOptions(QLocale.NumberOption.OmitGroupSeparator | QLocale.NumberOption.RejectGroupSeparator)
+    validator.setLocale(locale)
+    return validator
 
 class aboutWindow(QWidget):
     def __init__(self):
@@ -168,6 +169,7 @@ class Ui_mainWindow(object):
         global winSizeH, winSizeV
         mainWindow.setFixedSize(winSizeH, winSizeV)
         mainWindow.setWindowIcon(QIcon(base_dir + r'\icons\main.png'))
+        mainWindow.closeEvent = self.closeEvent
         self.initializations()
 
         self.centralwidget = QWidget(parent=mainWindow)
@@ -273,21 +275,17 @@ class Ui_mainWindow(object):
             pyi_splash.close()
 
     def onTabChanged(self, index: int):
-        if index == 0 and self.dat != None and self.draw_flag == False:
-            try:
-                self.draw_thread = Thread(target = self.CCCDiagram, args=(round(self.dat.R1NomVal, 2), round(self.dat.R2NomVal, 2), \
-                                self.dat.N1, self.dat.N2, format(self.dat.I1, ".1e"), \
-                                format(self.dat.I2, ".1e"), format(self.dat.bvdMean, ".1e"), \
-                                self.dat.NA, "10k*" + str(self.dat.dac12), "10k/" + str(self.dat.rangeShunt), format(self.dat.I1*self.k, ".1e"),), daemon=True)
-                self.draw_thread.start()
-                self.draw_thread.join()
-                self.draw_flag = True
-            except Exception as e:
-                logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + ' Error: ' + str(e))
-                self.draw_flag == False
-                if self.draw_thread is not None:
-                    self.draw_thread.join()
-                pass
+        if index == 0 and self.validFile and not self.draw_flag:
+            self.updateCCCDiagram()
+
+    def updateCCCDiagram(self) -> None:
+        """Draws the CCC diagram with the values of the loaded file"""
+        if debug_mode:
+            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+        self.CCCDiagram(round(self.dat.R1NomVal, 2), round(self.dat.R2NomVal, 2), self.dat.N1, self.dat.N2, \
+                        format(self.dat.I1, ".1e"), format(self.dat.I2, ".1e"), format(self.dat.bvdMean, ".1e"), \
+                        self.dat.NA, "10k*" + str(self.dat.dac12), "10k/" + str(self.dat.rangeShunt), format(self.dat.I1*self.k, ".1e"))
+        self.draw_flag = True
 
     def drawTimingDiagram(self,):
         if debug_mode:
@@ -369,19 +367,12 @@ class Ui_mainWindow(object):
             self.hide_tooltip()
             self.tooltip_action.setText("Show Tooltip")
 
-    def closeEvent(self, event):
+    def closeEvent(self, event) -> None:
+        """Closing the main window quits the program, also closing the About and Timing Diagram windows"""
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        if self.stats_thread is not None:
-            self.stats_thread.join()
-        if self.plot_bvd_thread is not None:
-            self.plot_bvd_thread.join()
-        if self.draw_thread is not None:
-            self.draw_thread.join()
-        file_handler.close()
-        mainWindow.close()
-        self.quit()
         event.accept()
+        QApplication.quit()
 
     def quit(self,) -> None:
         """
@@ -394,7 +385,6 @@ class Ui_mainWindow(object):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         mainWindow.close()
-        QtCore.QCoreApplication.instance().quit
         app.quit()
 
     def initializations(self) -> None:
@@ -410,17 +400,14 @@ class Ui_mainWindow(object):
         self.plottedRaw   = False
         self.plottedAllan = False
         self.plottedSpec  = False
+        self.SampUsedCt = 0
         self.changedDeltaI2R2Ct = 0
         self.changedR1STPBool = False
         self.changedR2STPBool = False
-        self.stats_thread = None
-        self.plot_bvd_thread = None
-        self.draw_thread = None
         self.draw_flag = False
         self.user_warn_msg = ""
-        self.deletePressed = False
-        self.restorePressed = False
         self.outlierPressed = False
+        self.detrend_state = 0
 
         self.R1Temp     = 23
         self.R2Temp     = 23
@@ -439,23 +426,28 @@ class Ui_mainWindow(object):
         self.CurrentButStatus = 'I2'
         self.saveStatus       = False
 
-        self.bvdCount     = []
-        self.deletedIndex = []
-        self.deletedCount = []
-        self.deletedBVD   = []
-        self.deletedR1    = []
-        self.deletedR2    = []
-        self.dat          = None # magnicon_ccc class object
-        self.bvd_stat_obj = None # bvd_stats class object
-        self.bvdList      = []
-        self.corr_bvdList = []
-        self.bvdList_chk  = []
-        self.V1           = []
-        self.V2           = []
-        self.A            = []
-        self.B            = []
-        self.stdA         = []
-        self.stdB         = []
+        self.bvdCount           = [] # cycle numbers of the cycles used in the results
+        self.bvdfitList         = []
+        self.deletedCycles      = [] # cycles deleted by the user, in the order they were deleted
+        self.outlierCycles      = set() # cycles left out by Remove Outliers
+        self.dat                = None # magnicon_ccc class object
+        self.bvd_stat_obj       = None # bvd_stats class object
+        # per-cycle lists for all the cycles, selectCycles() makes the lists used in the results from these
+        self.bvdList            = []
+        self.V1_all             = []
+        self.V2_all             = []
+        self.stdbvdList_all     = []
+        self.bvdList_chk_all    = []
+        # per-cycle lists without the outlier and deleted cycles
+        self.corr_bvdList       = []
+        self.stdbvdList         = []
+        self.bvdList_chk        = []
+        self.V1                 = []
+        self.V2                 = []
+        self.A                  = []
+        self.B                  = []
+        self.stdA               = []
+        self.stdB               = []
 
         self.lbl_width = 110
         self.lbl_height = 25
@@ -613,14 +605,17 @@ class Ui_mainWindow(object):
         self.StdDevChkPPMLabel = QLabel(parent=self.SetResTab)
         self.StdDevChkPPMLabel.setGeometry(QRect(self.col6x, 270, self.lbl_width, self.lbl_height))
         self.lbl_sampleTemp = QLabel(parent=self.SetResTab)
-        self.lbl_sampleTemp.setGeometry(QRect(self.col4x+70, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_sampleTemp.setGeometry(QRect(self.col4x+46, 700, self.lbl_width - 25, self.lbl_height))
         self.lbl_sampleTemp.setHidden(True)
         self.lbl_contact = QLabel(parent=self.SetResTab)
-        self.lbl_contact.setGeometry(QRect(self.col4x+150, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_contact.setGeometry(QRect(self.col4x+114, 700, self.lbl_width - 25, self.lbl_height))
         self.lbl_contact.setHidden(True)
         self.lbl_qhr_system = QLabel(parent=self.SetResTab)
-        self.lbl_qhr_system.setGeometry(QRect(self.col4x+240, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_qhr_system.setGeometry(QRect(self.col4x+195, 700, self.lbl_width - 25, self.lbl_height))
         self.lbl_qhr_system.setHidden(True)
+        self.lbl_carrier_density = QLabel(parent=self.SetResTab)
+        self.lbl_carrier_density.setGeometry(QRect(self.col4x+290, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_carrier_density.setHidden(True)
         # col7
         self.StandardRLabel = QLabel(parent=self.centralwidget)
         self.StandardRLabel.setGeometry(QRect(self.col7x, 30, self.lbl_width, self.lbl_height))
@@ -705,12 +700,12 @@ class Ui_mainWindow(object):
         self.FullCycLineEdit.setStyleSheet(le_readonly_style)
         self.R1PresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1PresLineEdit.setGeometry(QRect(self.col0x, self.coly*7, self.lbl_width, self.lbl_height))
-        self.R1PresLineEdit.setValidator(QDoubleValidator())
+        self.R1PresLineEdit.setValidator(float_validator())
         self.R1PresLineEdit.setStyleSheet(le_style)
         self.R1PresLineEdit.returnPressed.connect(self.R1PresChanged)
         self.R2PresLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2PresLineEdit.setGeometry(QRect(self.col0x, self.coly*8, self.lbl_width, self.lbl_height))
-        self.R2PresLineEdit.setValidator(QDoubleValidator())
+        self.R2PresLineEdit.setValidator(float_validator())
         self.R2PresLineEdit.setStyleSheet(le_style)
         self.R2PresLineEdit.returnPressed.connect(self.R2PresChanged)
         self.txtFileLineEdit = QLineEdit(parent=self.SetResTab)
@@ -809,12 +804,12 @@ class Ui_mainWindow(object):
         self.R2TotalPresLineEdit.setStyleSheet(le_readonly_style)
         self.R1TempLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1TempLineEdit.setGeometry(QRect(self.col3x, self.coly*6, self.lbl_width, self.lbl_height))
-        self.R1TempLineEdit.setValidator(QDoubleValidator())
+        self.R1TempLineEdit.setValidator(float_validator())
         self.R1TempLineEdit.setStyleSheet(le_style)
         self.R1TempLineEdit.returnPressed.connect(self.temp1Changed)
         self.R2TempLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2TempLineEdit.setGeometry(QRect(self.col3x, self.coly*7, self.lbl_width, self.lbl_height))
-        self.R2TempLineEdit.setValidator(QDoubleValidator())
+        self.R2TempLineEdit.setValidator(float_validator())
         self.R2TempLineEdit.setStyleSheet(le_style)
         self.R2TempLineEdit.returnPressed.connect(self.temp2Changed)
         self.RelHumLineEdit = QLineEdit(parent=self.SetResTab)
@@ -881,13 +876,13 @@ class Ui_mainWindow(object):
         self.R1STPLineEdit = QLineEdit(parent=self.SetResTab)
         self.R1STPLineEdit.setGeometry(QRect(self.col6x, self.coly, self.lbl_width - 5, self.lbl_height))
         self.R1STPLineEdit.setReadOnly(False)
-        self.R1STPLineEdit.setValidator(QDoubleValidator())
+        self.R1STPLineEdit.setValidator(float_validator())
         self.R1STPLineEdit.returnPressed.connect(self.changedR1STPPred)
         self.R1STPLineEdit.setStyleSheet(le_style)
         self.R2STPLineEdit = QLineEdit(parent=self.SetResTab)
         self.R2STPLineEdit.setGeometry(QRect(self.col6x, self.coly*2, self.lbl_width - 5, self.lbl_height))
         self.R2STPLineEdit.setReadOnly(False)
-        self.R2STPLineEdit.setValidator(QDoubleValidator())
+        self.R2STPLineEdit.setValidator(float_validator())
         self.R2STPLineEdit.returnPressed.connect(self.changedR2STPPred)
         self.R2STPLineEdit.setStyleSheet(le_style)
         self.NLineEdit = QLineEdit(parent=self.SetResTab)
@@ -955,24 +950,31 @@ class Ui_mainWindow(object):
                 """QLineEdit { background-color: rgb(215, 214, 213); color: red; font-weight: bold }""")
 
         self.le_Bfield = QLineEdit(parent=self.SetResTab)
-        self.le_Bfield.setGeometry(QRect(self.col4x, 730, self.lbl_width - 50, self.lbl_height))
+        self.le_Bfield.setGeometry(QRect(self.col4x, 730, self.lbl_width - 70, self.lbl_height))
         self.le_Bfield.setReadOnly(False)
         self.le_Bfield.setHidden(True)
-        self.le_Bfield.setValidator(QDoubleValidator())
+        self.le_Bfield.setValidator(float_validator())
         self.le_Bfield.setStyleSheet(le_style)
 
         self.le_sampleTemp = QLineEdit(parent=self.SetResTab)
-        self.le_sampleTemp.setGeometry(QRect(self.col4x+70, 730, self.lbl_width - 50, self.lbl_height))
+        self.le_sampleTemp.setGeometry(QRect(self.col4x+46, 730, self.lbl_width - 48, self.lbl_height))
         self.le_sampleTemp.setReadOnly(False)
         self.le_sampleTemp.setHidden(True)
-        self.le_sampleTemp.setValidator(QDoubleValidator())
+        self.le_sampleTemp.setValidator(float_validator())
         self.le_sampleTemp.setStyleSheet(le_style)
 
         self.le_contact = QLineEdit(parent=self.SetResTab)
-        self.le_contact.setGeometry(QRect(self.col4x+140, 730, self.lbl_width - 25, self.lbl_height))
+        self.le_contact.setGeometry(QRect(self.col4x+114, 730, self.lbl_width - 41, self.lbl_height))
         self.le_contact.setReadOnly(False)
         self.le_contact.setHidden(True)
         self.le_contact.setStyleSheet(le_style)
+
+        self.le_carrier_density = QLineEdit(parent=self.SetResTab)
+        self.le_carrier_density.setGeometry(QRect(self.col4x+290, 730, self.lbl_width - 55, self.lbl_height))
+        self.le_carrier_density.setReadOnly(False)
+        self.le_carrier_density.setHidden(True)
+        self.le_carrier_density.setValidator(float_validator())
+        self.le_carrier_density.setStyleSheet(le_style)
 
     def hide_tooltip(self) -> None:
         if debug_mode:
@@ -1053,7 +1055,8 @@ class Ui_mainWindow(object):
         self.saveButton.setToolTip('')
         self.C1C2LineEdit.setToolTip('')
         self.chb_outlier.setToolTip('')
-        self.chb_qhr.setTootlTip('')
+        self.chb_qhr.setToolTip('')
+        self.chb_detrend.setToolTip('')
 
     def show_tooltip(self) -> None:
         if debug_mode:
@@ -1108,13 +1111,13 @@ class Ui_mainWindow(object):
         self.StdDevMeanPPMLineEdit.setToolTip('Standard deviation of the mean of the bridge voltage difference calculated from the raw .txt file')
         self.StdDevC1LineEdit.setToolTip('Standard deviation of C<sub>1</sub>')
         self.StdDevC2LineEdit.setToolTip('Standard deviation of C<sub>2</sub>')
-        self.R1STPLineEdit.setToolTip('Value of the primary resistor at standard temperature and pressure')
-        self.R2STPLineEdit.setToolTip('Value of the secondary resistor at standard temperature and pressure')
+        self.R1STPLineEdit.setToolTip('Value of the primary resistor at standard temperature and pressure (STP) based on the resistance database entry')
+        self.R2STPLineEdit.setToolTip('Value of the secondary resistor at standard temperature and pressure (STP) based on the resistance database entry')
         self.NLineEdit.setToolTip('Total number of measurements or total number of full cycles')
         self.StdDevPPMLineEdit.setToolTip('Standard deviation of the resistance calculated from the raw .txt file')
         self.StdDevChkPPMLineEdit.setToolTip('Standard deviation of the resistance calculated from the _bvd.txt file')
-        self.ppmMeanLineEdit.setToolTip('Mean resistance value calculated from the raw .txt file')
-        self.RMeanChkPPMLineEdit.setToolTip('Mean resistance value calculated from the _bvd.txt file')
+        self.ppmMeanLineEdit.setToolTip('Mean resistance value calculated from the raw .txt file and corrected to standard temperature and pressure (STP)')
+        self.RMeanChkPPMLineEdit.setToolTip('Mean resistance value calculated from the _bvd.txt file and corrected to standard temperature and pressure (STP)')
         self.RatioMeanLineEdit.setToolTip('Mean of the Ratio  R<sub>1</sub>/R<sub>2</sub>')
         self.le_ratioStdMean.setToolTip('Standard deviation of the mean of the Ratio R<sub>1</sub>/R<sub>2</sub>')
         self.IgnoredFirstLineEdit.setToolTip('Set the number of ignored first mesurements in every half cycle')
@@ -1136,6 +1139,8 @@ class Ui_mainWindow(object):
         self.chb_outlier.setToolTip('Check to remove BVD values that are more than 3 sigma from the mean')
         self.lbl_cnOutput_rbv.setToolTip('Compensation output')
         self.chb_qhr.setToolTip('Check if characterizing a quantum Hall standard')
+        self.chb_detrend.setToolTip('Remove quadratic drift of the bridge voltage, fitted over 2 cycles together with the current reversal step. ' + \
+                                    'No-Overlap: the windows follow each other, Overlap: a window starts at every cycle (like the overlapping Allan deviation)')
 
     def show_warning_dialog(self):
         # Calculate center of main window
@@ -1159,65 +1164,28 @@ class Ui_mainWindow(object):
         self.CCCDiagramTab = QWidget()
         self.tabWidget.addTab(self.CCCDiagramTab, "")
         self.VerticalLayoutWidget = QWidget(parent=self.CCCDiagramTab)
-        self.VerticalLayoutWidget.setGeometry(QRect(0, 0, winSizeH-125, 691))
+        self.VerticalLayoutWidget.setGeometry(QRect(0, 5, winSizeH-125, winSizeV-75))
         self.VerticalLayout = QVBoxLayout(self.VerticalLayoutWidget)
-        self.lbl_cccdiagram = QLabel(parent=self.CCCDiagramTab)
-        self.lbl_cccdiagram.setGeometry(QRect(0, 5, winSizeH-125, winSizeV-75))
-        self.lbl_cccdiagram.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        mysp = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.lbl_cccdiagram.setSizePolicy(mysp)
+        self.VerticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.ccc_fig = Figure()
+        self.ccc_canvas = FigureCanvas(self.ccc_fig)
+        self.VerticalLayout.addWidget(self.ccc_canvas)
         self.CCCDiagram()
 
-    def CCCDiagram(self, R1="0", R2="0", N1="0", N2="0", I1="", I2="", BVD="", Na="1", RH="", RL="", Ia="") -> None:
-        # Draw the circuit diagram
-        # E 15 0 opamp 16 17 V; up, scale=0.3, size=0.4, color=red
-        # W 6 16; right, color=red, size=0.3, scale=0.3
-        # W 9 17; left, color=red, size=0.3, scale=0.3
+    def CCCDiagram(self, R1="", R2="", N1="", N2="", I1="", I2="", BVD="", Na="", RH="", RL="", Ia="") -> None:
+        """Draws the CCC circuit diagram, annotated with the values of the loaded file (empty values are not shown)"""
+        if debug_mode:
+            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+        self.ccc_fig.clear()
+        ax = self.ccc_fig.add_axes((0, 0, 1, 1))
         try:
-            cct = Circuit("""
-            I1 3 2; down, color=red, scale=0.5, l^={I_1}, i_>=""" + str(I1) + """
-            W 3 4; down, steps=|-, free, color=red, size=1
-            W 4 5; down, color=red, size=0.75
-            R1 5 6; down=1, color=red,scale=0.5, l^={R_1}, a_=""" + str(R1) + """, label_style=split
-            W 5 16; right, color=red, size=0.75
-            R2 16 9; down, color=red, scale=0.5, l_={R_2}, a^=""" + str(R2) + """
-            L2 9 10 {N_2}; down, mirror, color=blue, scale=0.5, size=1, l_={N_2}, a^=""" + str(N2) + """
-            W 9 0; right=0.02, ground, color=red, label_nodes=none
-            VM 6 9; right, scale=0.6, color=red, l_={\Delta{U}}, a^=""" + str(BVD) + """
-            W 10 11; down, color=blue, size=1.25
-            W 11 12; right, color=blue, size=0.75
-            W 12 13; up, color=red, size=1.25
-            I2 14 13 {I_2}; down, color=red, scale=0.5, l_={I_2}, i^>=""" + str(I2) + """,
-            W 14 15; up, steps=|-, free, color=red, size=0.75
-            W 15 16; down, color=red, size=0.75
-            L1 6 7 {N_1}; down=1, color=blue, scale=0.5, size=0.5, l^={N_1}, a_=""" + str(N1) + """
-            L3 7 8 {N_A}; down, color=blue, scale=0.5, size=1, l_={N_A}, i^={I_A}, a^=""" + str(Ia) + """
-            R3 1 8; variable, right, color=red, scale=0.5, size=0.75, l^={R_H}, a_=""" + str(RH) + """, label_style=split
-            R4 2 7; variable, right, color=red, scale=0.5, size=0.75, l^={R_L}, a_=""" + str(RL) + """, label_style=split
-            W 1 2; up, color=red, size=1.25
-            S1 circle; color=blue, size=0.4, l^={\phi}
-            W 7 S1.mid; right, dotted, line width=0pt, size=0.5
-            W 10 S1.mid; left, dotted, line width=0pt, size=0.5
-            W S1.s 17; down, color=red, size=0.25, dashed, i={i_f}
-            W 17 13; right, steps=-|, free, color=red, size=0.5, dashed, i={I_f}
-            ;draw_nodes=connections, label_ids=false, label_nodes=none, label_style=aligned, dpi=600""")
-            cct.draw(base_dir + r'\data\ccc_diagram.png', debug=2)
-            plt.close('all')
-            self.pixmap_cccdiagram = QPixmap(base_dir + r'\data\ccc_diagram.png')
-            # Set the pixmap to the label
-            scaled_pixmap = self.pixmap_cccdiagram.scaled(self.lbl_cccdiagram.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-            self.lbl_cccdiagram.setPixmap(scaled_pixmap)
-            # Resize the label to fit the image
-            self.lbl_cccdiagram.setScaledContents(True)
-            self.lbl_cccdiagram.show()
+            draw_ccc_diagram(ax, R1, R2, N1, N2, I1, I2, BVD, Na, RH, RL, Ia)
         except Exception as e:
-            self.pixmap_cccdiagram = QPixmap(base_dir + r'\data\ccc_diagram_default.png')
-            # Set the pixmap to the label
-            scaled_pixmap = self.pixmap_cccdiagram.scaled(self.lbl_cccdiagram.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-            self.lbl_cccdiagram.setPixmap(scaled_pixmap)
-            # Resize the label to fit the image
-            self.lbl_cccdiagram.setScaledContents(True)
-            self.lbl_cccdiagram.show()
+            logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + ' Error: ' + str(e))
+            ax.clear()
+            ax.imshow(plt.imread(base_dir + r'\data\ccc_diagram_default.png'))
+            ax.set_axis_off()
+        self.ccc_canvas.draw()
 
     def voltageTabSetUp(self) -> None:
         if debug_mode:
@@ -1610,11 +1578,29 @@ class Ui_mainWindow(object):
         self.chb_qhr.setTristate(False)
         self.chb_qhr.setCheckState(Qt.CheckState.Unchecked)
         self.chb_qhr.stateChanged.connect(self.qhrChar)
+        
+        self.chb_detrend = QCheckBox("Detrend", parent=self.centralwidget)
+        self.chb_detrend.setGeometry(QRect(self.col7x, int(self.coly*13), self.lbl_width - 10, int(self.lbl_height*1.2)))
+        self.chb_detrend.setTristate(True)
+        self.chb_detrend.setCheckState(Qt.CheckState.Unchecked)
+        self.chb_detrend.stateChanged.connect(self.detrend)
 
         self.saveButton = QPushButton(parent=self.centralwidget)
         self.saveButton.setGeometry(QRect(self.col7x, self.coly*3, self.lbl_width - 10, int(self.lbl_height*1.2)))
         self.saveButton.setEnabled(False)
         self.saveButton.clicked.connect(self.saveMDSS)
+        
+    def detrend(self, state) -> None:
+        if state == 0:
+            self.chb_detrend.setText("Detrend: None")
+            self.detrend_state = 0
+        elif state == 1:
+            self.chb_detrend.setText("Detrend: No-Overlap")
+            self.detrend_state = 1
+        elif state == 2:
+            self.chb_detrend.setText("Detrend: Overlap")
+            self.detrend_state = 2
+        self.getData()
 
     def qhrChar(self, state) -> None:
         if state == 2:
@@ -1627,6 +1613,8 @@ class Ui_mainWindow(object):
             self.le_contact.setHidden(False)
             self.lbl_qhr_system.setHidden(False)
             self.cb_qhr_system.setHidden(False)
+            self.lbl_carrier_density.setHidden(False)
+            self.le_carrier_density.setHidden(False)
         else:
             self.qhrCharFlag = False
             self.lbl_Bfield.setHidden(True)
@@ -1637,6 +1625,8 @@ class Ui_mainWindow(object):
             self.le_contact.setHidden(True)
             self.lbl_qhr_system.setHidden(True)
             self.cb_qhr_system.setHidden(True)
+            self.lbl_carrier_density.setHidden(True)
+            self.le_carrier_density.setHidden(True)
 
     def setSpinBoxes(self) -> None:
         if debug_mode:
@@ -1666,7 +1656,7 @@ class Ui_mainWindow(object):
         self.ProbeComboBox.addItem('NIST1')
 
         self.cb_qhr_system = QComboBox(parent=self.SetResTab)
-        self.cb_qhr_system.setGeometry(QRect(self.col4x+240, 730, self.lbl_width-15, self.lbl_height))
+        self.cb_qhr_system.setGeometry(QRect(self.col4x+189, 730, self.lbl_width-15, self.lbl_height))
         self.cb_qhr_system.setEditable(False)
         self.cb_qhr_system.setHidden(True)
         self.cb_qhr_system.addItem('Cryomag-5T')
@@ -1787,9 +1777,10 @@ class Ui_mainWindow(object):
         self.MDSSLabel.setText(_translate("mainWindow", "Save MDSS"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SetResTab), _translate("mainWindow", "Settings/Results"))
         self.lbl_Bfield.setText(_translate("mainWindow", "B [T]"))
-        self.lbl_sampleTemp.setText(_translate("mainWindow", "Sample T [K]"))
+        self.lbl_sampleTemp.setText(_translate("mainWindow", "Samp. T [K]"))
         self.lbl_contact.setText(_translate("mainWindow", "[I+, I-, V+, V-]"))
         self.lbl_qhr_system.setText(_translate("mainWindow", "QHR System"))
+        self.lbl_carrier_density.setText(_translate("mainWindow", "n [cm<sup>-2</sup>]"))
 
     def plotRaw(self) -> None:
         if debug_mode:
@@ -1869,36 +1860,56 @@ class Ui_mainWindow(object):
                 BVDstd  = std(self.corr_bvdList, ddof=1)
                 upper   =  3*BVDstd + BVDmean
                 lower   = -3*BVDstd + BVDmean
+                if len(self.corr_bvdList) > 1:
+                    self.bvdfit = polyfit(array(self.bvdCount), array(self.corr_bvdList), deg=1, full=True)
+                else:
+                    self.bvdfit = ([nan, nan],) # a line fit needs at least two points
+                # print(self.bvdfit[0][1])
+                # print(self.bvdfit)
+                self.bvdfitList = []
+                for i in self.bvdCount:
+                    self.bvdfitList.append(self.bvdfit[0][0]*i + self.bvdfit[0][1])  
+
                 if self.plottedBVD:
                     self.clearBVDPlot()
                     if self.RButStatus == 'R1':
                         self.BVDax21_ref[0].set_data(self.bvdCount, self.R1List)
+                        self.BVDax22_ref.set_ydata((self.meanR1,))
                         self.BVDax21twiny_ref[0].set_data(array(self.bvdCount)*float(self.dat.fullCyc), self.R1List)
                     else:
                         self.BVDax21_ref[0].set_data(self.bvdCount, self.R2List)
+                        self.BVDax22_ref.set_ydata((self.meanR2,))
+            
                     self.BVDax41_ref[0].set_data(self.bvdCount, self.corr_bvdList)
                     self.BVDax42_ref[0].set_data(self.bvdCount, upper*ones(len(self.corr_bvdList), dtype=int))
                     self.BVDax43_ref[0].set_data(self.bvdCount, lower*ones(len(self.corr_bvdList), dtype=int))
+                    self.BVDax44_ref[0].set_data(self.bvdCount, self.bvdfitList)
+    
                     self.BVDax3.hist(self.corr_bvdList, bins=self.bins, orientation='horizontal', color='r', edgecolor='k')
                     self.BVDax3.set_ylim([self.BVDax4.get_ylim()[0], self.BVDax4.get_ylim()[1]])
                 else:
                     if self.RButStatus == 'R1':
-                        self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R1List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
+                        self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R1List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha)
+                        self.BVDax22_ref = self.BVDax2.axhline(y=self.meanR1, color='blue', ls='-', alpha=self.alpha-0.3, label='Mean')
                         self.BVDax21twiny_ref = self.BVDax2twiny.plot(array(self.bvdCount)*float(self.dat.fullCyc), self.R1List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
                     else:
-                        self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R2List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
+                        self.BVDax21_ref = self.BVDax2.plot(self.bvdCount, self.R2List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha)
+                        self.BVDax22_ref = self.BVDax2.axhline(y=self.meanR2, color='blue', ls='-', alpha=self.alpha-0.3, label='Mean')
                         self.BVDax21twiny_ref = self.BVDax2twiny.plot(array(self.bvdCount)*float(self.dat.fullCyc), self.R2List, marker='o', ms=4, mfc='blue', mec='blue', ls='', alpha=self.alpha, label= 'Resistance')
                     self.BVDax41_ref = self.BVDax4.plot(self.bvdCount, self.corr_bvdList, marker='o', ms=4, mfc='red', mec='red', ls='', alpha=self.alpha, label= 'BVD [V]')
                     self.BVDax42_ref = self.BVDax4.plot(self.bvdCount, upper*ones(len(self.corr_bvdList), dtype=int), marker='', color='red', ms=0, ls='--', alpha=self.alpha)
                     self.BVDax43_ref = self.BVDax4.plot(self.bvdCount, lower*ones(len(self.corr_bvdList), dtype=int), marker='', color='red', ms=0, ls='--', alpha=self.alpha)
+                    self.BVDax44_ref = self.BVDax4.plot(self.bvdCount, self.bvdfitList, color = 'red', ls='-', alpha=self.alpha - 0.3)
 
                     self.BVDax3.hist(self.corr_bvdList, bins=self.bins, orientation='horizontal', color='r', edgecolor='k')
                     self.BVDax3.set_ylim([self.BVDax4.get_ylim()[0], self.BVDax4.get_ylim()[1]])
+                self.BVDax2.legend(loc='upper right', fancybox=True, shadow=True, ncols=2, columnspacing=0)
+                self.slope_text = self.BVDax4.text(x=0.05, y=0.1, s='Slope: ' + str("{:.3f}".format((self.bvdfit[0][0]*1e9)/float(self.dat.fullCyc))) + ' nV/s', color='red', transform=self.BVDax4.transAxes)
                 # Put a legend below current axis
-                lines, labels   = self.BVDax2.get_legend_handles_labels()
-                lines2, labels2 = self.BVDax4.get_legend_handles_labels()
-                self.BVDax2.legend(lines + lines2, labels + labels2, loc='upper center', bbox_to_anchor=(0.5, -0.2),
-                                   fancybox=True, shadow=True, ncols=2, columnspacing=0)
+                # lines, labels   = self.BVDax2.get_legend_handles_labels()
+                # lines2, labels2 = self.BVDax4.get_legend_handles_labels()
+                # self.BVDax2.legend(lines + lines2, labels + labels2, loc='upper center', bbox_to_anchor=(0.5, -0.2),
+                #                    fancybox=True, shadow=True, ncols=2, columnspacing=0)
                 if self.RButStatus == 'R1':
                     self.BVDax2.set_ylabel(r'$R_{2}$' + f' [{chr(956)}{chr(937)}/{chr(937)}]', color='b')
                 else:
@@ -2326,14 +2337,14 @@ class Ui_mainWindow(object):
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.plottedBVD:
             try:
-                # self.BVDax1_ref[0].set_data(array([]), array([]))
-                # self.BVDax12_ref[0].set_data(array([]), array([]))
                 self.BVDax41_ref[0].set_data(array([]), array([]))
                 self.BVDax42_ref[0].set_data(array([]), array([]))
                 self.BVDax43_ref[0].set_data(array([]), array([]))
+                self.BVDax44_ref[0].set_data(array([]), array([]))
                 self.BVDax21_ref[0].set_data(array([]), array([]))
+                self.BVDax22_ref.set_ydata((array([]),))
                 self.BVDax21twiny_ref[0].set_data(array([]), array([]))
-                
+                self.slope_text.remove()
                 for container in self.BVDax3.containers:
                     container.remove()
             except Exception as e:
@@ -2514,6 +2525,12 @@ class Ui_mainWindow(object):
             # self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
             self.IgnoredFirstLineEdit.setText(str(self.dat.ignored_first))
             self.IgnoredLastLineEdit.setText(str(self.dat.ignored_last))
+            # a (re)loaded file starts with all its cycles and without the values typed by the user
+            self.deletedCycles      = []
+            self.SampUsedCt         = 0
+            self.changedDeltaI2R2Ct = 0
+            self.changedR1STPBool   = False
+            self.changedR2STPBool   = False
             self.cleanUp()
             # getResults_end = perf_counter() - getData_start
             # print("Time taken to get Results: " + str(getResults_end))
@@ -2538,21 +2555,10 @@ class Ui_mainWindow(object):
                 # self.stats_thread = Thread(target=self.plotStatMeasures, daemon=True)
                 # self.stats_thread.start()
                 # self.stats_thread.join() # wait for the thread to finish
+                # draw the diagram for this file now if its tab is showing, otherwise when the tab is opened
+                self.draw_flag = False
                 if self.tabWidget.currentIndex() == 0:
-                    try:
-                        self.draw_thread = Thread(target = self.CCCDiagram, args=(round(self.dat.R1NomVal, 2), round(self.dat.R2NomVal, 2), \
-                                        self.dat.N1, self.dat.N2, format(self.dat.I1, ".1e"), \
-                                        format(self.dat.I2, ".1e"), format(self.dat.bvdMean, ".1e"), \
-                                        self.dat.NA, "10k*" + str(self.dat.dac12), "10k/" + str(self.dat.rangeShunt), format(self.dat.I1*self.k, ".1e"),), daemon=True)
-                        self.draw_thread.start()
-                        self.draw_thread.join()
-                        self.draw_flag = True
-                    except Exception as e:
-                        logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + ' Error: ' + str(e))
-                        self.draw_flag == False
-                        if self.draw_thread is not None:
-                            self.draw_thread.join()
-                        pass
+                    self.updateCCCDiagram()
 
                 # print("Time taken to plot allan and spectrum: ", perf_counter() - plotStat_start)
                 # getPlot_end = perf_counter() - getData_start
@@ -2563,10 +2569,6 @@ class Ui_mainWindow(object):
                 if self.user_warn_msg != "":
                     self.show_warning_dialog()
             else:
-                if self.stats_thread is not None:
-                    self.stats_thread.join()
-                if self.plot_bvd_thread is not None:
-                    self.plot_bvd_thread.join()
                 self.setInvalidData()
                 self.statusbar.showMessage('Invalid file selected...', 2000)
                 # self.clearPlots()
@@ -2597,54 +2599,56 @@ class Ui_mainWindow(object):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         try:
-            self.removed = []
+            # print(self.chb_detrend.checkState())
             self.bvd_stat_obj = bvd_stat(self.txtFilePath, int(self.IgnoredFirstLineEdit.text()), \
-                                         int(self.IgnoredLastLineEdit.text()), self.dat, debug_mode)
-            self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList, self.AA_used, self.BB_used = self.bvd_stat_obj.send_bvd_stats()
-            if self.outliers:
-                BVDmean = mean(self.bvdList)
-                BVDstd  = std(self.bvdList, ddof=1)
-                upper   =  3*BVDstd + BVDmean
-                lower   = -3*BVDstd + BVDmean
-                for i in self.bvdList:
-                    if i < upper and i > lower:
-                        self.corr_bvdList.append(i)
-            else:
-                self.corr_bvdList = self.bvdList
-            for i in range(len(self.corr_bvdList)):
-                self.bvdCount.append(i)
+                                         int(self.IgnoredLastLineEdit.text()), self.dat, debug_mode, \
+                                         self.detrend_state)
+            self.bvdList, self.V1_all, self.V2_all, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList_all, self.AA_used, self.BB_used = self.bvd_stat_obj.send_bvd_stats()
             self.bvd_stat_obj.clear_bvd_stats()
         except Exception as e:
             logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
                            ' Error: ' + str(e))
-            self.bvdList, self.V1, self.V2, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList, self.AA_used, self.BB_used = [], [], [], [], [], [], [], [], [], [], [], []
-            self.corr_bvdList = self.bvdList
+            self.bvdList, self.V1_all, self.V2_all, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList_all, self.AA_used, self.BB_used = [], [], [], [], [], [], [], [], [], [], [], []
             pass
+        # this comes from _bvd.txt files, copied so deleting cycles never changes the parsed file data
+        self.bvdList_chk_all = list(self.dat.bvd)
+        # cycles more than 3 sigma away from the mean BVD are left out of the results
+        self.outlierCycles = set()
+        if self.outliers and len(self.bvdList) > 1:
+            BVDmean = mean(self.bvdList)
+            BVDstd  = std(self.bvdList, ddof=1)
+            self.outlierCycles = {i for i, bvd in enumerate(self.bvdList) if abs(bvd - BVDmean) > 3*BVDstd}
+        self.selectCycles()
 
-        if self.dat.bvd != []:
-            # this comes from _bvd.txt files
-            self.bvd_mean_chk       = mean(self.dat.bvd)
-            self.bvd_std_chk        = std(self.dat.bvd, ddof=1)
-            self.bvd_stdmean_chk    = self.bvd_std_chk/sqrt(len(self.dat.bvd))
-            upper_chk   =  3*self.bvd_std_chk + self.bvd_mean_chk
-            lower_chk   = -3*self.bvd_std_chk + self.bvd_mean_chk
-            if self.outliers:
-                for ct, i in enumerate(self.dat.bvd):
-                    if i > lower_chk and i < upper_chk:
-                        self.bvdList_chk.append(i)
-                    else:
-                        self.removed.append(ct)
-                        self.deletedIndex.append(ct)
-                        # print(ct, len(self.dat.bvd) - ct - 1)
-                        self.plotCountCombo.removeItem(len(self.dat.bvd) - ct)
-            elif not self.outliers:
-                self.bvdList_chk = self.dat.bvd
-                if self.removed != []:
-                    for i in self.removed:
-                        self.plotCountCombo.addItem(f'ct {len(self.dat.bvd) - i}')
-        else:
-            self.bvdList_chk = []
-        # print(len(self.A), len(self.B))
+    def selectCycles(self, keepSelection: bool = False) -> None:
+        """Makes the per-cycle lists used in the results and plots from the lists for all the cycles,
+           leaving out the outlier cycles and the cycles deleted by the user. All the lists are made
+           here with the same cycles so they always stay aligned.
+        Parameters
+        ----------
+        keepSelection : bool, stay on the selected cycle in the delete list (after a delete or restore)
+        Returns
+        -------
+        None
+        """
+        if debug_mode:
+            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+        excluded            = self.outlierCycles.union(self.deletedCycles)
+        self.bvdCount       = [i for i in range(len(self.bvdList)) if i not in excluded]
+        self.corr_bvdList   = [self.bvdList[i] for i in self.bvdCount]
+        self.V1             = [self.V1_all[i] for i in self.bvdCount]
+        self.V2             = [self.V2_all[i] for i in self.bvdCount]
+        self.stdbvdList     = [self.stdbvdList_all[i] for i in self.bvdCount]
+        self.bvdList_chk    = [bvd for i, bvd in enumerate(self.bvdList_chk_all) if i not in excluded]
+        # list the cycles that can be deleted, last cycle first
+        selected = self.plotCountCombo.currentText()
+        position = self.plotCountCombo.currentIndex()
+        self.plotCountCombo.clear()
+        self.plotCountCombo.addItems([f'ct {i}' for i in reversed(self.bvdCount)])
+        if keepSelection:
+            # stay on the same cycle, or on the one that took the place of a deleted cycle
+            index = self.plotCountCombo.findText(selected)
+            self.plotCountCombo.setCurrentIndex(index if index >= 0 else min(position, self.plotCountCombo.count() - 1))
 
     # Results from data
     def results(self, mag, T1: float, T2: float, P1: float, P2: float) -> None:
@@ -2679,6 +2683,8 @@ class Ui_mainWindow(object):
         self.ratioMeanStdList   = []
         self.R1List             = []
         self.R2List             = []
+        self.R1List_nocorr      = []
+        self.R2List_nocorr      = []
         ratioMeanC1             = []
         ratioMeanC2             = []
         self.C1R1List           = []
@@ -2710,19 +2716,23 @@ class Ui_mainWindow(object):
         for rm, rmC1, rmC2 in zip(self.ratioMeanList, ratioMeanC1, ratioMeanC2):
             try:
                 self.R1List.append(float(((((self.R1*(1./rm))/mag.R2NomVal) - 1) * 10**6) - R2corr)) # this is actually R2List
+                self.R1List_nocorr.append(float(((((self.R1*(1./rm))/mag.R2NomVal) - 1) * 10**6)))
                 self.C1R1List.append((self.R1/rmC1 - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
                 self.C2R1List.append((self.R1/rmC2 - mag.R2NomVal)/mag.R2NomVal * 10**6 - R2corr)
             except ZeroDivisionError:
                 self.R1List.append(0)
+                self.R1List_nocorr.append(0)
                 self.C1R1List.append(0)
                 self.C2R1List.append(0)
                 pass
             try:
                 self.R2List.append(float(((((self.R2*rm)/mag.R1NomVal) - 1) * 10**6) - R1corr)) # this is actually R1List
+                self.R2List_nocorr.append(float(((((self.R2*rm)/mag.R1NomVal) - 1) * 10**6)))
                 self.C1R2List.append((self.R2*rmC1 - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
                 self.C2R2List.append((self.R2*rmC2 - mag.R1NomVal)/mag.R1NomVal * 10**6 - R1corr)
             except ZeroDivisionError:
                 self.R2List.append(0)
+                self.R2List_nocorr.append(0)
                 self.C1R2List.append(0)
                 self.C2R2List.append(0)
         # print(self.R1List, mean(self.R1List), len(self.R1List))
@@ -2731,6 +2741,7 @@ class Ui_mainWindow(object):
             self.ratioMean = mean(self.ratioMeanList)
             self.ratioStdMean = std(self.ratioMeanList, ddof=1)/sqrt(len(self.ratioMeanList))
             self.meanR1     = mean(self.R1List) # this is mean of R2
+            self.meanR1_nocorr = mean(self.R1List_nocorr)
             # self.meanR1     = float(((((self.R1/mean(self.ratioMeanList))/mag.R2NomVal) - 1) * 10**6) - R2corr)
             self.stdR1ppm   = std(self.R1List, ddof=1) # in ppm
             self.C1R1       = mean(self.C1R1List)
@@ -2741,6 +2752,7 @@ class Ui_mainWindow(object):
             self.stdC2R1    = std(self.C2R1List, ddof=1)
             self.stdMeanR1  = self.stdR1ppm/sqrt(len(self.R1List))
             self.meanR2     = mean(self.R2List) # this is mean of r1
+            self.meanR2_nocorr = mean(self.R2List_nocorr)
             # self.meanR2     = float(((((self.R2*mean(self.ratioMeanList))/mag.R1NomVal) - 1) * 10**6) - R1corr)
             self.stdR2ppm   = std(self.R2List, ddof=1)
             self.C1R2       = mean(self.C1R2List)
@@ -2755,6 +2767,8 @@ class Ui_mainWindow(object):
             self.ratioStdMean   = nan
             self.meanR1         = nan
             self.meanR2         = nan
+            self.meanR1_nocorr  = nan
+            self.meanR2_nocorr  = nan
             self.stdR1ppm       = nan
             self.stdR2ppm       = nan
             self.C1R1           = nan
@@ -2800,7 +2814,10 @@ class Ui_mainWindow(object):
             for i, j in enumerate(self.ratioMeanChkList):
                 # print(j, self.R1, mag.R2NomVal, R2corr)
                 self.R1MeanChkList.append((((self.R1/j) - mag.R2NomVal)/mag.R2NomVal) * 10**6 - R2corr) # this is actually R2
+                # self.R1MeanChkList_nocorr.append((((self.R1/j) - mag.R2NomVal)/mag.R2NomVal) * 10**6)
                 self.R2MeanChkList.append(((self.R2*j - mag.R1NomVal)/mag.R1NomVal) * 10**6 - R1corr) # this is actually R1
+                # self.R2MeanChkList_nocorr.append(((self.R2*j - mag.R1NomVal)/mag.R1NomVal) * 10**6)
+                
             self.R1MeanChk    = mean(self.R1MeanChkList) # this is R2
             self.stdR1Chk     = std(self.R1MeanChkList, ddof=1) # this is R2
             self.stdMeanR1Chk = self.stdR1Chk/sqrt(len(self.R1MeanChkList)) # this is R2
@@ -2841,12 +2858,15 @@ class Ui_mainWindow(object):
         """
         global red_style
         global green_style
+        global __version__
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         self.VMeanLineEdit.setText(str("{:.9e}".format(self.bvd_mean)))
         self.VMeanChkLineEdit.setText(str("{:.9e}".format(self.bvd_mean_chk)))
         self.Current1LineEdit.setText(str(self.dat.I1))
         self.FullCycLineEdit.setText(str(self.dat.fullCyc))
+        # warnings about the file's settings, rebuilt on every update so each one is listed once
+        self.user_warn_msg = ""
         if self.dat.calmode == True:
             self.lbl_calmode_rbv.setStyleSheet(green_style)
         else:
@@ -2861,6 +2881,8 @@ class Ui_mainWindow(object):
             self.user_warn_msg += "16 Bit DAC is non-zero!\n"
         if str(self.dat.screenVolt) == '0':
             self.user_warn_msg += "Screen voltage is off!\n"
+        if self.dat.dbWarning != '':
+            self.user_warn_msg += self.dat.dbWarning + "\n"
         if self.SampUsedCt != 0:
             delay = ((int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text()))/self.dat.SHC)*(self.dat.SHC*self.dat.intTime/self.dat.timeBase - self.dat.rampTime)
             meas = (self.dat.SHC*self.dat.intTime/self.dat.timeBase) - self.dat.rampTime - delay
@@ -2882,7 +2904,6 @@ class Ui_mainWindow(object):
         self.R2SNLineEdit.setText(self.dat.R2SN)
         self.SHCLineEdit.setText(str(self.dat.SHC))
         self.N1LineEdit.setText(str(self.dat.N1))
-        self.CommentsTextBrowser.setText(self.dat.comments + ', Ratio: ' + str(self.ratioMean) + ' +/- ' + str(self.ratioStdMean))
         self.RelHumLineEdit.setText(str(self.dat.relHum))
         self.kLineEdit.setText(str("{:.12f}".format(self.k)))
         if self.k == 0:
@@ -2918,15 +2939,6 @@ class Ui_mainWindow(object):
         self.le_12bitdac.setText(str(self.dat.dac12) + '/' + str(self.dat.low16)) # grab the values from config file
         # self.MDSSButton.setStyleSheet(red_style)
         self.MDSSButton.setEnabled(True)
-
-        if not (self.deletePressed or self.restorePressed):
-            self.plotCountCombo.clear()
-            for i in range(len(self.corr_bvdList)):
-                self.plotCountCombo.addItem(f'ct {len(self.corr_bvdList) - i - 1}')
-        if self.deletePressed:
-            self.deletePressed = False
-        if self.restorePressed:
-            self.restorePressed = False
 
         if len(self.corr_bvdList) > 625:
             self.bins = int(sqrt(len(self.corr_bvdList)))
@@ -3008,12 +3020,10 @@ class Ui_mainWindow(object):
         self.SkewnessEdit.setText("")
         self.KurtosisEdit.setText("")
 
-        self.deletedIndex = []
-        self.deletedCount = []
-        self.deletedBVD   = []
-        self.bvdCount     = []
-        self.deletedR1    = []
-        self.deletedR2    = []
+        self.deletedCycles      = []
+        self.outlierCycles      = set()
+        self.bvdCount           = []
+        self.bvdfitList         = []
         self.plotCountCombo.clear()
 
     def stdR(self, R: str) -> None:
@@ -3031,6 +3041,7 @@ class Ui_mainWindow(object):
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if R == 'R1':
+            # print('R1: ', self.meanR1_nocorr)
             self.R1ValueLineEdit.setText(str("{:5.10f}".format(self.R1)))
             self.R2ValueLineEdit.setText(str("{:5.10f}".format(self.dat.R2NomVal)))
             self.R2PPMLineEdit.setText(str(0))
@@ -3045,6 +3056,7 @@ class Ui_mainWindow(object):
             self.StdDevPPM2LineEdit.setText(str("{:.7f}".format(self.stdR1ppm)))
             self.StdDevMeanPPMLineEdit.setText(str("{:.7f}".format(self.stdMeanR1)))
             self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdR1Chk)))
+            self.CommentsTextBrowser.setText(self.dat.comments + ', Ratio: ' + str(self.ratioMean) + ' +/- ' + str(self.ratioStdMean) + ', C not at STP [ppm]: ' + str("{:.7f}".format(self.meanR1_nocorr)) + ', MOA Version: ' + __version__)
             err = (self.meanR1 - self.R1MeanChk)*1e3
             self.le_error.setText(str("{:.9f}".format(err)))
             if self.R1PPM:
@@ -3052,6 +3064,7 @@ class Ui_mainWindow(object):
             else:
                 self.R1PPMLineEdit.setText(str(0))
         else:
+            # print('R2: ', self.meanR2_nocorr)
             self.R1ValueLineEdit.setText(str("{:5.10f}".format(self.dat.R1NomVal)))
             self.R2ValueLineEdit.setText(str("{:5.10f}".format(self.R2)))
             self.R1PPMLineEdit.setText(str(0))
@@ -3066,6 +3079,7 @@ class Ui_mainWindow(object):
             self.StdDevPPM2LineEdit.setText(str("{:.7f}".format(self.stdR2ppm)))
             self.StdDevMeanPPMLineEdit.setText(str("{:.7f}".format(self.stdMeanR2)))
             self.StdDevChkPPMLineEdit.setText(str("{:.7f}".format(self.stdR2Chk)))
+            self.CommentsTextBrowser.setText(self.dat.comments + ', Ratio: ' + str(self.ratioMean) + ' +/- ' + str(self.ratioStdMean) + ', C not at STP [ppm]: ' + str("{:.7f}".format(self.meanR2_nocorr)) + ', MOA Version: ' + __version__)
             err = (self.meanR2 - self.R2MeanChk)*1e3
             self.le_error.setText(str("{:.7f}".format(err)))
             if self.R2PPM:
@@ -3089,7 +3103,7 @@ class Ui_mainWindow(object):
         except Exception as e:
             logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
                            ' Error: ' + str(e))
-            self.R1PresLineEdit.setText(str("{:.4f}".format(self.R1Totpres)))
+            self.R1PresLineEdit.setText(str("{:.4f}".format(self.R1pres)))
             pass
 
     def R2PresChanged(self) -> None:
@@ -3108,7 +3122,7 @@ class Ui_mainWindow(object):
         except Exception as e:
             logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
                            ' Error: ' + str(e))
-            self.R2PresLineEdit.setText(str("{:.4f}".format(self.R2Totpres)))
+            self.R2PresLineEdit.setText(str("{:.4f}".format(self.R2pres)))
             pass
 
     def oilDepth1Changed(self) -> None:
@@ -3258,7 +3272,7 @@ class Ui_mainWindow(object):
             # print(self.mdssdir)
         # self.progressBar.setProperty('value', 25)
 
-        self.dat.comments = self.CommentsTextBrowser.toPlainText()
+        # self.dat.comments = self.CommentsTextBrowser.toPlainText()
         writeDataFile(savepath=self.mdssdir, text=self.txtFile, dat_obj=self.dat, \
                       bvd_stat_obj=self.bvd_stat_obj, RStatus=self.RButStatus, \
                       R1Temp=self.R1Temp, R2Temp=self.R2Temp, R1Pres=self.R1TotPres, \
@@ -3273,7 +3287,7 @@ class Ui_mainWindow(object):
                       N=self.N, samplesUsed= int(self.dat.SHC) - (int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text())), \
                       meas=float(self.MeasLineEdit.text()), delay=float(self.DelayLineEdit.text()), \
                       R1PredictionSTP=float(self.R1STPLineEdit.text()), R2PredictionSTP=float(self.R2STPLineEdit.text()), \
-                      comments = self.CommentsTextBrowser.toPlainText(), bfield=self.le_Bfield.text(), sampleTemp=self.le_sampleTemp.text(), contact=self.le_contact.text(), qhr_system=self.cb_qhr_system.currentText(), qhrchar=self.qhrCharFlag)
+                      comments = self.CommentsTextBrowser.toPlainText(), bfield=self.le_Bfield.text(), sampleTemp=self.le_sampleTemp.text(), contact=self.le_contact.text(), qhr_system=self.cb_qhr_system.currentText(), carrier_density=self.le_carrier_density.text(), qhrchar=self.qhrCharFlag)
         with open(self.pathString + '_pyCCCRAW.mea', 'w') as mea_file:
             if self.RButStatus == 'R1':
                 unk = 'R2'
@@ -3327,87 +3341,43 @@ class Ui_mainWindow(object):
     def cleanUp(self) -> None:
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        self.deletedV1      = []
-        self.deletedV2      = []
-        self.deletedCount   = []
-        self.deletedBVD     = []
-        self.deletedBVDChk  = []
+        # the deleted cycles and the values typed by the user (ignored samples, delta(I2R2), STP predictions)
+        # are kept, they are only cleared when a file is (re)loaded
+        self.outlierCycles      = set()
 
-        self.bvdList        = []
-        self.corr_bvdList   = []
-        self.stdbvdList     = []
-        self.bvdCount       = []
-        self.deletedR1      = []
-        self.deletedR2      = []
+        self.bvdList            = []
+        self.corr_bvdList       = []
+        self.stdbvdList         = []
+        self.bvdCount           = []
+        self.bvdfitList         = []
 
         self.bvdList_chk        = []
 
-        self.SampUsedCt     = 0
-        self.changedDeltaI2R2Ct = 0
-        self.changedR1STPBool = False
-        self.changedR2STPBool = False
         self.CommentsTextBrowser.setText("")
 
     def deleteBut(self) -> None:
-        self.deletePressed = True
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
         if self.plottedBVD and self.plotCountCombo.count():
-            curIndex = self.plotCountCombo.count() - self.plotCountCombo.currentIndex() - 1
-            # print("Current Index:", curIndex)
-
-            self.deletedIndex.append(curIndex)
-            self.deletedCount.append(int(self.plotCountCombo.currentText().replace('ct ', '')))
-            if int(curIndex) >= 0:
-                self.plotCountCombo.removeItem(int(self.plotCountCombo.count() - curIndex - 1))
-            self.deletedBVD.append(self.corr_bvdList[curIndex])
-            self.deletedBVDChk.append(self.bvdList_chk[curIndex])
-            self.deletedV1.append(self.V1[curIndex])
-            self.deletedV2.append(self.V2[curIndex])
-            self.deletedR1.append(self.R1List[curIndex])
-            self.deletedR2.append(self.R2List[curIndex])
-            self.V1.pop(curIndex)
-            self.V2.pop(curIndex)
-            self.corr_bvdList.pop(curIndex)
-            self.bvdList_chk.pop(curIndex)
-            self.bvdCount.pop(curIndex)
-            self.R1List.pop(curIndex)
-            self.R2List.pop(curIndex)
+            # the delete list shows the cycle numbers of the cycles in use
+            self.deletedCycles.append(int(self.plotCountCombo.currentText().replace('ct ', '')))
+            self.selectCycles(keepSelection=True)
             self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
             self.setValidData()
             self.plotBVD()
             self.plotAllan()
 
-
     def restoreDeleted(self) -> None:
         """Restore last deleted data point
-        Parameters
-        ----------
-        loop : TYPE, optional
-            DESCRIPTION. The default is None.
         Returns
         -------
         None
         """
-        self.restorePressed = True
         if debug_mode:
             logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
-        if self.deletedCount != []:
-            # print(self.deletedIndex)
-            self.plotCountCombo.insertItem(int(self.N - self.deletedIndex[-1]), f'ct {int(self.deletedIndex[-1])}')
-            self.V1.insert(self.deletedIndex[-1], self.deletedV1[-1])
-            self.V2.insert(self.deletedIndex[-1], self.deletedV2[-1])
-            self.bvdCount.insert(self.deletedIndex[-1], self.deletedCount[-1])
-            self.corr_bvdList.insert(self.deletedIndex[-1], self.deletedBVD[-1])
-            self.bvdList_chk.insert(self.deletedIndex[-1], self.deletedBVDChk[-1])
-            self.R1List.insert(self.deletedIndex[-1], self.deletedR1[-1])
-            self.R2List.insert(self.deletedIndex[-1], self.deletedR2[-1])
-            self.deletedIndex.pop(-1)
-            self.deletedCount.pop(-1)
-            self.deletedBVD.pop(-1)
-            self.deletedBVDChk.pop(-1)
-            self.deletedR1.pop(-1)
-            self.deletedR2.pop(-1)
+        if self.deletedCycles != []:
+            self.deletedCycles.pop(-1)
+            self.selectCycles(keepSelection=True)
             self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
             self.setValidData()
             self.plotBVD()
@@ -3437,6 +3407,23 @@ def dir_path(save_path):
         os.mkdir(save_path)
     return save_path
 
+def excepthook(exc_type, exc_value, exc_tb) -> None:
+    """Logs unhandled exceptions and shows them in a dialog. Installed as sys.excepthook this
+       also stops PyQt from aborting the program when an exception escapes a slot.
+    """
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_tb)
+        return
+    logger.error('Unhandled exception', exc_info=(exc_type, exc_value, exc_tb))
+    try:
+        msgBox = QMessageBox(QMessageBox.Icon.Critical, 'Error', exc_type.__name__ + ': ' + str(exc_value) + \
+                             '\n\nThe last action did not complete. Details were written to the log file.', \
+                             parent=QApplication.activeWindow())
+        msgBox.setDetailedText(''.join(traceback.format_exception(exc_type, exc_value, exc_tb)))
+        msgBox.exec()
+    except Exception:
+        sys.__excepthook__(exc_type, exc_value, exc_tb)
+
 if __name__ == "__main__":
     parser = ArgumentParser(prog = 'Magnicon-Offline-Analyzer',
                             description='Configure Magnicon-Offline-Analyzer',
@@ -3461,13 +3448,9 @@ if __name__ == "__main__":
     fmt = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
     file_handler.setFormatter(fmt)
     logger.addHandler(file_handler)
-    # Handle high resolution displays:
-    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-        QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-        QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     app = QApplication(sys.argv)
     app.setStyle("windowsvista")
+    sys.excepthook = excepthook # show unhandled exceptions in a dialog instead of letting PyQt abort
     mainWindow = QMainWindow()
     ui = Ui_mainWindow()
     ui.setupUi(mainWindow)

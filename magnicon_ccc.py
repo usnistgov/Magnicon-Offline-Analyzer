@@ -195,7 +195,7 @@ class magnicon_ccc:
         feedinIndex = [-97, -94.5, -92.0, -89.5, -87.0, -84.5, -82.0, -79.5, -77.0, -74.5, -72.0, -69.5, -67.0, -64.5, -62.0,
                        -59.5, -57.0, -54.5, -52.0, -49.5, -47.0, -44.5, -42.0, -39.5, -37.0, -34.5, -32.0, -29.5, -27.0]
         rangeShuntList=[512, 64, 8, 1]
-        with open (self.cfgFile, "r") as file:
+        with open (self.cfgFile, "r",  encoding="utf-8", errors="ignore") as file:
             for line in file.readlines():
                 if line.startswith('r1 ='):
                     if ('12906.4' in line) or ('12.9064' in line):
@@ -210,7 +210,7 @@ class magnicon_ccc:
                         self.R1NomVal = 25812.8074593045/6.0
                     elif ('109.3' in line) or ('1.093' in line):
                         self.R1NomVal = 25812.8074593045/236.0
-                    elif ('218.7' in line) or ('2.817' in line):
+                    elif ('218.7' in line) or ('2.187' in line):
                         self.R1NomVal = 25812.8074593045/118.0
                     else:
                         self.R1NomVal = float(line.split('=')[-1].strip())
@@ -227,7 +227,7 @@ class magnicon_ccc:
                         self.R2NomVal = 25812.8074593045/6.0
                     elif ('109.3' in line) or ('1.093' in line):
                         self.R2NomVal = 25812.8074593045/236.0
-                    elif ('218.7' in line) or ('2.817' in line):
+                    elif ('218.7' in line) or ('2.187' in line):
                         self.R2NomVal = 25812.8074593045/118.0
                     else:
                         self.R2NomVal = float(line.split('=')[-1].strip())
@@ -297,10 +297,11 @@ class magnicon_ccc:
                         self.screen_neg = True
                     else:
                         self.screen_neg = False
-        if self.lower8 is not nan and self.upper4 is not nan:
-            self.dac12 = self.lower8 + self.upper4
-        if not self.screen_pos and not self.screen_neg:
-            self.screenVolt = '0'
+            if self.lower8 is not nan and self.upper4 is not nan:
+                self.dac12 = self.lower8 + self.upper4
+            if not self.screen_pos and not self.screen_neg:
+                self.screenVolt = '0'
+            
 
     def check_shared_drive_exists(self, drive_path):
         try:
@@ -324,17 +325,22 @@ class magnicon_ccc:
 
     def calculations(self) -> None:
         # Calculations using the parsed data
+        self.dbWarning = ''
         if self.dbdir != '':
             # use the directory supplied by user...
             R = ResData(self.dbdir)
         # user directory not supplied...
         else:
+            R = None
             # if site is NIST...
             if self.site == 'NIST':
                 p = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'
                 if self.check_shared_drive_exists(r'\\elwood.nist.gov\68_PML'):
                     R = ResData(p)
-            else:
+                else:
+                    self.dbWarning = 'Network resistor database is unreachable, using the local ResDataBase.dat!'
+                    logger.warning(self.dbWarning)
+            if R is None:
                 # default to the local one supplied with this project
                 # print("Using ResDatabase.dat located at: ", base_dir + r'\data')
                 R = ResData(base_dir + r'\data')

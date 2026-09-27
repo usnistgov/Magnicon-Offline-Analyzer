@@ -1,5 +1,56 @@
 # RELEASE
 
+## 09/27/2026 Version 3.0.0
+### Results that can change compared to 2.5.1
+  * Detrend: the quadratic fit over each cycle also absorbed about 70% of the current reversal step, so Detrend
+    reported about 30% of the true BVD (the resistance was off by several nOhm/Ohm). The drift is now fitted together
+    with the step, in time order, over two cycles, and only the drift is subtracted. No-Overlap uses windows that
+    follow each other, Overlap starts a window at every cycle like the overlapping Allan deviation
+  * Remove Outliers and Delete/Restore Last leave out the same cycles from every per-cycle list. Before, with Remove
+    Outliers on, C1/C2 and their std devs were computed from shifted cycles, and Restore Last put back the wrong C1/C2
+    after more than one delete. The delete list and the BVD plot use the original cycle numbers
+  * Resistor database calibration dates are converted with the exact LabVIEW epoch offset. The old conversion put
+    71 of the 359 calibration dates in data/ResDataBase.dat one day late, which changes the STP predictions of those
+    resistors by up to 0.3 ppm (typically about 5 nOhm/Ohm)
+  * Environment (temperature/pressure) averages use the files for every day an overnight or multi-day run spans.
+    Previously only one day's file was used
+  * Deleted points and typed-in values (ignored samples, Delta(I2R2), STP predictions) are kept when other settings
+    change. They are cleared when a file is loaded or replotted. Before, changing e.g. a temperature silently reverted
+    them, and the Ignored First/Last, Delay and Meas boxes could show other values than the ones used for the results
+
+### New
+  * Carrier density n [cm^-2] line edit for QHR Char. The value is written to the pymdss file as the entry before
+    StandRes, so QHR Process lines have one more field
+  * Rename Sample T [K] to Samp. T [K] and re-space the QHR widgets so they fit in one row
+  * The CCC diagram is drawn with schemdraw instead of lcapy, so LaTeX/TeX Live is no longer needed or bundled with
+    the program. lcapy and the packages only it needed are removed from requirements.txt
+
+### Fixes
+  * Crashes: comma in a pressure field, unreachable NIST network share (now falls back to the local
+    ResDataBase.dat with a warning), runs with a single BVD point and a first file with fewer than 4 cycles.
+    Numeric fields no longer accept group separators
+  * Unhandled errors are logged and shown in a dialog instead of closing the program, and a failed save no longer
+    leaves a partial pymdss file
+  * The warning dialog lists each warning once (it repeated them after every update), and closing the main window
+    quits the program even when the About or Timing Diagram window is open
+  * Fix the .cfg pattern for R_K/118 resistors ('2.817' -> '2.187') and remove code that had no effect
+  * Add .gitignore, remove invalid escape sequences, update to 3.0.0
+
+### AI use
+  * The changes in this release were made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic,
+    used through Claude Code) at the direction of the maintainer. They were checked with the sample runs in this
+    repository, which give the same results as before with the default settings, and with simulated data for the
+    BVD, Remove Outliers, Delete/Restore Last and Detrend calculations
+
+## 06/12/2026 Version 2.5.1
+  * add analysis version in the comment string, add uncorrected unknown value in ppm in comment string,
+    fix ratio value updates in comment string, update to 2.5.1
+
+## 08/01/2025 Version 2.5
+  * Display mean value of R1 or R2 in plot as a horizontal line
+  * Linear fit the BVD data and display slope in nV/sec
+  * TODO: Perform quadratic correction of BV data to get BVD.
+
 ## 06/20/2025 Version 2.4.1
   * If screen voltage is off, then the program shows a warning. Guard voltage is set to 0 in pymdss.txt file if screen 
     voltage is off

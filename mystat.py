@@ -370,8 +370,9 @@ def autoCorrelation(data):
     # 95% confidence band for the auto-correlation of Xt  
     for i in lag[1:]:
         pci.append(1.96*math.sqrt((1+2*sum([a*b for a, b in zip(acf[1:i+1], acf[1:i+1])]))/len(data)))
-    # to keep len same
-    pci.insert(0,0)
+    # to keep len same (there are no lags for fewer than 4 data points)
+    if lag != []:
+        pci.insert(0,0)
     for i, j, k in zip(lag[1:], acf[1:], pci[1:]):
         if j > k or j < -k:
             cutoff_lag_0 = i

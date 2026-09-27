@@ -1,6 +1,17 @@
 from bvd_stats import bvd_stat
 from magnicon_ccc import magnicon_ccc
-import os
+import os, io
+from contextlib import contextmanager
+
+@contextmanager
+def write_when_done(path: str):
+    """Collects everything written and only creates the file if no exception was raised,
+       so a failed save does not leave a partial file behind
+    """
+    buffer = io.StringIO()
+    yield buffer
+    with open(path, 'w') as f:
+        f.write(buffer.getvalue())
 
 # Class writes the MDSS.txt file
 class writeDataFile():
@@ -12,13 +23,13 @@ class writeDataFile():
                  stdC1R1: float, stdC2R1: float, C1R2: float, C2R2: float, \
                  stdC1R2: float, stdC2R2: float, R1PPM: float, R2PPM: float, \
                  bvd_mean: float, N: int, samplesUsed: int, meas: float, delay: float, \
-                 R1PredictionSTP: float, R2PredictionSTP: float, comments: str, bfield: str, sampleTemp: str, contact: str, qhr_system: str,  qhrchar: bool) -> None:
+                 R1PredictionSTP: float, R2PredictionSTP: float, comments: str, bfield: str, sampleTemp: str, contact: str, qhr_system: str, carrier_density: str, qhrchar: bool) -> None:
         # Creates the MDSS file name according to the input .txt file's name
         self.savepath = savepath
         dataFileName = (text.split('/')[-1]).replace('_bvd.txt', "")
         dataFileName = self.savepath + os.sep + f'{dataFileName}_pyMDSS.txt'
 
-        with open(dataFileName, 'w') as f:
+        with write_when_done(dataFileName) as f:
             if RStatus == 'R1':
                 f.write(f'{dat_obj.R2NomVal}')
             else:
@@ -115,11 +126,16 @@ class writeDataFile():
                     sampleTemp = float(sampleTemp)
                 else:
                     sampleTemp = 0
+                if carrier_density != '':
+                    carrier_density = float(carrier_density)
+                else:
+                    carrier_density = 0
                 f.write('|QHR Process')
                 f.write(f'|{"{:.2f}".format(bfield)}')
                 f.write(f'|{"{:.2f}".format(sampleTemp)}')
                 f.write('|' + contact)
                 f.write('|' + qhr_system)
+                f.write(f'|{"{:.3E}".format(carrier_density).replace("E+0", "E+")}') # carrier density [cm^-2]
                 f.write('|StandRes')
             else:
                 f.write('|Magnicon CCC Process|StandRes')

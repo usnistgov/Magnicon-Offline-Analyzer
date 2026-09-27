@@ -1,0 +1,13 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# PyInstaller output (build.bat)
+/build/
+/dist/
+
+# UPX binaries used by the PyInstaller build
+/upx-*/
+
+# CCC diagram files written by versions before 3.0.0 (lcapy), data/ccc_diagram_default.png is tracked
+/data/ccc_diagram.*

@@ -17,17 +17,17 @@ options = [
 a = Analysis(
     ['Magnicon-Offline-Analyzer.py'],
     pathex=[''],
-    binaries=[('C:\\texlive', 'texlive')],
+    binaries=[],
     datas=[('.\\bvd_stats.py', '.'), ('.\\create_mag_ccc_datafile.py', '.'), \
-           ('.\\magnicon_ccc.py', '.'),  ('.\\ResDataBase.py', '.'),  ('.\\mystat.py', '.'), ('.\\icons', 'icons'), 
-           ('..\\Lib\\site-packages\\allantools\\allantools_info.json', 'allantools'), \
-           ('.\\env.py', '.'), ('.\\data\\ccc_diagram_default.png', 'data'), ('.\\data\\ResDataBase.dat', 'data'), \
+           ('.\\magnicon_ccc.py', '.'),  ('.\\ResDataBase.py', '.'),  ('.\\mystat.py', '.'), ('.\\icons', 'icons'),
+           ('C:\\WPy64-31241\\python-3.12.4.amd64\\Lib\\site-packages\\allantools\\allantools_info.json', 'allantools'), \
+           ('.\\env.py', '.'), ('.\\ccc_diagram.py', '.'), ('.\\data\\ccc_diagram_default.png', 'data'), ('.\\data\\ResDataBase.dat', 'data'), \
            ],
-    hiddenimports = ['pyi_splash', 'allantools', 'lcapy'],
+    hiddenimports = ['pyi_splash', 'allantools'],
     hookspath=[f'{PACKAGE_SITE}/pyupdater/hooks'],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['PyQt5'],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,

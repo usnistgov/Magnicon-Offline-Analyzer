@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "2.4.1"
+__version__ 	=       "3.0.0"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -47,4 +47,22 @@ __ChangeLog__   =       """
                                          tabs, Update ResDataBase.dat, move removed outliers checkbox to bvd tab, upgrade to version 2.4
                         061525:     ENH: If screen voltage is off, shows a warning and writes screen voltage as 0 in pymdss file
                         062025:     ENH: Seperated BVD and R plots so its easy to view, Added QHR Char checkbox to save QHR Process in pymdss file update to version 2.4.1
+                        080125:     ENH: quadratic zero point drift correction of BV data added, linear fit the BVD data to estimate drift in BVD, show mean value of R1/2 in plot as a hline update to 2.5
+                        061226:     ENH: add analysis version in the comment string, fix ratio value updates in comment string, update to 2.5.1
+                        092626:     ENH: add carrier density [cm^-2] line edit for QHR Char, written to the pymdss file before StandRes, rename Sample T [K] to Samp. T [K]
+                                         and re-space the QHR widgets
+                        092626:     FIX: environment averages use every day of overnight/multi-day runs, convert resistor database cal dates with the exact LabVIEW
+                                         epoch offset (was off by up to a day), fix crashes (comma in pressure fields, unreachable NIST share, runs with one BVD point),
+                                         show unhandled errors in a dialog instead of exiting, no partial pymdss file on a failed save, add .gitignore, remove invalid
+                                         escape sequences, remove outliers and delete/restore last leave out the same cycles from every per-cycle list (C1/C2 were
+                                         computed from the wrong cycles), fix crash when the first file opened has fewer than 4 cycles, update to version 3.0.0
+                        092626:     ENH: keep deleted points and typed-in ignored samples, delta(I2R2) and STP predictions when other settings change (cleared
+                                         when a file is loaded or replotted, before they were silently reverted), draw the CCC diagram with
+                                         schemdraw instead of lcapy so LaTeX/TeX Live is no longer needed, remove lcapy and its dependencies from requirements.txt
+                        092626:     FIX: warning dialog lists each warning once, closing the main window quits the program, fix the .cfg pattern for R_K/118
+                                         ('2.817' -> '2.187'), remove code that had no effect (unused threads, Qt5 high DPI settings, no-op quit)
+                        092626:     FIX: detrend absorbed ~70% of the current reversal step (BVD ~30% of true value), drift is now fitted together with the
+                                         step in time order over 2 cycles and only the drift is subtracted, overlap mode starts a window at every cycle like OADEV
+                        092626:     NOTE: the 3.0.0 changes were made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through
+                                         Claude Code) at the direction of the maintainer, and checked with the sample runs and with simulated data
                         """

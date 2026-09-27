@@ -1,7 +1,7 @@
 from numpy import asarray, float64, nan
 from pandas import read_csv, to_datetime, concat
 from os import sep, scandir
-from datetime import datetime
+from datetime import datetime, timedelta
 
 EPOCH = 2082844800
 class env:
@@ -21,6 +21,8 @@ class env:
         self.end_date = end_datetime.split(' ')[0]
         self.end_date = datetime.strptime(self.end_date, '%m/%d/%Y')
         self.end_date_fin = self.end_date.strftime('%Y%m%d')
+        # every day the measurement spans (overnight/multi-day runs have one environment file per day)
+        self.dates_fin = [(self.start_date + timedelta(days=i)).strftime('%Y%m%d') for i in range((self.end_date - self.start_date).days + 1)]
         # print('3. ', self.start_date_fin, self.end_date_fin)
         x = datetime.timestamp(self.start_time)
         y = datetime.timestamp(self.end_time)
@@ -58,11 +60,10 @@ class env:
                 self.filename = filename.name
                 # print(self.filename)
                 # print ((filename.name.split('_')[-1]).split('.')[0], self.start_date_fin, self.end_date_fin)
-                if filename.name != '' and ((filename.name.split('_')[-1]).split('.')[0] == self.start_date_fin \
-                   or (filename.name.split('_')[-1]).split('.')[0] == self.end_date_fin):
-                    self.mydata.append(self._read_helper(self.filepath + sep + filename.name))  
-            for i in self.mydata:
-                self.df = concat(i,ignore_index = True )
+                if filename.name != '' and (filename.name.split('_')[-1]).split('.')[0] in self.dates_fin:
+                    self.mydata.append(self._read_helper(self.filepath + sep + filename.name))
+            # combine the data from all the days
+            self.df = concat([df for i in self.mydata for df in i], ignore_index = True)
             self.df['TS'] = self.df['TS'] - EPOCH # labview timestamp to posix timestamp
             self.df.insert(0, "Date", to_datetime(self.df['TS'], utc=True, unit='s'))
             self.df['Date'] = self.df['Date'].dt.tz_convert('America/New_York')
