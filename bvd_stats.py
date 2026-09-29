@@ -292,20 +292,25 @@ class bvd_stat:
             windows = [[k, k + 1] for k in range(0, n_cycles - 1, 2)]
             if n_cycles % 2:
                 windows[-1].append(n_cycles - 1)
+        by_cycle = {}
+        for quarter in quarters:
+            by_cycle.setdefault(quarter[3], []).append(quarter)
         fits = []
         for cycles in windows:
-            y, t, p = [], [], []
-            for samples, times, polarity, cycle in quarters:
-                if cycle in cycles:
-                    y.append(samples); t.append(times); p.append(full(len(samples), polarity))
-            y, t, p = concatenate(y), concatenate(t).astype(float), concatenate(p)
+            members = [quarter for cycle in cycles for quarter in by_cycle.get(cycle, [])]
+            y = concatenate([samples for samples, times, polarity, cycle in members])
+            t = concatenate([times for samples, times, polarity, cycle in members]).astype(float)
+            p = concatenate([full(len(samples), polarity) for samples, times, polarity, cycle in members])
             t0, scale = t.mean(), (t.max() - t.min())/2
             u = (t - t0)/scale
             coeff = lstsq(column_stack((ones(len(u)), u, u**2, p)), y, rcond=None)[0]
             fits.append((t0, scale, coeff[:3]))
         # drift of each quarter: average of the fits of the windows its cycle is in (the nearest cycle's windows for
         # the quarters that are not part of any BVD, at the start and the end of the measurement)
-        in_windows = [[w for w, cycles in enumerate(windows) if k in cycles] for k in range(n_cycles)]
+        in_windows = [[] for k in range(n_cycles)]
+        for w, cycles in enumerate(windows):
+            for cycle in cycles:
+                in_windows[cycle].append(w)
         corrected = []
         for samples, times, polarity, cycle in quarters:
             ws = in_windows[min(max(cycle, 0), n_cycles - 1)]

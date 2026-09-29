@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "3.0.0"
+__version__ 	=       "3.0.1"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -65,4 +65,8 @@ __ChangeLog__   =       """
                                          step in time order over 2 cycles and only the drift is subtracted, overlap mode starts a window at every cycle like OADEV
                         092626:     NOTE: the 3.0.0 changes were made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through
                                          Claude Code) at the direction of the maintainer, and checked with the sample runs and with simulated data
+                        092926:     ENH: R plot shows the mean with overlapping quadratic drift removal (Detrend: Overlap) next to the mean of the selected
+                                         Detrend setting, legend means rounded to 3 decimals, show the R Mean - R Mean Chk label in ppb (it was hidden under
+                                         its box) and re-space the results column to fit it, faster drift removal for long runs, update to version 3.0.1.
+                                         Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code)
                         """

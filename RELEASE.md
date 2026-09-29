@@ -1,5 +1,18 @@
 # RELEASE
 
+## 09/29/2026 Version 3.0.1
+  * The R1/R2 plot shows the mean with overlapping quadratic drift removal (Detrend: Overlap) as a dashed line next
+    to the mean of the selected Detrend setting. Both means are listed in the legend, rounded to 3 decimals. With
+    Detrend: Overlap selected the two are the same and only one line is shown
+  * The R Mean - R Mean Chk box has its label, R Mean - Chk [ppb] (the old label was hidden under the box). The
+    results column is re-spaced to fit it
+  * Faster drift removal for long runs (2880 cycles: Overlap 2.9 s -> 0.8 s, No-Overlap 1.6 s -> 0.6 s), with the
+    same results
+  * AI use: made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code) at
+    the direction of the maintainer. Checked with the sample runs (results unchanged) and by comparing the new mean
+    line with the result of Detrend: Overlap
+  * update to 3.0.1
+
 ## 09/27/2026 Version 3.0.0
 ### Results that can change compared to 2.5.1
   * Detrend: the quadratic fit over each cycle also absorbed about 70% of the current reversal step, so Detrend

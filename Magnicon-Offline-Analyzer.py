@@ -50,7 +50,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__             = '3.0.0' # Program version string
+__version__             = '3.0.1' # Program version string
 red_style               = "color: white; background-color: red; border: 0.5px solid black"
 blue_style              = "color: white; background-color: blue; border: 0.5px solid black"
 green_style             = "color: white; background-color: green; border:0.5px solid black"
@@ -438,10 +438,12 @@ class Ui_mainWindow(object):
         self.V2_all             = []
         self.stdbvdList_all     = []
         self.bvdList_chk_all    = []
+        self.bvdList_overlap_all = [] # BVD with overlapping quadratic drift removal (Detrend: Overlap)
         # per-cycle lists without the outlier and deleted cycles
         self.corr_bvdList       = []
         self.stdbvdList         = []
         self.bvdList_chk        = []
+        self.bvdList_overlap    = []
         self.V1                 = []
         self.V2                 = []
         self.A                  = []
@@ -624,23 +626,23 @@ class Ui_mainWindow(object):
         self.ppmMeanLabel = QLabel(parent=self.centralwidget)
         self.ppmMeanLabel.setGeometry(QRect(self.col7x, 210, self.lbl_width, self.lbl_height))
         self.RMeanChkPPMLabel = QLabel(parent=self.centralwidget)
-        self.RMeanChkPPMLabel.setGeometry(QRect(self.col7x, 270, self.lbl_width, self.lbl_height))
+        self.RMeanChkPPMLabel.setGeometry(QRect(self.col7x, 267, self.lbl_width, self.lbl_height))
         self.StdDevPPM2Label = QLabel(parent=self.centralwidget)
-        self.StdDevPPM2Label.setGeometry(QRect(self.col7x, 330, self.lbl_width, self.lbl_height))
+        self.StdDevPPM2Label.setGeometry(QRect(self.col7x, 324, self.lbl_width, self.lbl_height))
         self.StdDevMeanPPMLabel = QLabel(parent=self.centralwidget)
-        self.StdDevMeanPPMLabel.setGeometry(QRect(self.col7x, 390, self.lbl_width, self.lbl_height))
+        self.StdDevMeanPPMLabel.setGeometry(QRect(self.col7x, 381, self.lbl_width, self.lbl_height))
         self.C1C2Label = QLabel(parent=self.centralwidget)
-        self.C1C2Label.setGeometry(QRect(self.col7x, 450, self.lbl_width, self.lbl_height))
+        self.C1C2Label.setGeometry(QRect(self.col7x, 438, self.lbl_width, self.lbl_height))
         self.RatioMeanLabel = QLabel(parent=self.centralwidget)
-        self.RatioMeanLabel.setGeometry(QRect(self.col7x, 510, self.lbl_width, self.lbl_height))
+        self.RatioMeanLabel.setGeometry(QRect(self.col7x, 495, self.lbl_width, self.lbl_height))
         self.lbl_ratioStdMean = QLabel(parent=self.centralwidget)
-        self.lbl_ratioStdMean.setGeometry(QRect(self.col7x, 570, self.lbl_width, self.lbl_height))
+        self.lbl_ratioStdMean.setGeometry(QRect(self.col7x, 552, self.lbl_width, self.lbl_height))
         self.IgnoredFirstLabel = QLabel(parent=self.centralwidget)
-        self.IgnoredFirstLabel.setGeometry(QRect(self.col7x, 630, self.lbl_width, self.lbl_height))
+        self.IgnoredFirstLabel.setGeometry(QRect(self.col7x, 609, self.lbl_width, self.lbl_height))
         self.IgnoredLastLabel = QLabel(parent=self.centralwidget)
-        self.IgnoredLastLabel.setGeometry(QRect(self.col7x, 690, self.lbl_width, self.lbl_height))
+        self.IgnoredLastLabel.setGeometry(QRect(self.col7x, 666, self.lbl_width, self.lbl_height))
         self.lbl_error = QLabel(parent=self.centralwidget)
-        self.lbl_error.setGeometry(QRect(self.col7x, 750, self.lbl_width, self.lbl_height))
+        self.lbl_error.setGeometry(QRect(self.col7x, 723, self.lbl_width, self.lbl_height))
         self.ResultsLabel = QLabel(parent=self.SetResTab)
         self.ResultsLabel.setGeometry(QRect(650, 12, self.lbl_width, self.lbl_height))
         self.ResultsLabel.setStyleSheet(
@@ -899,32 +901,32 @@ class Ui_mainWindow(object):
         self.StdDevChkPPMLineEdit.setStyleSheet(le_readonly_style)
         # col7
         self.ppmMeanLineEdit = QLineEdit(parent=self.centralwidget)
-        self.ppmMeanLineEdit.setGeometry(QRect(self.col7x, self.coly*4, self.lbl_width, self.lbl_height))
+        self.ppmMeanLineEdit.setGeometry(QRect(self.col7x, 237, self.lbl_width, self.lbl_height))
         self.ppmMeanLineEdit.setReadOnly(True)
         self.ppmMeanLineEdit.setStyleSheet(le_readonly_bold_style)
         self.RMeanChkPPMLineEdit = QLineEdit(parent=self.centralwidget)
-        self.RMeanChkPPMLineEdit.setGeometry(QRect(self.col7x, self.coly*5, self.lbl_width, self.lbl_height))
+        self.RMeanChkPPMLineEdit.setGeometry(QRect(self.col7x, 294, self.lbl_width, self.lbl_height))
         self.RMeanChkPPMLineEdit.setReadOnly(True)
         self.RMeanChkPPMLineEdit.setStyleSheet(le_readonly_bold_style)
         self.StdDevPPM2LineEdit = QLineEdit(parent=self.centralwidget)
-        self.StdDevPPM2LineEdit.setGeometry(QRect(self.col7x, self.coly*6, self.lbl_width, self.lbl_height))
+        self.StdDevPPM2LineEdit.setGeometry(QRect(self.col7x, 351, self.lbl_width, self.lbl_height))
         self.StdDevPPM2LineEdit.setReadOnly(True)
         self.StdDevPPM2LineEdit.setStyleSheet(le_readonly_bold_style)
 
         self.StdDevMeanPPMLineEdit = QLineEdit(parent=self.centralwidget)
-        self.StdDevMeanPPMLineEdit.setGeometry(QRect(self.col7x, self.coly*7, self.lbl_width, self.lbl_height))
+        self.StdDevMeanPPMLineEdit.setGeometry(QRect(self.col7x, 408, self.lbl_width, self.lbl_height))
         self.StdDevMeanPPMLineEdit.setReadOnly(True)
         self.StdDevMeanPPMLineEdit.setStyleSheet(le_readonly_bold_style)
         self.C1C2LineEdit = QLineEdit(parent=self.centralwidget)
-        self.C1C2LineEdit.setGeometry(QRect(self.col7x, self.coly*8, self.lbl_width, self.lbl_height))
+        self.C1C2LineEdit.setGeometry(QRect(self.col7x, 465, self.lbl_width, self.lbl_height))
         self.C1C2LineEdit.setReadOnly(True)
         self.C1C2LineEdit.setStyleSheet(le_readonly_bold_style)
         self.RatioMeanLineEdit = QLineEdit(parent=self.centralwidget)
-        self.RatioMeanLineEdit.setGeometry(QRect(self.col7x, self.coly*9, self.lbl_width, self.lbl_height))
+        self.RatioMeanLineEdit.setGeometry(QRect(self.col7x, 522, self.lbl_width, self.lbl_height))
         self.RatioMeanLineEdit.setReadOnly(True)
         self.RatioMeanLineEdit.setStyleSheet(le_readonly_bold_style)
         self.le_ratioStdMean = QLineEdit(parent=self.centralwidget)
-        self.le_ratioStdMean.setGeometry(QRect(self.col7x, self.coly*10, self.lbl_width, self.lbl_height))
+        self.le_ratioStdMean.setGeometry(QRect(self.col7x, 579, self.lbl_width, self.lbl_height))
         self.le_ratioStdMean.setReadOnly(True)
         self.le_ratioStdMean.setStyleSheet(le_readonly_bold_style)
         # self.SampUsedLineEdit = QLineEdit(parent=self.centralwidget)
@@ -932,19 +934,19 @@ class Ui_mainWindow(object):
         # self.SampUsedLineEdit.setReadOnly(False)
         # self.SampUsedLineEdit.returnPressed.connect(self.changedSamplesUsed)
         self.IgnoredFirstLineEdit = QLineEdit(parent=self.centralwidget)
-        self.IgnoredFirstLineEdit.setGeometry(QRect(self.col7x, self.coly*11, self.lbl_width, self.lbl_height))
+        self.IgnoredFirstLineEdit.setGeometry(QRect(self.col7x, 636, self.lbl_width, self.lbl_height))
         self.IgnoredFirstLineEdit.setReadOnly(False)
         self.IgnoredFirstLineEdit.setStyleSheet(le_style)
         self.IgnoredFirstLineEdit.returnPressed.connect(self.changedIgnoredFirst)
 
         self.IgnoredLastLineEdit = QLineEdit(parent=self.centralwidget)
-        self.IgnoredLastLineEdit.setGeometry(QRect(self.col7x, self.coly*12, self.lbl_width, self.lbl_height))
+        self.IgnoredLastLineEdit.setGeometry(QRect(self.col7x, 693, self.lbl_width, self.lbl_height))
         self.IgnoredLastLineEdit.setReadOnly(False)
         self.IgnoredLastLineEdit.setStyleSheet(le_style)
         self.IgnoredLastLineEdit.returnPressed.connect(self.changedIgnoredLast)
 
         self.le_error = QLineEdit(parent=self.centralwidget)
-        self.le_error.setGeometry(QRect(self.col7x, int(self.coly*12.5), self.lbl_width, self.lbl_height))
+        self.le_error.setGeometry(QRect(self.col7x, 750, self.lbl_width, self.lbl_height))
         self.le_error.setReadOnly(True)
         self.le_error.setStyleSheet(
                 """QLineEdit { background-color: rgb(215, 214, 213); color: red; font-weight: bold }""")
@@ -1122,7 +1124,7 @@ class Ui_mainWindow(object):
         self.le_ratioStdMean.setToolTip('Standard deviation of the mean of the Ratio R<sub>1</sub>/R<sub>2</sub>')
         self.IgnoredFirstLineEdit.setToolTip('Set the number of ignored first mesurements in every half cycle')
         self.IgnoredLastLineEdit.setToolTip('Set the number of ignored last mesurements in every half cycle')
-        self.le_error.setToolTip('R Mean - R Mean Chk')
+        self.le_error.setToolTip('R Mean - R Mean Chk in ppb (n' + chr(937) + '/' + chr(937) + ')')
         self.C1C2LineEdit.setToolTip('Difference between C<sub>1</sub> and C<sub>2</sub>')
         self.MagElecComboBox.setToolTip('S/N of the CCCDrive')
         self.ProbeComboBox.setToolTip('Type or S/N of probe')
@@ -1745,7 +1747,7 @@ class Ui_mainWindow(object):
         self.DelayLabel.setText(_translate("mainWindow", "Delay [s]"))
         self.IgnoredFirstLabel.setText(_translate("mainWindow", "Ignored First"))
         self.IgnoredLastLabel.setText(_translate("mainWindow", "Ignored Last"))
-        self.lbl_error.setText(_translate("mainWindow", f"Error [n{chr(937)}/{chr(937)}]"))
+        self.lbl_error.setText(_translate("mainWindow", f"R Mean {chr(8722)} Chk [ppb]"))
         self.ResultsLabel.setText(_translate("mainWindow", "RESULTS"))
         self.lbl_ccceq.setText(_translate("mainWindow", "CCC EQUATION"))
         self.SquidFeedBut.setText(_translate("mainWindow", "Negative"))
@@ -1903,7 +1905,21 @@ class Ui_mainWindow(object):
 
                     self.BVDax3.hist(self.corr_bvdList, bins=self.bins, orientation='horizontal', color='r', edgecolor='k')
                     self.BVDax3.set_ylim([self.BVDax4.get_ylim()[0], self.BVDax4.get_ylim()[1]])
-                self.BVDax2.legend(loc='upper right', fancybox=True, shadow=True, ncols=2, columnspacing=0)
+                # mean with overlapping quadratic drift removal next to the mean of the current Detrend setting
+                if self.RButStatus == 'R1':
+                    meanR, meanR_overlap = self.meanR1, self.meanR1_overlap
+                else:
+                    meanR, meanR_overlap = self.meanR2, self.meanR2_overlap
+                if self.plottedBVD:
+                    self.BVDax23_ref.set_ydata((meanR_overlap,))
+                else:
+                    self.BVDax23_ref = self.BVDax2.axhline(y=meanR_overlap, color='#eb6834', ls='--', alpha=0.8)
+                mean_label = {0: 'Mean', 1: 'Mean, Detrend No-Overlap', 2: 'Mean, Detrend Overlap'}[self.detrend_state]
+                self.BVDax22_ref.set_label(mean_label + ': ' + str("{:.3f}".format(meanR)))
+                # with Detrend: Overlap selected both lines are the same, so only one is shown
+                self.BVDax23_ref.set_visible(self.detrend_state != 2)
+                self.BVDax23_ref.set_label('_nolegend_' if self.detrend_state == 2 else 'Mean, Detrend Overlap: ' + str("{:.3f}".format(meanR_overlap)))
+                self.BVDax2.legend(loc='upper right', fancybox=True, shadow=True, ncols=2, columnspacing=1, fontsize=10)
                 self.slope_text = self.BVDax4.text(x=0.05, y=0.1, s='Slope: ' + str("{:.3f}".format((self.bvdfit[0][0]*1e9)/float(self.dat.fullCyc))) + ' nV/s', color='red', transform=self.BVDax4.transAxes)
                 # Put a legend below current axis
                 # lines, labels   = self.BVDax2.get_legend_handles_labels()
@@ -2347,6 +2363,7 @@ class Ui_mainWindow(object):
                 self.slope_text.remove()
                 for container in self.BVDax3.containers:
                     container.remove()
+                self.BVDax23_ref.set_ydata((array([]),))
             except Exception as e:
                 logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
                                ' Error: ' + str(e))
@@ -2610,6 +2627,17 @@ class Ui_mainWindow(object):
                            ' Error: ' + str(e))
             self.bvdList, self.V1_all, self.V2_all, self.A, self.B, self.stdA, self.stdB, self.AA, self.BB, self.stdbvdList_all, self.AA_used, self.BB_used = [], [], [], [], [], [], [], [], [], [], [], []
             pass
+        # BVD with overlapping quadratic drift removal (Detrend: Overlap) for the second mean line in the R plot
+        if self.detrend_state == 2:
+            self.bvdList_overlap_all = self.bvdList
+        else:
+            try:
+                self.bvdList_overlap_all = bvd_stat(self.txtFilePath, int(self.IgnoredFirstLineEdit.text()), \
+                                                    int(self.IgnoredLastLineEdit.text()), self.dat, debug_mode, 2).bvdList
+            except Exception as e:
+                logger.warning('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                               ' Error: ' + str(e))
+                self.bvdList_overlap_all = []
         # this comes from _bvd.txt files, copied so deleting cycles never changes the parsed file data
         self.bvdList_chk_all = list(self.dat.bvd)
         # cycles more than 3 sigma away from the mean BVD are left out of the results
@@ -2640,6 +2668,7 @@ class Ui_mainWindow(object):
         self.V2             = [self.V2_all[i] for i in self.bvdCount]
         self.stdbvdList     = [self.stdbvdList_all[i] for i in self.bvdCount]
         self.bvdList_chk    = [bvd for i, bvd in enumerate(self.bvdList_chk_all) if i not in excluded]
+        self.bvdList_overlap = [bvd for i, bvd in enumerate(self.bvdList_overlap_all) if i not in excluded]
         # list the cycles that can be deleted, last cycle first
         selected = self.plotCountCombo.currentText()
         position = self.plotCountCombo.currentIndex()
@@ -2735,6 +2764,17 @@ class Ui_mainWindow(object):
                 self.R2List_nocorr.append(0)
                 self.C1R2List.append(0)
                 self.C2R2List.append(0)
+        # the same resistance means with the BVD after overlapping quadratic drift removal (Detrend: Overlap), for the R plot
+        R1List_overlap, R2List_overlap = [], []
+        for bvd in self.bvdList_overlap:
+            try:
+                rm = compensation*(1 + (bvd/myDeltaI2R2))
+                R1List_overlap.append(float(((((self.R1*(1./rm))/mag.R2NomVal) - 1) * 10**6) - R2corr)) # this is actually R2
+                R2List_overlap.append(float(((((self.R2*rm)/mag.R1NomVal) - 1) * 10**6) - R1corr)) # this is actually R1
+            except ZeroDivisionError:
+                pass
+        self.meanR1_overlap = mean(R1List_overlap) if R1List_overlap else nan
+        self.meanR2_overlap = mean(R2List_overlap) if R2List_overlap else nan
         # print(self.R1List, mean(self.R1List), len(self.R1List))
         if self.ratioMeanList != []:
             # self.ratioMean = compensation*(1 + (self.bvd_mean/myDeltaI2R2)) # calculated from raw bridge voltages
@@ -3352,6 +3392,7 @@ class Ui_mainWindow(object):
         self.bvdfitList         = []
 
         self.bvdList_chk        = []
+        self.bvdList_overlap    = []
 
         self.CommentsTextBrowser.setText("")
 
