@@ -47,6 +47,13 @@ A utility to interact with the analysis software for Magnicon CCC systems
 DB_PATH is the path to the resistor database directory\
 In debugging mode, debug logs are saved to the log file specfied by the LOG_PATH
 
+Batch processing
+----------------
+File > Batch Process... (Ctrl+B) processes and saves several `_bvd.txt` files at a time with the current settings.
+Check QHR Char and enter the QHR values first to save the files as QHR Process. Each file gets the same pymdss and
+.mea files as MDSS Save (the ADEV and PSD are not calculated), and a summary of the batch is written to
+`pyBatch_<date>_<time>.csv` next to the data files.
+
 Contact
 -------
 To report bugs or request features, please contact:\

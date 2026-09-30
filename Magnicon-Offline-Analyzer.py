@@ -9,6 +9,8 @@ import sys, os
 from time import perf_counter
 import inspect
 import traceback
+import csv
+from datetime import datetime
 
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QLocale
@@ -18,7 +20,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QV
                              QLabel, QPushButton, QComboBox, QTextBrowser, QTabWidget, \
                              QSpacerItem, QGridLayout, QLineEdit, QFrame, QSizePolicy, \
                              QMenuBar, QSpinBox, QToolButton, QStatusBar, \
-                             QTextEdit, QFileDialog, QCheckBox, QMessageBox)
+                             QTextEdit, QFileDialog, QCheckBox, QMessageBox, QProgressDialog)
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -50,13 +52,20 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__             = '3.0.1' # Program version string
+__version__             = '3.1.0' # Program version string
 red_style               = "color: white; background-color: red; border: 0.5px solid black"
 blue_style              = "color: white; background-color: blue; border: 0.5px solid black"
 green_style             = "color: white; background-color: green; border:0.5px solid black"
 le_style                = """QLineEdit { border: 0.5px solid black; background-color: rgb(255, 255, 255); color: black }"""
 le_readonly_style       = """QLineEdit { border: 0.5px solid black; background-color: rgb(215, 214, 213); color: black }"""
 le_readonly_bold_style  = """QLineEdit { border: 0.5px solid black; background-color: rgb(215, 214, 213); color: black; font-weight: bold }"""
+# columns of the batch summary csv file
+batch_csv_fields = ['File', 'Status', 'Start Time', 'End Time', 'Standard', 'R1 Serial', 'R2 Serial', \
+                    'Mean [uOhm/Ohm]', 'Std. Dev. [uOhm/Ohm]', 'Std. Mean [uOhm/Ohm]', 'R Mean Chk [uOhm/Ohm]', \
+                    'R Mean - Chk [ppb]', 'C1-C2 [uOhm/Ohm]', 'Ratio Mean', 'Ratio Std. Mean', 'BVD Mean [V]', \
+                    'BVD Std. Mean [V]', 'N', 'Ignored First', 'Ignored Last', 'R1 Temperature [C]', \
+                    'R2 Temperature [C]', 'R1 Total Pres. [Pa]', 'R2 Total Pres. [Pa]', 'R1STPPred [uOhm/Ohm]', \
+                    'R2STPPred [uOhm/Ohm]', 'Remove Outliers', 'Detrend', 'Process', 'pymdss File', 'Warnings', 'Error']
 winSizeH    = 1000
 winSizeV    = 845
 #c           = 0.8465 # specific gravity of oil used
@@ -212,6 +221,12 @@ class Ui_mainWindow(object):
         self.file_action.setShortcut(QKeySequence("Ctrl+o"))
         self.file_action.setShortcutVisibleInContextMenu(True)
 
+        self.batch_action = QAction("&Batch Process...")
+        self.batch_action.setStatusTip("Process and save several data files with the current settings")
+        self.batch_action.triggered.connect(self.batchProcess)
+        self.batch_action.setShortcut(QKeySequence("Ctrl+b"))
+        self.batch_action.setShortcutVisibleInContextMenu(True)
+
         self.close_action = QAction("&Quit")
         self.close_action.setStatusTip("Quit this program")
         self.close_action.triggered.connect(self.quit)
@@ -338,6 +353,7 @@ class Ui_mainWindow(object):
         # print('Class: Ui_mainWindow, In function: ' + inspect.stack()[0][3])
         self.file_menu = self.menubar.addMenu("&File")
         self.file_menu.addAction(self.file_action)
+        self.file_menu.addAction(self.batch_action)
         self.file_menu.addAction(self.close_action)
         # self.file_menu.setShortcutEnabled(True)
         self.help_menu = self.menubar.addMenu("&Help")
@@ -408,6 +424,7 @@ class Ui_mainWindow(object):
         self.user_warn_msg = ""
         self.outlierPressed = False
         self.detrend_state = 0
+        self.batchMode = False # True while batch processing: no plots, ADEV/PSD or warning dialogs
 
         self.R1Temp     = 23
         self.R2Temp     = 23
@@ -2539,6 +2556,10 @@ class Ui_mainWindow(object):
                 self.R1pres = 101325
                 self.R2pres = 101325
                 pass
+            # total pressures of this file, before they kept the value of the previous file (or a typed-in
+            # pressure) when there is no environment path
+            self.R1TotPres = self.R1pres + self.R1OilPres
+            self.R2TotPres = self.R2pres + self.R2OilPres
             # self.SampUsedLineEdit.setText(str(self.dat.samplesUsed))
             self.IgnoredFirstLineEdit.setText(str(self.dat.ignored_first))
             self.IgnoredLastLineEdit.setText(str(self.dat.ignored_last))
@@ -2559,6 +2580,9 @@ class Ui_mainWindow(object):
                 # print("Time taken to get BVD: " +  str(getBVD_end))
                 self.results(self.dat, self.R1Temp, self.R2Temp, self.R1TotPres, self.R2TotPres)
                 self.setValidData()
+                if self.batchMode:
+                    # batch processing plots only the last file and skips the ADEV and PSD, see batchProcess
+                    return
                 self.plotRaw()
                 self.plotBVD()
                 self.plotStatMeasures()
@@ -2587,12 +2611,14 @@ class Ui_mainWindow(object):
                     self.show_warning_dialog()
             else:
                 self.setInvalidData()
-                self.statusbar.showMessage('Invalid file selected...', 2000)
+                if not self.batchMode:
+                    self.statusbar.showMessage('Invalid file selected...', 2000)
                 # self.clearPlots()
         else:
             # self.clearPlots()
             self.setInvalidData()
-            self.statusbar.showMessage('Invalid file! Filename should end in _bvd.txt', 5000)
+            if not self.batchMode:
+                self.statusbar.showMessage('Invalid file! Filename should end in _bvd.txt', 5000)
 
     def plotStatMeasures(self,) -> None:
         # TODO: this needs to be in a QThread in a future release...
@@ -3063,6 +3089,7 @@ class Ui_mainWindow(object):
         self.deletedCycles      = []
         self.outlierCycles      = set()
         self.bvdCount           = []
+        self.corr_bvdList       = [] # nothing to plot, e.g. when the Standard R button is clicked
         self.bvdfitList         = []
         self.plotCountCombo.clear()
 
@@ -3295,21 +3322,27 @@ class Ui_mainWindow(object):
             self.saveButton.setEnabled(True)
             # self.progressBar.setProperty('value', 0)
 
-    def saveMDSS(self) -> None:
-        global red_style
-        self.mdssdir = ""
-        if debug_mode:
-            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+    def mdssDirectory(self, txtFilePath: str) -> str:
+        """Folder the pymdss file of txtFilePath is saved to, the Transfer Files folder on the desktop at NIST
+           (created if needed), otherwise the folder of the data file
+        """
+        mdssdir = ""
         if site == 'NIST':
-            self.mdssdir = "C:" + os.sep + "Users" + os.sep + os.getlogin() + os.sep + "Desktop" + os.sep + r"Transfer Files"
-            if not os.path.isdir(self.mdssdir):
-                os.mkdir(self.mdssdir)
+            mdssdir = "C:" + os.sep + "Users" + os.sep + os.getlogin() + os.sep + "Desktop" + os.sep + r"Transfer Files"
+            if not os.path.isdir(mdssdir):
+                os.mkdir(mdssdir)
         else:
-            tempdir = self.txtFilePath.split('/')
+            tempdir = txtFilePath.split('/')
             tempdir.pop(-1)
             for i in tempdir:
-                self.mdssdir = self.mdssdir + i + os.sep
-            # print(self.mdssdir)
+                mdssdir = mdssdir + i + os.sep
+        return mdssdir
+
+    def saveMDSS(self) -> None:
+        global red_style
+        if debug_mode:
+            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+        self.mdssdir = self.mdssDirectory(self.txtFilePath)
         # self.progressBar.setProperty('value', 25)
 
         # self.dat.comments = self.CommentsTextBrowser.toPlainText()
@@ -3377,6 +3410,173 @@ class Ui_mainWindow(object):
         self.MDSSButton.setText('No')
         self.saveButton.setEnabled(False)
         self.statusbar.showMessage('Saved to ' + str(self.mdssdir), 5000)
+
+    def batchProcess(self) -> None:
+        """Processes several data files with the current settings and saves the pymdss, _pyCCCRAW.mea and
+           _pyBV.mea files of each one, as MDSS Save does. The settings (standard R, SQUID feedin, electronics,
+           probe, oil depths, environment paths, Remove Outliers, Detrend and, when QHR Char is checked, the QHR
+           values) are used for every file. The ignored samples, delta(I2R2) and STP predictions are those of
+           each file. The ADEV and PSD are not calculated. The results are summarized in one csv file per batch,
+           saved next to the data files.
+        """
+        if debug_mode:
+            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+        files, _ = QFileDialog.getOpenFileNames(mainWindow, "Select data files to batch process", \
+                                                self.dialog.directory().absolutePath(), "Text files (*_bvd.txt)")
+        if not files:
+            return
+        files = sorted(files)
+        datadir = os.path.dirname(files[0])
+        self.dialog.setDirectory(datadir)
+        if self.qhrCharFlag:
+            process = 'QHR Process (B [T]: ' + self.le_Bfield.text() + ', Samp. T [K]: ' + self.le_sampleTemp.text() + \
+                      ', [I+, I-, V+, V-]: ' + self.le_contact.text() + ', QHR System: ' + self.cb_qhr_system.currentText() + \
+                      ', n [cm^-2]: ' + self.le_carrier_density.text() + ')'
+        else:
+            process = 'Magnicon CCC Process'
+        env1 = self.le_path_temperature1.text() if self.le_path_temperature1.text() != '' else 'none, temperature of each file and 101325 Pa'
+        env2 = self.le_path_temperature2.text() if self.le_path_temperature2.text() != '' else 'none, temperature of each file and 101325 Pa'
+        settings = {'Standard R': self.RButStatus, 'SQUID Feedin Polarity': self.SquidFeedStatus, \
+                    'SQUID Feedin Arm': self.CurrentButStatus, 'Magnicon Electronics': self.MagElecComboBox.currentText(), \
+                    'Probe': self.ProbeComboBox.currentText(), 'R1 Oil Depth [mm]': str(self.R1OilDepth), \
+                    'R2 Oil Depth [mm]': str(self.R2OilDepth), 'R1 Environment Path': env1, 'R2 Environment Path': env2, \
+                    'Remove Outliers': 'Yes' if self.outliers else 'No', \
+                    'Detrend': {0: 'None', 1: 'No-Overlap', 2: 'Overlap'}[self.detrend_state], 'Process': process}
+        mdssdir = self.mdssDirectory(files[0])
+        msgBox = QMessageBox(QMessageBox.Icon.Question, 'Batch Process', 'Process and save ' + str(len(files)) + \
+                             ' data files with these settings?', \
+                             QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel, parent=mainWindow)
+        msgBox.setInformativeText('\n'.join(k + ': ' + v for k, v in settings.items()) + '\n\n' + \
+                                  'The ignored samples, ' + chr(916) + '(I2R2) and STP predictions of each file are used, ' + \
+                                  'the ADEV and PSD are not calculated.\n\n' + \
+                                  'pymdss files are saved to ' + os.path.normpath(mdssdir) + ', the .mea files and a summary ' + \
+                                  'csv file next to the data files. Existing pymdss and .mea files of these runs are overwritten.')
+        msgBox.exec()
+        if msgBox.standardButton(msgBox.clickedButton()) != QMessageBox.StandardButton.Ok:
+            return
+
+        progress = QProgressDialog('', 'Cancel', 0, len(files), mainWindow)
+        progress.setWindowTitle('Batch Process')
+        progress.setWindowModality(Qt.WindowModality.WindowModal)
+        progress.setMinimumDuration(0)
+        progress.setAutoClose(False)
+        rows = []
+        lastValid = ''
+        self.batchMode = True
+        try:
+            for n, f in enumerate(files):
+                progress.setLabelText('Processing ' + os.path.basename(f) + ' (' + str(n + 1) + ' of ' + str(len(files)) + ')')
+                progress.setValue(n)
+                if progress.wasCanceled():
+                    break
+                row = self.batchProcessFile(f)
+                row.update({'Remove Outliers': settings['Remove Outliers'], 'Detrend': settings['Detrend'], \
+                            'Process': 'QHR Process' if self.qhrCharFlag else 'Magnicon CCC Process'})
+                rows.append(row)
+                if self.validFile and self.txtFilePath == f:
+                    lastValid = f
+            progress.setValue(len(files))
+            # show the last file that could be processed, with its raw and BVD plots
+            if lastValid != '' and (not self.validFile or self.txtFilePath != lastValid):
+                self.txtFilePath = lastValid
+                self.txtFileLineEdit.setText(lastValid)
+                self.getData()
+        finally:
+            self.batchMode = False
+            progress.close()
+        if self.validFile:
+            self.plotRaw()
+            self.plotBVD()
+            self.draw_flag = False
+            if self.tabWidget.currentIndex() == 0:
+                self.updateCCCDiagram()
+        # the ADEV and PSD tabs would show another file
+        self.clearAllanPlot()
+        self.clearSpecPlot()
+        self.AllanCanvas.draw()
+        self.SpecCanvas.draw()
+
+        csvPath = os.path.join(datadir, 'pyBatch_' + datetime.now().strftime('%Y%m%d_%H%M%S') + '.csv')
+        csvError = ''
+        try:
+            with open(csvPath, 'w', newline='') as csv_file:
+                writer = csv.DictWriter(csv_file, fieldnames=batch_csv_fields, restval='', extrasaction='ignore')
+                writer.writeheader()
+                writer.writerows(rows)
+        except Exception as e:
+            logger.error('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3], exc_info=True)
+            csvError = 'The summary csv file could not be written: ' + str(e)
+
+        saved = [r for r in rows if r['Status'] == 'Saved']
+        notSaved = [r for r in rows if r['Status'] != 'Saved']
+        text = str(len(saved)) + ' of ' + str(len(files)) + ' data files saved.'
+        if len(rows) < len(files):
+            text += '\nCanceled, ' + str(len(files) - len(rows)) + ' files were not processed.'
+        if notSaved:
+            text += '\n\nNot saved:\n' + '\n'.join(r['File'] + ': ' + r['Status'] + \
+                                                   (' (' + r['Error'] + ')' if r.get('Error', '') != '' else '') for r in notSaved)
+        warned = [r for r in rows if r.get('Warnings', '') != '']
+        if warned:
+            text += '\n\n' + str(len(warned)) + ' files have warnings, see the Warnings column of the summary.'
+        text += '\n\n' + (csvError if csvError != '' else 'Summary: ' + os.path.normpath(csvPath))
+        details = '\n'.join(r['File'] + ': ' + r['Status'] + \
+                            (', ' + r['Warnings'] if r.get('Warnings', '') != '' else '') for r in rows)
+        summaryBox = QMessageBox(QMessageBox.Icon.Information if not notSaved and csvError == '' else QMessageBox.Icon.Warning, \
+                                 'Batch Process', text, parent=mainWindow)
+        summaryBox.setDetailedText(details)
+        self.statusbar.showMessage('Batch process: ' + str(len(saved)) + ' of ' + str(len(files)) + \
+                                   ' data files saved, ADEV and PSD are not calculated in a batch', 10000)
+        summaryBox.exec()
+
+    def batchProcessFile(self, txtFilePath: str) -> dict:
+        """Loads, processes and saves one data file of a batch. Returns its row of the summary csv file"""
+        if debug_mode:
+            logger.debug('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3])
+        row = {'File': os.path.basename(txtFilePath), 'Status': 'Error'}
+        try:
+            rawFile = txtFilePath.split('_bvd.txt')[0] + '.txt'
+            if not os.path.exists(rawFile):
+                row['Status'] = 'Raw data file ' + os.path.basename(rawFile) + ' not found'
+                return row
+            self.txtFilePath = txtFilePath
+            self.txtFileLineEdit.setText(txtFilePath)
+            self.validFile = False
+            self.user_warn_msg = ""
+            self.getData()
+            if not self.validFile:
+                row['Status'] = 'Invalid file'
+                return row
+            if self.RButStatus == 'R1':
+                (meanR, stdR, stdMeanR, meanRChk, C1, C2) = (self.meanR1, self.stdR1ppm, self.stdMeanR1, \
+                                                            self.R1MeanChk, self.C1R1, self.C2R1)
+            else:
+                (meanR, stdR, stdMeanR, meanRChk, C1, C2) = (self.meanR2, self.stdR2ppm, self.stdMeanR2, \
+                                                            self.R2MeanChk, self.C1R2, self.C2R2)
+            row.update({'Start Time': str(self.dat.startDate), 'End Time': str(self.dat.endDate), \
+                        'Standard': self.RButStatus, 'R1 Serial': self.dat.R1SN, 'R2 Serial': self.dat.R2SN, \
+                        'Mean [uOhm/Ohm]': meanR, 'Std. Dev. [uOhm/Ohm]': stdR, 'Std. Mean [uOhm/Ohm]': stdMeanR, \
+                        'R Mean Chk [uOhm/Ohm]': meanRChk, 'R Mean - Chk [ppb]': (meanR - meanRChk)*1e3, \
+                        'C1-C2 [uOhm/Ohm]': C1 - C2, 'Ratio Mean': self.ratioMean, 'Ratio Std. Mean': self.ratioStdMean, \
+                        'BVD Mean [V]': self.bvd_mean, 'BVD Std. Mean [V]': self.bvd_stdMean, 'N': self.N, \
+                        'Ignored First': self.IgnoredFirstLineEdit.text(), 'Ignored Last': self.IgnoredLastLineEdit.text(), \
+                        'R1 Temperature [C]': self.R1Temp, 'R2 Temperature [C]': self.R2Temp, \
+                        'R1 Total Pres. [Pa]': self.R1TotPres, 'R2 Total Pres. [Pa]': self.R2TotPres, \
+                        'R1STPPred [uOhm/Ohm]': self.R1STPLineEdit.text(), 'R2STPPred [uOhm/Ohm]': self.R2STPLineEdit.text(), \
+                        'Warnings': '; '.join(w for w in self.user_warn_msg.split('\n') if w != '')})
+            self.saveMDSS()
+            row['pymdss File'] = os.path.normpath(os.path.join(self.mdssdir, os.path.basename(txtFilePath).replace('_bvd.txt', '') + '_pyMDSS.txt'))
+            row['Status'] = 'Saved'
+        except Exception as e:
+            logger.error('In class: ' + self.__class__.__name__ + ' In function: ' + inspect.stack()[0][3] + \
+                         ' File: ' + txtFilePath, exc_info=True)
+            row['Status'] = 'Error'
+            row['Error'] = type(e).__name__ + ': ' + str(e)
+            try:
+                # do not show or plot the results of a file that failed part way
+                self.setInvalidData()
+            except Exception:
+                self.validFile = False
+        return row
 
     def cleanUp(self) -> None:
         if debug_mode:

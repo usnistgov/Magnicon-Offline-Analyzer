@@ -1,5 +1,31 @@
 # RELEASE
 
+## 09/29/2026 Version 3.1.0
+### New
+  * File > Batch Process... (Ctrl+B) processes and saves several data files at a time. The settings (Standard R,
+    SQUID feedin polarity and arm, electronics, probe, oil depths, environment paths, Remove Outliers and Detrend)
+    are used for every file. With QHR Char checked the files are saved as QHR Process with the typed QHR values,
+    otherwise as Magnicon CCC Process. The ignored samples, Delta(I2R2) and STP predictions are those of each file
+  * Each file gets the same pymdss, _pyCCCRAW.mea and _pyBV.mea files as MDSS Save. The ADEV and PSD are not
+    calculated, so no _pyadev/_pypsd files are written
+  * A summary of the results (mean, std dev, std mean, R Mean Chk, R Mean - Chk, C1-C2, ratio, BVD, N, temperatures,
+    pressures, STP predictions, settings, warnings and errors) is written to one pyBatch_<date>_<time>.csv file per
+    batch, next to the data files. Files that cannot be processed are listed and the batch goes on, Cancel stops
+    after the current file
+
+### Fixes
+  * The total pressures are those of the loaded file. Without an environment path they kept the value of the
+    previous file, or of a pressure typed in for it, while the pressure box showed 101325 Pa. This can change the
+    results if a pressure was typed in before another file was opened
+  * Clicking Standard R after an invalid file was loaded no longer gives an error
+  * update to 3.1.0
+
+### AI use
+  * Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code) at the
+    direction of the maintainer. Checked with the sample runs: the files saved by Batch Process are identical to the
+    ones saved with MDSS Save (default settings, QHR Char, Remove Outliers with Detrend, R2 as the standard), and the
+    results with the default settings are unchanged
+
 ## 09/29/2026 Version 3.0.1
   * The R1/R2 plot shows the mean with overlapping quadratic drift removal (Detrend: Overlap) as a dashed line next
     to the mean of the selected Detrend setting. Both means are listed in the legend, rounded to 3 decimals. With

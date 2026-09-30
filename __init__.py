@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "3.0.1"
+__version__ 	=       "3.1.0"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -69,4 +69,11 @@ __ChangeLog__   =       """
                                          Detrend setting, legend means rounded to 3 decimals, show the R Mean - R Mean Chk label in ppb (it was hidden under
                                          its box) and re-space the results column to fit it, faster drift removal for long runs, update to version 3.0.1.
                                          Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code)
+                        092926:     ENH: File > Batch Process... processes and saves several data files with the current settings (QHR Process with the
+                                         typed QHR values when QHR Char is checked), writes the same pymdss and .mea files as MDSS Save, skips the ADEV
+                                         and PSD, and summarizes the results in one pyBatch_<date>_<time>.csv file per batch next to the data files
+                        092926:     FIX: the total pressures are those of the loaded file (without an environment path they kept the value of the
+                                         previous file or of a typed-in pressure), clicking Standard R after an invalid file no longer gives an error,
+                                         update to version 3.1.0. Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used
+                                         through Claude Code)
                         """
