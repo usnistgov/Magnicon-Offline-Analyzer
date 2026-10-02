@@ -204,14 +204,16 @@ class bvd_stat:
             self.B1B2.append(array_split(j, 2))
             # self.BB.extend(j)
         self.fit_ABBA()
-        for a2, b1, stda2, stdb1 in zip(self.A[1::2], self.B[1::2], self.stdA[1::2], self.stdB[1::2]):
-            # print (ct, a2, b1)
-            self.V1.append(b1 - a2) # C1
-            self.stdV1.append(sqrt(stda2**2 + stdb1**2))
-        for a1, b2, stda1, stdb2 in zip(self.A[2::2], self.B[0::2], self.stdA[2::2], self.stdB[0::2]):
-            # print (ct, a1, b2)
-            self.V2.append(b2 - a1) # C2
-            self.stdV2.append(sqrt(stda1**2 + stdb2**2))
+        # labels of Help > Timing Diagram: A1 = second half of an I- half cycle, B1 B2 = halves of the I+ half
+        # cycle after it, A2 = first half of the next I- half cycle. A and B list the halves in time order
+        # C1 = B2 - A1, from the second halves of the half cycles
+        for a1, b2, stda1, stdb2 in zip(self.A[1::2], self.B[1::2], self.stdA[1::2], self.stdB[1::2]):
+            self.V1.append(b2 - a1) # C1
+            self.stdV1.append(sqrt(stda1**2 + stdb2**2))
+        # C2 = B1 - A2, from the first halves of the half cycles
+        for a2, b1, stda2, stdb1 in zip(self.A[2::2], self.B[0::2], self.stdA[2::2], self.stdB[0::2]):
+            self.V2.append(b1 - a2) # C2
+            self.stdV2.append(sqrt(stda2**2 + stdb1**2))
         for V1, V2, stdV1, stdV2 in zip(self.V1, self.V2, self.stdV1, self.stdV2):
             self.bvdList.append((V1 + V2)/2.) # bvd
             self.stdbvdList.append(sqrt(stdV1**2 + stdV2**2)/2)
@@ -255,11 +257,12 @@ class bvd_stat:
 
         The drift is fitted together with the current reversal step, y(t) = a + b*t + c*t**2 + d*p(t) with
         p = -1/2 for I- and +1/2 for I+ samples, over the samples that the BVDs of two consecutive cycles are
-        calculated from (A2 B1 B2 A1' twice). Only the drift a + b*t + c*t**2 is subtracted, so the step (the
-        BVD) is kept. Over a single cycle the curvature and the step look alike and the BVD gets about 4 times
-        noisier, over two cycles only a few percent. Without overlap the windows follow each other (cycles 1-2,
-        3-4, ...). With overlap a window starts at every cycle (1-2, 2-3, 3-4, ...) like in the overlapping
-        Allan deviation, and the drift of a sample is the average of the fits of all the windows it is in.
+        calculated from (A1 B1 B2 A2 twice, labels of Help > Timing Diagram). Only the drift a + b*t + c*t**2
+        is subtracted, so the step (the BVD) is kept. Over a single cycle the curvature and the step look alike
+        and the BVD gets about 4 times noisier, over two cycles only a few percent. Without overlap the windows
+        follow each other (cycles 1-2, 3-4, ...). With overlap a window starts at every cycle (1-2, 2-3, 3-4, ...)
+        like in the overlapping Allan deviation, and the drift of a sample is the average of the fits of all the
+        windows it is in.
         Parameters
         ----------
         overlap : bool, start a window at every cycle instead of every other cycle
@@ -274,7 +277,8 @@ class bvd_stat:
             return self.AA_2D, self.BB_2D
         SHC, first = int(self.mag.SHC), self.ignored_first
         # the quarters of every half cycle: (samples, times since the first ramp down, polarity, cycle it belongs to).
-        # The BVD of cycle k is calculated from A2 of I- half cycle k, I+ half cycle k and A1 of I- half cycle k+1
+        # The BVD of cycle k is calculated from the second half of I- half cycle k (A1), I+ half cycle k (B1 B2)
+        # and the first half of I- half cycle k+1 (A2)
         quarters = []
         for k, a in enumerate(self.AA_2D):
             t = 2*k*SHC + first + arange(len(a))

@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__             = '3.1.1' # Program version string
+__version__             = '3.1.2' # Program version string
 red_style               = "color: white; background-color: red; border: 0.5px solid black"
 blue_style              = "color: white; background-color: blue; border: 0.5px solid black"
 green_style             = "color: white; background-color: green; border:0.5px solid black"

@@ -71,15 +71,29 @@ voltage is off or the network resistor database cannot be reached.
 ### From raw samples to BVDs (ABBA)
 The raw samples are split into I- (A) and I+ (B) half cycles of SHC samples. The samples at the start of every half
 cycle, during the ramp and while the bridge settles, are left out (Ignored First), and so are the last ones (Ignored
-Last). The used samples of every half cycle are split into a first and a second half (A1, A2 and B1, B2, the means
-of the samples). Every cycle gives one BVD from the second half of its I- half cycle, its I+ half cycle and the first
-half of the next I- half cycle (A1'):
+Last). The used samples of every half cycle are split into a first and a second half, and the mean of each half is
+taken. Every cycle gives one BVD from four of these means, labelled as in Help > Timing Diagram:
+
+* A1: the second half of the I- half cycle
+* B1, B2: the first and the second half of the I+ half cycle after it
+* A2: the first half of the next I- half cycle
+
 ```
-BVD = ((B1 + B2) - (A2 + A1')) / 2
+C1 = B2 - A1        (the second halves)
+C2 = B1 - A2        (the first halves)
+BVD = (C1 + C2) / 2 = ((B2 - A1) + (B1 - A2)) / 2
 ```
-A2 comes before the B samples and A1' after them, so the A and the B samples have the same average time and a
-constant offset or a linear drift of the bridge voltage cancels. C1 = B2 - A2 and C2 = B1 - A1' are the two parts of
-the BVD, BVD = (C1 + C2)/2. A linear drift moves C1 and C2 in opposite directions, so C1 - C2 shows it.
+The first half of an I- half cycle is A2 of the BVD before it and its second half is A1 of the BVD after it. A1 comes
+before the B samples and A2 after them, so the A and the B samples have the same average time and a constant offset
+or a linear drift of the bridge voltage cancels in the BVD.
+
+C1 - C2 compares the second halves with the first halves:
+
+* Settling: if the bridge has not settled when the used samples start, the first halves (B1 and A2) still contain part
+  of the transient after the current reversal while the second halves do not, so C2 differs from C1. The BVD is then
+  biased, and nothing cancels this. A C1 - C2 that is clearly not 0 can mean that Ignored First should be larger
+* Linear drift: a linear drift moves C1 and C2 by the same amount in opposite directions, so it shows in C1 - C2 and
+  cancels in the BVD
 
 ![Samples used by each BVD and the windows of the quadratic drift correction](docs/abba_windows.png)
 
@@ -131,7 +145,8 @@ without the correction of the unknown is written to the comment (C not at STP).
 * R Mean Chk is the same calculation with the BVDs of the Magnicon software from the `_bvd.txt` file, leaving out the
   same cycles. R Mean - Chk [ppb] is the difference. With Quad Corr: None it should be about 0, which shows that the
   BVDs calculated from the raw samples agree with the Magnicon software
-* C1 - C2 shows a linear drift and differences between the half cycles
+* C1 - C2 shows whether the bridge has settled and a linear drift, see
+  [From raw samples to BVDs (ABBA)](#from-raw-samples-to-bvds-abba)
 * The BVD tab shows the BVD of every cycle with its mean +/- 3 standard deviations, a line fit with its slope in nV/s,
   a histogram, the skewness and the kurtosis
 
@@ -165,7 +180,7 @@ shifted by different amounts, and every BVD is biased. Quad Corr removes the cur
 calculated. It works on the used raw samples, not on the BVDs, because the curvature inside a cycle can only be seen
 in the samples. (Quad Corr was called Detrend in earlier versions.)
 
-The used samples of two consecutive BVDs (A2 B1 B2 A1', twice) are fitted together, in time order, by least squares
+The used samples of two consecutive BVDs (A1 B1 B2 A2, twice) are fitted together, in time order, by least squares
 with
 ```
 y(t) = a + b*t + c*t^2 + d*p(t),    p(t) = -1/2 for I- samples, +1/2 for I+ samples

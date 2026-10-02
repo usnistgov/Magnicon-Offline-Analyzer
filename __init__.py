@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "3.1.1"
+__version__ 	=       "3.1.2"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -80,4 +80,9 @@ __ChangeLog__   =       """
                                          was cut off) and move the results column up 2 px per row to fit it, README explains how the program works and
                                          the quadratic drift correction with two figures in docs/, fix the pip install command, update to version 3.1.1.
                                          Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code)
+                        100126:     DOC: README and figures use the A1 B1 B2 A2 labels of Help > Timing Diagram, C1 = B2 - A1 (second halves) and
+                                         C2 = B1 - A2 (first halves), explain that C1 - C2 shows incomplete settling and a linear drift, rename the
+                                         loop variables of the C1/C2 calculation in bvd_stats.py to these labels (results unchanged), update to
+                                         version 3.1.2. Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through
+                                         Claude Code)
                         """

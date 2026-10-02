@@ -1,5 +1,16 @@
 # RELEASE
 
+## 10/01/2026 Version 3.1.2
+  * README and the figures in docs/ use the labels of Help > Timing Diagram: A1 = second half of the I- half cycle,
+    B1 B2 = halves of the I+ half cycle, A2 = first half of the next I- half cycle. C1 = B2 - A1 (second halves),
+    C2 = B1 - A2 (first halves), BVD = (C1 + C2)/2. The README explains that C1 - C2 shows incomplete settling (the
+    first halves are measured closer to the current reversal) and a linear drift
+  * The loop variables of the C1/C2 calculation in bvd_stats.py are named with these labels (the old names did not
+    match the half cycle halves they used). Results are unchanged
+  * AI use: made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code) at
+    the direction of the maintainer. Checked with the sample runs (results unchanged)
+  * update to 3.1.2
+
 ## 10/01/2026 Version 3.1.1
   * Detrend is renamed Quad Corr (quadratic drift correction). The checkbox shows its setting on a second line
     (Quad Corr: None, No-Overlap or Overlap), the old label was cut off as "Detrend: No-Ov". The results column
