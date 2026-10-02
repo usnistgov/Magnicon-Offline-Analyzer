@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "3.1.0"
+__version__ 	=       "3.1.1"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -76,4 +76,8 @@ __ChangeLog__   =       """
                                          previous file or of a typed-in pressure), clicking Standard R after an invalid file no longer gives an error,
                                          update to version 3.1.0. Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used
                                          through Claude Code)
+                        100126:     ENH: rename Detrend to Quad Corr (quadratic drift correction), show its setting on two lines (Detrend: No-Overlap
+                                         was cut off) and move the results column up 2 px per row to fit it, README explains how the program works and
+                                         the quadratic drift correction with two figures in docs/, fix the pip install command, update to version 3.1.1.
+                                         Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code)
                         """

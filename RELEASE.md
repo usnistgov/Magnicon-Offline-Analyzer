@@ -1,5 +1,18 @@
 # RELEASE
 
+## 10/01/2026 Version 3.1.1
+  * Detrend is renamed Quad Corr (quadratic drift correction). The checkbox shows its setting on a second line
+    (Quad Corr: None, No-Overlap or Overlap), the old label was cut off as "Detrend: No-Ov". The results column
+    moves up 2 px per row to make room. The R plot legend, the Batch Process dialog and the summary csv column use
+    the new name. Results are unchanged
+  * README: how the program works (files of a run, the ABBA calculation of the BVDs, the CCC equation, the STP
+    prediction and the temperature and pressure corrections, checks, tabs and saved files) and how the quadratic
+    drift correction works, with two figures in docs/. Fix the pip install command
+  * AI use: made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code) at
+    the direction of the maintainer. Checked with the sample runs (results unchanged) and by rendering the window.
+    The figures in docs/ were made with the program's own drift removal and ABBA code on simulated data
+  * update to 3.1.1
+
 ## 09/29/2026 Version 3.1.0
 ### New
   * File > Batch Process... (Ctrl+B) processes and saves several data files at a time. The settings (Standard R,
