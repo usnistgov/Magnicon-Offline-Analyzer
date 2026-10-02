@@ -17,6 +17,7 @@ lcapy==1.24
 matplotlib==3.7.2
 matplotlib-inline==0.1.7
 mpmath==1.3.0
+mysql-connector-python==8.0.21
 networkx==3.4.2
 numpy==1.25.2
 packaging==23.1
@@ -26,6 +27,7 @@ pefile==2023.2.7
 pillow==12.3.0
 prompt_toolkit==3.0.48
 property-cached==1.6.4
+protobuf==4.25.1
 pure_eval==0.2.3
 pyasn1==0.5.1
 pycparser==2.21

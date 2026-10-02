@@ -1,5 +1,34 @@
 # RELEASE
 
+## 10/02/2026 Version 3.2.0
+### Results that can change
+  * At NIST (-s NIST) the resistor values (cal date, cal value, drift and coefficients) come from the MySQL table
+    resistors_database (schema resdb), which keeps every version of the values with the dates it was valid. A run
+    uses the values that were in effect at the middle of the run (valid_from <= run time < valid_to), also in Batch
+    Process. Before, every run used the current values of the network ResDataBase.dat, also old runs: for the March
+    2018 sample runs the STP prediction of resistor 1218 is now 21.266 instead of 21.346 uOhm/Ohm. Runs from before
+    the oldest .dat file (03/13/2018) use the values of that file
+  * data/ResDataBase.dat, used away from NIST and when the network database cannot be reached, is updated to the
+    current database (116 resistors changed, F057A added). For the March 2018 sample runs the prediction of 1218
+    changes from 21.319 to 21.346 uOhm/Ohm
+
+### New
+  * Command line options --mysql_host (default localhost), --mysql_port (3306), --mysql_user (root),
+    --mysql_password (default: the MYSQL_PWD environment variable) and --mysql_db (resdb), so the database can move
+    to the pymdss server. The settings used, without the password, are written to the log file
+  * When the table cannot be read, the current values of the network ResDataBase.dat and then of the local copy are
+    used, with a warning that gives the reason (also in the Warnings column of the batch summary). A connection that
+    failed is tried again after 5 minutes, so the following runs do not wait for it
+  * requirements.txt: mysql-connector-python 8.0.21 (and protobuf). The PyInstaller spec includes its error messages
+
+### AI use
+  * Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code) at the
+    direction of the maintainer. Checked with a SQLite copy of resistors_database made by resdb_import.py: the values
+    in effect after each of the 59 updates in the table equal the ResDataBase .dat file that was live then, and the
+    sample runs, opened or batch processed through MySQL, give the same results as with the .dat file that was live
+    when they were measured. The connection to a real MySQL server was tested for failures only
+  * update to 3.2.0
+
 ## 10/01/2026 Version 3.1.2
   * README and the figures in docs/ use the labels of Help > Timing Diagram: A1 = second half of the I- half cycle,
     B1 B2 = halves of the I+ half cycle, A2 = first half of the next I- half cycle. C1 = B2 - A1 (second halves),

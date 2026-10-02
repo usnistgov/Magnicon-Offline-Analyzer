@@ -23,7 +23,7 @@ a = Analysis(
            ('C:\\WPy64-31241\\python-3.12.4.amd64\\Lib\\site-packages\\allantools\\allantools_info.json', 'allantools'), \
            ('.\\env.py', '.'), ('.\\ccc_diagram.py', '.'), ('.\\data\\ccc_diagram_default.png', 'data'), ('.\\data\\ResDataBase.dat', 'data'), \
            ],
-    hiddenimports = ['pyi_splash', 'allantools'],
+    hiddenimports = ['pyi_splash', 'allantools', 'mysql.connector', 'mysql.connector.locales.eng.client_error'],
     hookspath=[f'{PACKAGE_SITE}/pyupdater/hooks'],
     hooksconfig={},
     runtime_hooks=[],

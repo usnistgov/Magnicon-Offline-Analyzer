@@ -39,6 +39,17 @@ options:
   -s SITE, --site SITE  Site where this program is used
   -c SPECIFIC_GRAVITY, --specific_gravity SPECIFIC_GRAVITY
                         Specific gravity of oil for oil type resistors
+  --mysql_host MYSQL_HOST
+                        Host of the MySQL resistor database (table resistors_database), tried first with -s NIST
+                        before the ResDataBase.dat files
+  --mysql_port MYSQL_PORT
+                        Port of the MySQL resistor database
+  --mysql_user MYSQL_USER
+                        User of the MySQL resistor database
+  --mysql_password MYSQL_PASSWORD
+                        Password of the MySQL resistor database, when not given it is read from the MYSQL_PWD
+                        environment variable
+  --mysql_db MYSQL_DB   Schema of the MySQL resistor database
 
 A utility to interact with the analysis software for Magnicon CCC systems
 
@@ -46,6 +57,13 @@ A utility to interact with the analysis software for Magnicon CCC systems
 
 DB_PATH is the path to the resistor database directory\
 In debugging mode, debug logs are saved to the log file specfied by the LOG_PATH
+
+The MySQL options default to localhost, port 3306, user root and schema resdb. For example, with the database on
+another server:
+```
+python Magnicon-Offline-Analyzer.py -s NIST --mysql_host <server> --mysql_user <user> --mysql_password <password>
+```
+The settings used, without the password, are written to the log file
 
 How the program works
 ---------------------
@@ -129,9 +147,17 @@ correction is subtracted, so Mean [uOhm/Ohm] is the deviation of the unknown fro
 standard temperature and 101325 Pa. Std. Dev and Std. Mean are calculated from the values of the cycles. The value
 without the correction of the unknown is written to the comment (C not at STP).
 
-* Resistor database: the folder given with `-db`, the network database at NIST (`-s NIST`, it falls back to the local
-  file with a warning), or `data/ResDataBase.dat`. A resistor that is not in the database has 0 for its prediction
-  and coefficients. The STP predictions can be changed on the Settings/Results tab
+* Resistor database: the folder given with `-db`, the databases at NIST (`-s NIST`, see below), or
+  `data/ResDataBase.dat`. A resistor that is not in the database has 0 for its prediction and coefficients. The STP
+  predictions can be changed on the Settings/Results tab
+* At NIST the program first reads the resistors from the MySQL table `resistors_database` (schema `resdb`, made
+  from the ResDataBase .dat files by `resdb_import.py`), set with the `--mysql_...` options (see Usage). The table
+  keeps every version of the values of a resistor with the dates it was valid (`valid_from`, `valid_to`), and a run
+  uses the version that was in effect at the middle of the run (the time of the STP predictions): the cal date, cal
+  value, drift and coefficients of the database as it was when the run was measured. Runs from before the oldest
+  .dat file use the values of that file. When the table cannot be read, the current values of the network
+  ResDataBase.dat and then of the local copy are used, with a warning that gives the reason. A connection that
+  failed is tried again after 5 minutes, so the following runs do not wait for it
 * Temperature and pressure: with an R1/R2 Environment Path, the averages over the run of the environment files in
   that folder (tab separated, one file per day ending in `_YYYYMMDD`, with LabVIEW time stamp, temperature and
   pressure). Without one, the standard temperature of the resistor (no temperature correction) and 101325 Pa. The

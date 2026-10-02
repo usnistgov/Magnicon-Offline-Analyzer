@@ -7,6 +7,7 @@ from numpy import std, floor, nan
 import win32file
 
 # Put ResDataBase.py in branch to use on non-NIST computers
+import ResDataBase
 from ResDataBase import ResData
 # base directory of the project
 if getattr(sys, 'frozen', False):
@@ -23,9 +24,10 @@ else:
         running_mode = 'Interactive'
 # Class for parsing CCC files
 class magnicon_ccc:
-    def __init__(self, text: str, dbdir: str, site: str) -> None:
+    def __init__(self, text: str, dbdir: str, site: str, mysql: dict = None) -> None:
         self.dbdir = dbdir
         self.site = site
+        self.mysql = mysql # MySQL resistor database settings, tried first at NIST (None: ResDataBase.MYSQL_DEFAULTS)
         self.text = text
         # Reads in file and checks that it is a .txt file
         if '_bvd.txt' in self.text:
@@ -332,18 +334,26 @@ class magnicon_ccc:
         # user directory not supplied...
         else:
             R = None
-            # if site is NIST...
+            # if site is NIST, the MySQL resistor database first, with the values in effect at the middle of the run
+            # (the time of the STP predictions), then the current values of the network ResDataBase.dat
             if self.site == 'NIST':
-                p = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'
-                if self.check_shared_drive_exists(r'\\elwood.nist.gov\68_PML'):
-                    R = ResData(p)
-                else:
-                    self.dbWarning = 'Network resistor database is unreachable, using the local ResDataBase.dat!'
+                R = ResDataBase.load_mysql(self.mysql, getattr(self, 'DT', None))
+                if R is None:
+                    p = r'\\elwood.nist.gov\68_PML\68internal\Calibrations\MDSS Data\resist\vax_data\resistor data\ARMS\Analysis Files'
+                    if self.check_shared_drive_exists(r'\\elwood.nist.gov\68_PML'):
+                        R = ResData(p)
+                        self.dbWarning = 'MySQL resistor database cannot be read, using the current values of the network ' + \
+                                         'ResDataBase.dat! (' + ResDataBase.mysql_error + ')'
+                    else:
+                        self.dbWarning = 'MySQL and network resistor databases are unreachable, using the current values of ' + \
+                                         'the local ResDataBase.dat! (' + ResDataBase.mysql_error + ')'
                     logger.warning(self.dbWarning)
             if R is None:
                 # default to the local one supplied with this project
                 # print("Using ResDatabase.dat located at: ", base_dir + r'\data')
                 R = ResData(base_dir + r'\data')
+        self.dbSource = R.source # where the resistor values come from
+        logger.info('Resistor database: ' + self.dbSource)
         # Finds the data on the two resistors in the CCC files from the resistor database
         if self.R1SN in R.ResDict:
             self.R1NomVal  = R.ResDict[self.R1SN]['NomVal']

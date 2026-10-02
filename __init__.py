@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "3.1.2"
+__version__ 	=       "3.2.0"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -85,4 +85,10 @@ __ChangeLog__   =       """
                                          loop variables of the C1/C2 calculation in bvd_stats.py to these labels (results unchanged), update to
                                          version 3.1.2. Made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through
                                          Claude Code)
+                        100226:     ENH: at NIST the resistor values come from the MySQL table resistors_database (schema resdb), with the values
+                                         that were in effect at the middle of each run (valid_from <= run time < valid_to), also in Batch Process.
+                                         When the table cannot be read, the current values of the network and then the local ResDataBase.dat are
+                                         used with a warning. Add --mysql_host, --mysql_port, --mysql_user, --mysql_password and --mysql_db, update
+                                         data/ResDataBase.dat to the current database, update to version 3.2.0. Made with the help of an AI coding
+                                         assistant (Claude Opus 5.5 by Anthropic, used through Claude Code)
                         """
