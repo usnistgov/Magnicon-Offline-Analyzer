@@ -7,7 +7,7 @@ __maintainer__ 	=       "Alireza Panna"
 __email__ 		=       "alireza.panna@nist.gov"
 __status__ 		=       "Stable"
 __date__        =       "06/2023"
-__version__ 	=       "3.2.0"
+__version__ 	=       "3.2.1"
 __ChangeLog__   =       """
                         031224:     FIX: Make R1STPPPM and R2STPPPM linedits editable so user can update predicted value, add requirements.txt
                                     for building project, switch to using allantools for plotting allan deviations since its faster, add 
@@ -91,4 +91,8 @@ __ChangeLog__   =       """
                                          used with a warning. Add --mysql_host, --mysql_port, --mysql_user, --mysql_password and --mysql_db, update
                                          data/ResDataBase.dat to the current database, update to version 3.2.0. Made with the help of an AI coding
                                          assistant (Claude Opus 5.5 by Anthropic, used through Claude Code)
+                        102626:     ENH: add a mobility mu [cm^2/Vs] line edit for QHR Char, written to the pymdss file after the carrier density
+                                         (before StandRes) as a float with 2 decimals, show the QHR widgets in two rows (B, Samp. T, contacts / QHR
+                                         System, n, mu) and move the CCC equation up to make room, update to version 3.2.1. Made with the help of an
+                                         AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code)
                         """

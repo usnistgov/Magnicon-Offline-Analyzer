@@ -193,8 +193,8 @@ without the correction of the unknown is written to the comment (C not at STP).
   the data files
 * Set Save MDSS to Yes and click Save to write
     * `<run>_pyMDSS.txt`: the pipe separated results for the MDSS database, as Magnicon CCC Process, or as QHR Process
-      with B, Samp. T, contacts, QHR System and carrier density when QHR Char is checked. It is saved to Desktop\Transfer
-      Files at NIST (`-s NIST`), otherwise next to the data files
+      with B, Samp. T, contacts, QHR System, carrier density n and mobility &mu; when QHR Char is checked. It is saved
+      to Desktop\Transfer Files at NIST (`-s NIST`), otherwise next to the data files
     * `<run>_pyCCCRAW.mea`: the BVD and the ratio of every cycle with their standard deviations of the mean
     * `<run>_pyBV.mea`: the used I- and I+ bridge voltages
 

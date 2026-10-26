@@ -1,5 +1,17 @@
 # RELEASE
 
+## 10/26/2026 Version 3.2.1
+  * Mobility mu [cm^2/Vs] line edit for QHR Char. The value is written to the pymdss file after the carrier density,
+    as the entry before StandRes, as a float with 2 decimals (0.00 when the box is empty), so QHR Process lines have
+    one more field: ...|QHR System|n|mu|StandRes. Magnicon CCC Process lines are unchanged
+  * The QHR widgets are shown in two rows, in the order of the pymdss file: B, Samp. T and contacts, then QHR System,
+    n and mu. The CCC equation moves up to make room, and the QHR System box is wide enough for Cryogenics-3He
+  * The Batch Process dialog lists the mobility with the other QHR values
+  * AI use: made with the help of an AI coding assistant (Claude Opus 5.5 by Anthropic, used through Claude Code) at
+    the direction of the maintainer. Checked by rendering the window and by saving pymdss files with and without QHR
+    Char (results of the sample runs unchanged)
+  * update to 3.2.1
+
 ## 10/02/2026 Version 3.2.0
 ### Results that can change
   * At NIST (-s NIST) the resistor values (cal date, cal value, drift and coefficients) come from the MySQL table
