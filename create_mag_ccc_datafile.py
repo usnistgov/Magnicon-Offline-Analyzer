@@ -23,7 +23,7 @@ class writeDataFile():
                  stdC1R1: float, stdC2R1: float, C1R2: float, C2R2: float, \
                  stdC1R2: float, stdC2R2: float, R1PPM: float, R2PPM: float, \
                  bvd_mean: float, N: int, samplesUsed: int, meas: float, delay: float, \
-                 R1PredictionSTP: float, R2PredictionSTP: float, comments: str, bfield: str, sampleTemp: str, contact: str, qhr_system: str, carrier_density: str, qhrchar: bool) -> None:
+                 R1PredictionSTP: float, R2PredictionSTP: float, comments: str, bfield: str, sampleTemp: str, contact: str, qhr_system: str, carrier_density: str, mobility: str, qhrchar: bool) -> None:
         # Creates the MDSS file name according to the input .txt file's name
         self.savepath = savepath
         dataFileName = (text.split('/')[-1]).replace('_bvd.txt', "")
@@ -130,12 +130,17 @@ class writeDataFile():
                     carrier_density = float(carrier_density)
                 else:
                     carrier_density = 0
+                if mobility != '':
+                    mobility = float(mobility)
+                else:
+                    mobility = 0
                 f.write('|QHR Process')
                 f.write(f'|{"{:.2f}".format(bfield)}')
                 f.write(f'|{"{:.2f}".format(sampleTemp)}')
                 f.write('|' + contact)
                 f.write('|' + qhr_system)
                 f.write(f'|{"{:.3E}".format(carrier_density).replace("E+0", "E+")}') # carrier density [cm^-2]
+                f.write(f'|{"{:.2f}".format(mobility)}') # mobility [cm^2/Vs]
                 f.write('|StandRes')
             else:
                 f.write('|Magnicon CCC Process|StandRes')

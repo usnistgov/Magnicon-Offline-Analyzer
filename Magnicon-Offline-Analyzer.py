@@ -39,6 +39,7 @@ from create_mag_ccc_datafile import writeDataFile
 import mystat
 from env import env
 from ccc_diagram import draw_ccc_diagram
+from ResDataBase import MYSQL_DEFAULTS
 from argparse import ArgumentParser
 
 import logging
@@ -52,7 +53,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # python globals
-__version__             = '3.1.2' # Program version string
+__version__             = '3.2.1' # Program version string
 red_style               = "color: white; background-color: red; border: 0.5px solid black"
 blue_style              = "color: white; background-color: blue; border: 0.5px solid black"
 green_style             = "color: white; background-color: green; border:0.5px solid black"
@@ -66,6 +67,7 @@ batch_csv_fields = ['File', 'Status', 'Start Time', 'End Time', 'Standard', 'R1 
                     'BVD Std. Mean [V]', 'N', 'Ignored First', 'Ignored Last', 'R1 Temperature [C]', \
                     'R2 Temperature [C]', 'R1 Total Pres. [Pa]', 'R2 Total Pres. [Pa]', 'R1STPPred [uOhm/Ohm]', \
                     'R2STPPred [uOhm/Ohm]', 'Remove Outliers', 'Quad Corr', 'Process', 'pymdss File', 'Warnings', 'Error']
+mysql_config = None # MySQL resistor database settings from the command line, None: ResDataBase.MYSQL_DEFAULTS
 winSizeH    = 1000
 winSizeV    = 845
 #c           = 0.8465 # specific gravity of oil used
@@ -610,7 +612,7 @@ class Ui_mainWindow(object):
         self.StdDevC2Label = QLabel(parent=self.SetResTab)
         self.StdDevC2Label.setGeometry(QRect(self.col5x, 270, self.lbl_width, self.lbl_height))
         self.lbl_Bfield = QLabel(parent=self.SetResTab)
-        self.lbl_Bfield.setGeometry(QRect(self.col4x, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_Bfield.setGeometry(QRect(self.col4x, 664, self.lbl_width, self.lbl_height))
         self.lbl_Bfield.setHidden(True)
        # col6
         self.R1STPLabel = QLabel(parent=self.SetResTab)
@@ -624,17 +626,20 @@ class Ui_mainWindow(object):
         self.StdDevChkPPMLabel = QLabel(parent=self.SetResTab)
         self.StdDevChkPPMLabel.setGeometry(QRect(self.col6x, 270, self.lbl_width, self.lbl_height))
         self.lbl_sampleTemp = QLabel(parent=self.SetResTab)
-        self.lbl_sampleTemp.setGeometry(QRect(self.col4x+46, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_sampleTemp.setGeometry(QRect(self.col5x, 664, self.lbl_width, self.lbl_height))
         self.lbl_sampleTemp.setHidden(True)
         self.lbl_contact = QLabel(parent=self.SetResTab)
-        self.lbl_contact.setGeometry(QRect(self.col4x+114, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_contact.setGeometry(QRect(self.col6x, 664, self.lbl_width - 5, self.lbl_height))
         self.lbl_contact.setHidden(True)
         self.lbl_qhr_system = QLabel(parent=self.SetResTab)
-        self.lbl_qhr_system.setGeometry(QRect(self.col4x+195, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_qhr_system.setGeometry(QRect(self.col4x, 716, self.lbl_width, self.lbl_height))
         self.lbl_qhr_system.setHidden(True)
         self.lbl_carrier_density = QLabel(parent=self.SetResTab)
-        self.lbl_carrier_density.setGeometry(QRect(self.col4x+290, 700, self.lbl_width - 25, self.lbl_height))
+        self.lbl_carrier_density.setGeometry(QRect(self.col5x, 716, self.lbl_width, self.lbl_height))
         self.lbl_carrier_density.setHidden(True)
+        self.lbl_mobility = QLabel(parent=self.SetResTab)
+        self.lbl_mobility.setGeometry(QRect(self.col6x, 716, self.lbl_width - 5, self.lbl_height))
+        self.lbl_mobility.setHidden(True)
         # col7
         self.StandardRLabel = QLabel(parent=self.centralwidget)
         self.StandardRLabel.setGeometry(QRect(self.col7x, 30, self.lbl_width, self.lbl_height))
@@ -669,7 +674,7 @@ class Ui_mainWindow(object):
         self.SettingsLabel.setStyleSheet(
                 """QLabel {color: red; font-weight: bold; font-size: 10pt }""")
         self.lbl_ccceq = QLabel(parent=self.SetResTab)
-        self.lbl_ccceq.setGeometry(QRect(640, 440, self.lbl_width+25, self.lbl_height))
+        self.lbl_ccceq.setGeometry(QRect(640, 408, self.lbl_width+25, self.lbl_height))
         self.lbl_ccceq.setStyleSheet(
                 """QLabel {color: green; font-weight: bold; font-size: 14pt }""")
         # self.LogoLabel = QLabel(parent=self.SetResTab)
@@ -679,7 +684,7 @@ class Ui_mainWindow(object):
         self.lbl_equation = QLabel(parent=self.SetResTab)
         self.pixmap_equation = QPixmap(base_dir + r'\icons\ccc_equation.PNG')
         self.lbl_equation.setPixmap(self.pixmap_equation)
-        self.lbl_equation.setGeometry(QRect(550, 475, 314, 222))
+        self.lbl_equation.setGeometry(QRect(550, 440, 314, 222))
 
         # Create and show the warning dialog
         self.msgBox = QMessageBox()
@@ -969,31 +974,38 @@ class Ui_mainWindow(object):
                 """QLineEdit { background-color: rgb(215, 214, 213); color: red; font-weight: bold }""")
 
         self.le_Bfield = QLineEdit(parent=self.SetResTab)
-        self.le_Bfield.setGeometry(QRect(self.col4x, 730, self.lbl_width - 70, self.lbl_height))
+        self.le_Bfield.setGeometry(QRect(self.col4x, 689, self.lbl_width, self.lbl_height))
         self.le_Bfield.setReadOnly(False)
         self.le_Bfield.setHidden(True)
         self.le_Bfield.setValidator(float_validator())
         self.le_Bfield.setStyleSheet(le_style)
 
         self.le_sampleTemp = QLineEdit(parent=self.SetResTab)
-        self.le_sampleTemp.setGeometry(QRect(self.col4x+46, 730, self.lbl_width - 48, self.lbl_height))
+        self.le_sampleTemp.setGeometry(QRect(self.col5x, 689, self.lbl_width, self.lbl_height))
         self.le_sampleTemp.setReadOnly(False)
         self.le_sampleTemp.setHidden(True)
         self.le_sampleTemp.setValidator(float_validator())
         self.le_sampleTemp.setStyleSheet(le_style)
 
         self.le_contact = QLineEdit(parent=self.SetResTab)
-        self.le_contact.setGeometry(QRect(self.col4x+114, 730, self.lbl_width - 41, self.lbl_height))
+        self.le_contact.setGeometry(QRect(self.col6x, 689, self.lbl_width - 5, self.lbl_height))
         self.le_contact.setReadOnly(False)
         self.le_contact.setHidden(True)
         self.le_contact.setStyleSheet(le_style)
 
         self.le_carrier_density = QLineEdit(parent=self.SetResTab)
-        self.le_carrier_density.setGeometry(QRect(self.col4x+290, 730, self.lbl_width - 55, self.lbl_height))
+        self.le_carrier_density.setGeometry(QRect(self.col5x, 741, self.lbl_width, self.lbl_height))
         self.le_carrier_density.setReadOnly(False)
         self.le_carrier_density.setHidden(True)
         self.le_carrier_density.setValidator(float_validator())
         self.le_carrier_density.setStyleSheet(le_style)
+
+        self.le_mobility = QLineEdit(parent=self.SetResTab)
+        self.le_mobility.setGeometry(QRect(self.col6x, 741, self.lbl_width - 5, self.lbl_height))
+        self.le_mobility.setReadOnly(False)
+        self.le_mobility.setHidden(True)
+        self.le_mobility.setValidator(float_validator())
+        self.le_mobility.setStyleSheet(le_style)
 
     def hide_tooltip(self) -> None:
         if debug_mode:
@@ -1635,6 +1647,8 @@ class Ui_mainWindow(object):
             self.cb_qhr_system.setHidden(False)
             self.lbl_carrier_density.setHidden(False)
             self.le_carrier_density.setHidden(False)
+            self.lbl_mobility.setHidden(False)
+            self.le_mobility.setHidden(False)
         else:
             self.qhrCharFlag = False
             self.lbl_Bfield.setHidden(True)
@@ -1647,6 +1661,8 @@ class Ui_mainWindow(object):
             self.cb_qhr_system.setHidden(True)
             self.lbl_carrier_density.setHidden(True)
             self.le_carrier_density.setHidden(True)
+            self.lbl_mobility.setHidden(True)
+            self.le_mobility.setHidden(True)
 
     def setSpinBoxes(self) -> None:
         if debug_mode:
@@ -1676,7 +1692,7 @@ class Ui_mainWindow(object):
         self.ProbeComboBox.addItem('NIST1')
 
         self.cb_qhr_system = QComboBox(parent=self.SetResTab)
-        self.cb_qhr_system.setGeometry(QRect(self.col4x+189, 730, self.lbl_width-15, self.lbl_height))
+        self.cb_qhr_system.setGeometry(QRect(self.col4x, 741, self.lbl_width, self.lbl_height))
         self.cb_qhr_system.setEditable(False)
         self.cb_qhr_system.setHidden(True)
         self.cb_qhr_system.addItem('Cryomag-5T')
@@ -1801,6 +1817,7 @@ class Ui_mainWindow(object):
         self.lbl_contact.setText(_translate("mainWindow", "[I+, I-, V+, V-]"))
         self.lbl_qhr_system.setText(_translate("mainWindow", "QHR System"))
         self.lbl_carrier_density.setText(_translate("mainWindow", "n [cm<sup>-2</sup>]"))
+        self.lbl_mobility.setText(_translate("mainWindow", f"{chr(956)} [cm<sup>2</sup>/Vs]"))
 
     def plotRaw(self) -> None:
         if debug_mode:
@@ -2524,7 +2541,7 @@ class Ui_mainWindow(object):
         if self.txtFilePath.endswith('_bvd.txt') and os.path.exists(self.txtFilePath) and self.txtFilePath.split('_bvd.txt')[0][-1].isnumeric():
             self.txtFile = self.txtFilePath.split('/')[-1]
             self.pathString = self.txtFilePath.split('_bvd.txt')[0]
-            self.dat = magnicon_ccc(self.txtFilePath, dbdir, site)
+            self.dat = magnicon_ccc(self.txtFilePath, dbdir, site, mysql_config)
 
             # getFile_end = perf_counter() - getData_start
             # print("Time taken to read files: " +  str(getFile_end))
@@ -3361,7 +3378,7 @@ class Ui_mainWindow(object):
                       N=self.N, samplesUsed= int(self.dat.SHC) - (int(self.IgnoredFirstLineEdit.text()) + int(self.IgnoredLastLineEdit.text())), \
                       meas=float(self.MeasLineEdit.text()), delay=float(self.DelayLineEdit.text()), \
                       R1PredictionSTP=float(self.R1STPLineEdit.text()), R2PredictionSTP=float(self.R2STPLineEdit.text()), \
-                      comments = self.CommentsTextBrowser.toPlainText(), bfield=self.le_Bfield.text(), sampleTemp=self.le_sampleTemp.text(), contact=self.le_contact.text(), qhr_system=self.cb_qhr_system.currentText(), carrier_density=self.le_carrier_density.text(), qhrchar=self.qhrCharFlag)
+                      comments = self.CommentsTextBrowser.toPlainText(), bfield=self.le_Bfield.text(), sampleTemp=self.le_sampleTemp.text(), contact=self.le_contact.text(), qhr_system=self.cb_qhr_system.currentText(), carrier_density=self.le_carrier_density.text(), mobility=self.le_mobility.text(), qhrchar=self.qhrCharFlag)
         with open(self.pathString + '_pyCCCRAW.mea', 'w') as mea_file:
             if self.RButStatus == 'R1':
                 unk = 'R2'
@@ -3432,7 +3449,8 @@ class Ui_mainWindow(object):
         if self.qhrCharFlag:
             process = 'QHR Process (B [T]: ' + self.le_Bfield.text() + ', Samp. T [K]: ' + self.le_sampleTemp.text() + \
                       ', [I+, I-, V+, V-]: ' + self.le_contact.text() + ', QHR System: ' + self.cb_qhr_system.currentText() + \
-                      ', n [cm^-2]: ' + self.le_carrier_density.text() + ')'
+                      ', n [cm^-2]: ' + self.le_carrier_density.text() + \
+                      ', ' + chr(956) + ' [cm^2/Vs]: ' + self.le_mobility.text() + ')'
         else:
             process = 'Magnicon CCC Process'
         env1 = self.le_path_temperature1.text() if self.le_path_temperature1.text() != '' else 'none, temperature of each file and 101325 Pa'
@@ -3675,6 +3693,13 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--debug', help='Debugging mode', action='store_true')
     parser.add_argument('-s', '--site', help='Site where this program is used', default="", type=str)
     parser.add_argument('-c', '--specific_gravity', help='Specific gravity of oil for oil type resistors', default=0.8465, type=float)
+    parser.add_argument('--mysql_host', help='Host of the MySQL resistor database (table resistors_database), tried ' + \
+                        'first with -s NIST before the ResDataBase.dat files', default=MYSQL_DEFAULTS['host'], type=str)
+    parser.add_argument('--mysql_port', help='Port of the MySQL resistor database', default=MYSQL_DEFAULTS['port'], type=int)
+    parser.add_argument('--mysql_user', help='User of the MySQL resistor database', default=MYSQL_DEFAULTS['user'], type=str)
+    parser.add_argument('--mysql_password', help='Password of the MySQL resistor database, when not given it is read ' + \
+                        'from the MYSQL_PWD environment variable', default=None, type=str)
+    parser.add_argument('--mysql_db', help='Schema of the MySQL resistor database', default=MYSQL_DEFAULTS['database'], type=str)
     args, unk = parser.parse_known_args()
     if unk:
         logger.debug("Warning: Ignoring unknown arguments: {:}".format(unk))
@@ -3684,12 +3709,17 @@ if __name__ == "__main__":
     debug_mode = args.debug
     site = args.site
     c = args.specific_gravity
+    mysql_config = {'host': args.mysql_host, 'port': args.mysql_port, 'user': args.mysql_user, \
+                    'password': args.mysql_password, 'database': args.mysql_db}
     # define the file handler and formatting
     lfname = logdir + os.sep + 'debug_magnicon-offline-analyzer' + '.log'
     file_handler = TimedRotatingFileHandler(lfname, when='midnight')
     fmt = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
     file_handler.setFormatter(fmt)
     logger.addHandler(file_handler)
+    logger.info('MySQL resistor database: ' + mysql_config['user'] + '@' + mysql_config['host'] + ':' + \
+                str(mysql_config['port']) + '/' + mysql_config['database'] + ', password ' + \
+                ('given' if args.mysql_password is not None else 'from MYSQL_PWD' if os.environ.get('MYSQL_PWD') else 'not set'))
     app = QApplication(sys.argv)
     app.setStyle("windowsvista")
     sys.excepthook = excepthook # show unhandled exceptions in a dialog instead of letting PyQt abort
